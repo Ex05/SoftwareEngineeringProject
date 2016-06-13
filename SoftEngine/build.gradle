@@ -1,0 +1,30 @@
+apply plugin:'java'
+
+version '0.1.0'
+
+dependencies {
+    compile project(':ImageLoader')
+
+    compile project(':WindowingSystem')
+
+    compile files('res\\lib\\propertyFile\\propertyFile.jar')
+}
+
+task exportWindowingSystem(type: Copy, dependsOn: ['buildDependents']) {
+    from project(':WindowingSystem').getTasksByName('jar', false)
+    into file("${projectDir}\\res\\lib\\windowingSystem")
+
+    include '*.jar'
+}
+
+task exportImageLoader(type: Copy, dependsOn: ['buildDependents']) {
+    from project(':ImageLoader').getTasksByName('jar', false)
+    into file("${projectDir}\\res\\lib\\imageLoader")
+
+    include '*.jar'
+}
+
+task export(dependsOn: ['exportWindowingSystem',
+                        'exportImageLoader'])
+
+build.finalizedBy export

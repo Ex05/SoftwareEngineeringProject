@@ -1,0 +1,148 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+group 'SWT_II'
+
+version '0.1.0'
+
+sourceCompatibility = 1.8
+
+def exportDirectory = System.getProperty('user.home') + '\\Desktop\\' + project.name
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': version,
+                'Main-Class': 'de.presidente.Main',
+                'Class-Path': ['.\\res\\lib\\softEngine\\softEngine.jar',
+                               '.\\res\\lib\\softEngine\\imageLoader\\imageLoader.jar',
+                               '.\\res\\lib\\softEngine\\propertyFile\\propertyFile.jar',
+                               '.\\res\\lib\\resourceLoader\\resourceLoader.jar',
+                               '.\\res\\lib\\netWork\\network.jar',
+                               '.\\res\\lib\\softEngine\\windowingSystem\\windowingSystem.jar'].join(' ')
+        )
+    }
+
+    final char[] lowerCaseBaseName = getBaseName().replaceAll("\\s", "_").toCharArray()
+    lowerCaseBaseName[0] = Character.toLowerCase(lowerCaseBaseName[0])
+
+    archiveName = new String(lowerCaseBaseName) + /*'_' + getVersion() + */'.' + getExtension()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile project(':SoftEngine')
+
+    compile project(':ResourceLoader')
+
+    compile project(':Network')
+}
+
+task buildSrcJar(type: Jar, dependsOn: 'classes') {
+    classifier = 'sources'
+
+    from sourceSets.main.allSource
+
+    archiveName = 'src.jar'
+}
+
+artifacts {
+    archives buildSrcJar
+}
+
+task copySoftEngineLibraries(type: Copy, dependsOn: 'buildDependents') {
+    from file(project(':SoftEngine').getProjectDir().toString() + '\\res\\lib')
+
+    into file("${projectDir}\\res\\lib\\softEngine")
+
+    exclude '*.properties', '**\\src.jar', '**\\consoleEditor.jar'
+}
+
+task copySoftEngineJar(type: Copy, dependsOn: 'buildDependents') {
+    from project(':SoftEngine').getTasksByName('jar', false)
+
+    into file("${projectDir}\\res\\lib\\softEngine")
+
+    include '*.jar'
+}
+
+task exportResources(type: Copy, dependsOn: 'buildDependents') {
+    from file("${projectDir}\\res")
+
+    into file(exportDirectory + '\\res')
+}
+
+task copyResourceLoaderJar(type: Copy, dependsOn: 'buildDependents') {
+    from project(':ResourceLoader').getTasksByName('jar', false)
+
+    into file("${projectDir}\\res\\lib\\resourceLoader")
+}
+
+task copyCrashHandler(type: Copy, dependsOn: 'buildDependents') {
+    from project(':CrashHandler').getTasksByName('jar', false)
+
+    into file(exportDirectory)
+}
+
+task copyNetworkJar(type: Copy, dependsOn: 'buildDependents') {
+    from project(':Network').getTasksByName('jar', false)
+
+    into file("${projectDir}\\res\\lib\\network")
+}
+
+task export(type: Copy, dependsOn: ['copySoftEngineJar',
+                                    'copySoftEngineLibraries',
+                                    'copyResourceLoaderJar',
+                                    'copyNetworkJar',
+                                    'copyCrashHandler',
+                                    'exportResources',]) {
+    from jar
+
+    into file(exportDirectory)
+
+    include '*.jar'
+}
+
+build.finalizedBy export
+
+// <- Subprojects ->
+subprojects {
+    apply plugin:'java'
+
+    group 'SWT_II'
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    jar {
+        final char[] lowerCaseBaseName = getBaseName().replaceAll("\\s", "_").toCharArray()
+        lowerCaseBaseName[0] = Character.toLowerCase(lowerCaseBaseName[0])
+
+        archiveName = new String(lowerCaseBaseName) + /*'_' + getVersion() + */'.' + getExtension()
+    }
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+    task buildSrcJar(type: Jar, dependsOn: 'classes') {
+        classifier = 'sources'
+
+        from sourceSets.main.allSource
+
+        archiveName = 'src.jar'
+    }
+
+    artifacts {
+        archives buildSrcJar
+    }
+}

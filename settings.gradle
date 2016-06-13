@@ -1,0 +1,9 @@
+rootProject.name = 'JungleKing'
+include 'ImageLoader'
+include 'CrashHandler'
+include 'Network'
+include 'ResourceLoader'
+include 'WindowingSystem'
+include 'Server'
+include 'SoftEngine'
+
