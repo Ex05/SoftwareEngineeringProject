@@ -6,7 +6,7 @@ package de.janik.util.resource_loader;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public interface LaunchableComponent {
+public interface LaunchComponent {
     // <- Public ->
     // <- Protected ->
     // <- Private->

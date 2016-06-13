@@ -15,7 +15,7 @@ public final class LaunchEvent {
 
     private final int weight;
 
-    private LaunchableComponent parent;
+    private LaunchComponent parent;
 
     // <- Static ->
 
@@ -41,7 +41,7 @@ public final class LaunchEvent {
         return weight;
     }
 
-    public void setParent(final LaunchableComponent parent) {
+    public void setParent(final LaunchComponent parent) {
         this.parent = parent;
     }
 

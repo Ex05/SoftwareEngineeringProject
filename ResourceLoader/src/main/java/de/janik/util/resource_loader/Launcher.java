@@ -14,7 +14,7 @@ public final class Launcher {
     // <- Protected ->
 
     // <- Private->
-    private final LaunchableComponent component;
+    private final LaunchComponent component;
 
     private final List<LaunchEvent> events;
 
@@ -23,7 +23,7 @@ public final class Launcher {
     // <- Static ->
 
     // <- Constructor ->
-    public Launcher(final LaunchableComponent component) {
+    public Launcher(final LaunchComponent component) {
         this.component = component;
 
         events = new ArrayList<>();

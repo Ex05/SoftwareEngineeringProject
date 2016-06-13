@@ -8,7 +8,7 @@ import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.TextField;
-import de.janik.util.resource_loader.LaunchableComponent;
+import de.janik.util.resource_loader.LaunchComponent;
 import de.janik.util.resource_loader.Launcher;
 
 import static de.janik.softengine.ui.Text.Interpolation.BILINEAR;
@@ -23,7 +23,7 @@ import static java.awt.event.KeyEvent.VK_ENTER;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Intro extends State implements LaunchableComponent {
+public final class Intro extends State implements LaunchComponent {
     // <- Public ->
     // <- Protected ->
 
