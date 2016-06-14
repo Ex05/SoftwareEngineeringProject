@@ -43,5 +43,9 @@ public final class Lobby {
         return  games.stream().map(Game::getName).toArray(String[]::new);
     }
 
+    public String[] getConnectedClients(){
+        return  clients.stream().map(Client::getUserName).toArray(String[]::new);
+    }
+
     // <- Static ->
 }

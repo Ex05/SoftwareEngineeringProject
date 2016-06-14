@@ -111,7 +111,9 @@ public final class Client implements Runnable {
 
 
         while (running) {
-            send(new Packet_004_LobbyEnter(server.getLobby().getGameNames()));
+            final Lobby lobby = server.getLobby();
+
+            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getConnectedClients()));
 
             server.enterLobby(this);
 
@@ -134,7 +136,13 @@ public final class Client implements Runnable {
     }
 
     // <- Getter & Setter ->
+    public long getuID() {
+        return uID;
+    }
 
+    public String getUserName() {
+        return userName;
+    }
 
     // <- Static ->
 }
