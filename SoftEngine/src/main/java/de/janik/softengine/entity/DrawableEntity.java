@@ -40,6 +40,12 @@ public abstract class DrawableEntity extends Entity implements Drawable {
 
     // <- Object ->
 
+    @Override
+    public void pressKey(final int keyCode) {
+        if (isVisible())
+            super.pressKey(keyCode);
+    }
+
     // <- Getter & Setter ->
     public boolean isVisible() {
         return visible;

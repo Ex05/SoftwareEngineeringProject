@@ -174,6 +174,10 @@ public class Text extends A_Sprite {
         setAntialiasing(antialiasing);
     }
 
+    public Graphics2D getGraphics() {
+        return g;
+    }
+
     // <- Static ->
     public enum Interpolation {
         BILINEAR(VALUE_INTERPOLATION_BILINEAR),

@@ -47,6 +47,7 @@ public final class JungleKingGame extends Game {
         }
 
         gameStates.add(new Intro(this));
+        gameStates.add(new Login(this));
 
         switchState(Intro.class);
     }

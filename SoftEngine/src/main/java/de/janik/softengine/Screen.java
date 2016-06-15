@@ -10,8 +10,6 @@ import de.janik.softengine.util.ColorARGB;
 
 import java.util.List;
 
-import static de.janik.softengine.util.ColorARGB.ToAWT_Color;
-
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
@@ -40,10 +38,7 @@ public final class Screen extends A_Sprite {
 
     // <- Object ->
     public void fillScreen(final ColorARGB color) {
-        final int rgb = ToAWT_Color(color).getRGB();
-
-        for (int i = 0; i < pixel.length; i++)
-            pixel[i] = rgb;
+        bitmap.fill(color);
     }
 
     public void render(final List<DrawableEntity> entities) {

@@ -2,6 +2,8 @@ package de.janik.softengine.ui;
 // <- Import ->
 // <- Static_Import ->
 
+import de.janik.softengine.util.ColorARGB;
+
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -28,9 +30,9 @@ public final class Bitmap extends A_Sprite {
     private final int width;
     private final int height;
 
-    private final BufferedImage img;
+    private BufferedImage img;
 
-    private final Graphics2D g;
+    private Graphics2D g;
 
     // <- Static ->
     static {
@@ -44,15 +46,17 @@ public final class Bitmap extends A_Sprite {
         this.height = height;
         this.pixels = pixels;
 
-        final SinglePixelPackedSampleModel sm = new SinglePixelPackedSampleModel(TYPE_INT, width, height, BIT_MASKS);
+        if (width > 0 && height > 0) {
+            final SinglePixelPackedSampleModel sm = new SinglePixelPackedSampleModel(TYPE_INT, width, height, BIT_MASKS);
 
-        final DataBufferInt db = new DataBufferInt(pixels, pixels.length);
+            final DataBufferInt db = new DataBufferInt(pixels, pixels.length);
 
-        final WritableRaster raster = Raster.createWritableRaster(sm, db, null);
+            final WritableRaster raster = Raster.createWritableRaster(sm, db, null);
 
-        img = new BufferedImage(ColorModel.getRGBdefault(), raster, false, new Hashtable<>());
+            img = new BufferedImage(ColorModel.getRGBdefault(), raster, false, new Hashtable<>());
 
-        g = (Graphics2D) img.getGraphics();
+            g = (Graphics2D) img.getGraphics();
+        }
     }
 
     // <- Abstract ->
@@ -83,7 +87,7 @@ public final class Bitmap extends A_Sprite {
                     final int srcRed = (srcRGBA >> 24) & BIT_MASK;
                     final int srcGreen = (srcRGBA >> 16) & BIT_MASK;
                     final int srcBlue = (srcRGBA >> 8) & BIT_MASK;
-                    final float srcAlpha = (float )alpha / 255.0f;
+                    final float srcAlpha = (float) alpha / 255.0f;
 
                     final int dstRGB = pixels[dstPos];
 
@@ -101,6 +105,13 @@ public final class Bitmap extends A_Sprite {
                     pixels[dstPos] = (blendRed << 24) | (blendGreen << 16) | (blendBlue << 8) | dstAlpha;
                 }
             }
+    }
+
+    public void fill(final ColorARGB color) {
+        final int rgb = color.getRGB();
+
+        for (int i = 0; i < pixels.length; i++)
+            pixels[i] = rgb;
     }
 
     // <- Getter & Setter ->

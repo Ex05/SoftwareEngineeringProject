@@ -109,7 +109,6 @@ public final class Client implements Runnable {
                 send(new Packet_000_ConnectionClosed());
         } while (true);
 
-
         while (running) {
             final Lobby lobby = server.getLobby();
 
@@ -121,7 +120,7 @@ public final class Client implements Runnable {
         }
     }
 
-    private boolean send(final Packet packet) {
+    private boolean send(final Packet packet)  {
         boolean successfulWrite = false;
 
         try {

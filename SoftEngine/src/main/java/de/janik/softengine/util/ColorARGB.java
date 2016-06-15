@@ -608,6 +608,13 @@ public class ColorARGB {
         color[_ALPHA] = alpha;
     }
 
+    public int getRGB() {
+        return (asInt(getAlpha()) & 0xFF) << 24 |
+                (asInt(getRed()) & 0xFF) << 16 |
+                (asInt(getGreen()) & 0xFF) << 8 |
+                (asInt(getBlue()) & 0xFF);
+    }
+
     // <- Static ->
 
     /**

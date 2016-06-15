@@ -75,7 +75,7 @@ public final class Intro extends State implements LaunchComponent {
         buttonPressEnter.setVisible(false);
         buttonPressEnter.onKeyPress(keyCode -> {
             if (keyCode == VK_ENTER) {
-                // TODO:(jan) Switch state to 'playing".
+                game.switchState(Login.class);
             }
         });
 
@@ -107,6 +107,11 @@ public final class Intro extends State implements LaunchComponent {
 
     @Override
     public void tick(final long ticks, final Engine engine) {
+        // TODO:(jan) Remove debug code.
+        game.switchState(Login.class);
+
+        System.err.println("Intro.tick[TODO:(jan) Remove debug code.]");
+
         if (textWelcomePosY < engine.getScreenHeight() / 2 - textWelcome.getHeight() / 4) {
             textWelcomePosY += 10;
             textWelcome.setY(textWelcomePosY);
@@ -116,7 +121,7 @@ public final class Intro extends State implements LaunchComponent {
         buttonPressEnter.setLocation(engine.getScreenWidth() / 2 - buttonPressEnter.getWidth() / 2, textWelcome.getY() - 40);
 
         if (!enterPressed)
-            if (engine.getInput().isKeyDown(VK_ENTER)) {
+            if (buttonPressEnter.isVisible() && engine.getInput().isKeyDown(VK_ENTER)) {
                 buttonPressEnter.pressKey(VK_ENTER);
 
                 enterPressed = true;
@@ -139,8 +144,6 @@ public final class Intro extends State implements LaunchComponent {
 
     @Override
     public void launch() {
-        // TODO:(jan) Switch state to 'playing'.
-
         resourcesFinishedLoading = true;
 
         loadingBar.setVisible(false);
