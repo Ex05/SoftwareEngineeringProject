@@ -10,6 +10,7 @@ import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.util.ColorARGB;
 
+import static de.janik.softengine.util.ColorARGB.DARK_GRAY;
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
 import static de.janik.softengine.util.ColorARGB.WHITE;
@@ -26,6 +27,8 @@ public final class Login extends State {
     private final Button buttonLogin;
     private final Button buttonNotRegistered;
     private final Button buttonCreateAccount;
+    private final Button buttonUserName;
+    private final Button buttonPassword;
 
     private final Rectangle background;
     private final Rectangle backgroundButtonLogin;
@@ -87,6 +90,20 @@ public final class Login extends State {
         buttonCreateAccount.setZ(background.getZ() + 1);
         buttonCreateAccount.setTextColor(GREEN);
         buttonCreateAccount.setLocation(engine.getScreenWidth() / 2, buttonNotRegistered.getY());
+
+        buttonUserName = new Button("Username");
+        buttonUserName.setFont(SOURCE_CODE_PRO);
+        buttonUserName.setZ(backgroundTextFieldUser.getZ() + 1);
+        buttonUserName.setTextColor(DARK_GRAY);
+        buttonUserName.setTextSize(28);
+        buttonUserName.setLocation(backgroundTextFieldUser.getX(), backgroundTextFieldUser.getY() + buttonUserName.getHeight() / 2 - 4);
+
+        buttonPassword = new Button("Password");
+        buttonPassword.setFont(SOURCE_CODE_PRO);
+        buttonPassword.setZ(backgroundTextFieldPassword.getZ() + 1);
+        buttonPassword.setTextColor(DARK_GRAY);
+        buttonPassword.setTextSize(28);
+        buttonPassword.setLocation(backgroundTextFieldPassword.getX(), backgroundTextFieldPassword.getY() + buttonPassword.getHeight() / 2 - 4);
     }
 
     // <- Abstract ->
@@ -98,7 +115,9 @@ public final class Login extends State {
 
         game.add(background);
         game.add(backgroundTextFieldUser);
+        game.add(buttonUserName);
         game.add(backgroundTextFieldPassword);
+        game.add(buttonPassword);
         game.add(backgroundButtonLogin);
         game.add(buttonLogin);
         game.add(buttonNotRegistered);
