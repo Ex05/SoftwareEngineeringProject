@@ -1,76 +1,46 @@
 package de.janik.softengine.ui;
+
 // <- Import ->
 
 // <- Static_Import ->
 
 
-import de.janik.softengine.InputManager;
 import de.janik.softengine.entity.DrawableEntity;
-import de.janik.softengine.util.ColorARGB;
-
-import java.awt.Font;
-
-import static de.janik.softengine.ui.Text.Interpolation;
 
 /**
- * @author Jan.Marcel.Janik [©2016]
+ * @author Gorden.Kappenberg [©2016]
  */
-public final class TextField extends DrawableEntity {
+public class TextField extends DrawableEntity {
     // <- Public ->
     // <- Protected ->
-
     // <- Private->
-    private final Text text;
+
+    private final Text defaultText;
+
+    private Text text;
 
     // <- Static ->
-
     // <- Constructor ->
-    public TextField(final String text) {
+    public TextField() {
+        this(null);
+    }
+
+    public TextField(final String defaultText) {
         this(0, 0);
 
-        setText(text);
+        if (defaultText != null)
+            this.defaultText.setText(defaultText);
+
     }
 
     public TextField(int x, int y) {
         super(x, y);
 
+        defaultText = new Text();
         text = new Text();
-
-        setSprite(text);
     }
-
     // <- Abstract ->
-
     // <- Object ->
-    @Override
-    public void tick(final long ticks, final InputManager input) {
-        // Unused
-    }
-
     // <- Getter & Setter ->
-    public void setFont(final Font font) {
-        text.setFont(font);
-    }
-
-    public void setTextSize(final int textSize) {
-        text.setTextSize(textSize);
-    }
-
-    public void setText(final String text) {
-        this.text.setText(text);
-    }
-
-    public void setTextColor(final ColorARGB color) {
-        text.setColor(color);
-    }
-
-    public void setAntialiasing(final boolean antialiasing) {
-        text.setAntialiasing(antialiasing);
-    }
-
-    public void setAntialiasing(final boolean antialiasing, final Interpolation interpolation) {
-        text.setAntialiasing(antialiasing, interpolation);
-    }
-
     // <- Static ->
 }

@@ -27,7 +27,7 @@ import static de.janik.windowing.WindowType.BORDERLESS_NO_CONTROLS;
 import static java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment;
 
 /**
- * @author Jan.Marcel.Janik [©2016]
+ * @author Jan.Marcel.Janik, Gorden.Kappenberg [©2016]
  */
 public class Engine implements Runnable {
     // <- Public ->
@@ -72,7 +72,7 @@ public class Engine implements Runnable {
         input = new InputManager(this);
 
         canvas = new Canvas(window, game.getDisplayScaleFactor());
-        canvas.setDragableByMouse(true, window);
+        canvas.setDragableByMouse(false, window);
         canvas.addKeyListener(input);
         canvas.addMouseListener(input);
 

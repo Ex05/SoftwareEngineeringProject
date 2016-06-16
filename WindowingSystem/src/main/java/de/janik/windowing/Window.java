@@ -22,7 +22,7 @@ import static java.awt.Window.Type.UTILITY;
 // <- Static_Import ->
 
 /**
- * @author Jan.Marcel.Janik [©2016]
+ * @author Jan.Marcel.Janik, Gorden.Kappenberg [©2016]
  */
 public final class Window {
     // <- Public ->
@@ -128,7 +128,6 @@ public final class Window {
             }
             case BORDERLESS: {
                 frame.setType(NORMAL);
-
                 frame.setUndecorated(true);
 
                 break;
@@ -136,6 +135,12 @@ public final class Window {
             case BORDERLESS_NO_CONTROLS: {
                 frame.setType(UTILITY);
                 frame.setUndecorated(true);
+
+                break;
+            }
+            case UTILITY: {
+                frame.setType(UTILITY);
+                frame.setUndecorated(false);
 
                 break;
             }

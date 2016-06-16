@@ -7,7 +7,7 @@ import de.janik.softengine.Engine;
 import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
-import de.janik.softengine.ui.TextField;
+import de.janik.softengine.ui.Label;
 import de.janik.util.resource_loader.LaunchComponent;
 import de.janik.util.resource_loader.Launcher;
 
@@ -30,7 +30,7 @@ public final class Intro extends State implements LaunchComponent {
     // <- Private->
     private static final String BUTTON_LOADING_BAR_FORMAT_STRING;
 
-    private final TextField textWelcome;
+    private final Label textWelcome;
     private final Button buttonPressEnter;
 
     private final Launcher launcher;
@@ -59,7 +59,7 @@ public final class Intro extends State implements LaunchComponent {
 
         launcher = new Launcher(this);
 
-        textWelcome = new TextField("Welcome");
+        textWelcome = new Label("Welcome");
         textWelcome.setFont(SOURCE_CODE_PRO);
         textWelcome.setAntialiasing(true, BILINEAR);
         textWelcome.setTextColor(ORANGE);
