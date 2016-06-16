@@ -4,12 +4,16 @@ package de.presidente.jungle_king;
 // <- Static_Import ->
 
 import de.janik.softengine.Engine;
+import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.TextField;
 import de.janik.softengine.util.ColorARGB;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static de.janik.softengine.ui.Button.TextLocation.CENTER;
 import static de.janik.softengine.util.ColorARGB.DARK_GRAY;
@@ -26,27 +30,44 @@ public final class Login extends State {
     // <- Protected ->
 
     // <- Private->
+    private static final int MOVE_INTERVAL;
+    private static final int TIME;
+
     private final Button buttonLogin;
+    private final Button buttonRegister;
     private final Button buttonCreateAccount;
     private final Button buttonUserName;
     private final Button buttonPassword;
 
     private final TextField buttonNotRegistered;
 
-    private final Rectangle background;
+    private final Rectangle backgroundLogin;
+    private final Rectangle backgroundRegister;
     private final Rectangle backgroundTextFieldUser;
     private final Rectangle backgroundTextFieldPassword;
 
+    private final List<DrawableEntity> loginComponents;
+    private final List<DrawableEntity> registerComponents;
+
+    private State state = State.LOGIN;
+
+    private long timer;
+
     // <- Static ->
+    static {
+        TIME = 20;
+
+        MOVE_INTERVAL = 900 / TIME;
+    }
 
     // <- Constructor ->
     public Login(final Game game) {
         super(game);
 
-        background = new Rectangle(500, 300);
-        background.setColor(WHITE);
-        background.setLocation(engine.getScreenWidth() / 2 - background.getWidth() / 2,
-                engine.getScreenHeight() / 2 - background.getHeight() / 2);
+        backgroundLogin = new Rectangle(500, 314);
+        backgroundLogin.setColor(WHITE);
+        backgroundLogin.setLocation(engine.getScreenWidth() / 2 - backgroundLogin.getWidth() / 2,
+                engine.getScreenHeight() / 2 - backgroundLogin.getHeight() / 2);
 
         final int offsetTopBottom = 45;
         final int offset = 25;
@@ -56,13 +77,13 @@ public final class Login extends State {
         final ColorARGB lightGray = new ColorARGB(222, 222, 222);
 
         backgroundTextFieldUser = new Rectangle(400, textFieldHeight);
-        backgroundTextFieldUser.setZ(background.getZ() + 1);
+        backgroundTextFieldUser.setZ(backgroundLogin.getZ() + 1);
         backgroundTextFieldUser.setColor(lightGray);
         backgroundTextFieldUser.setLocation(engine.getScreenWidth() / 2 - backgroundTextFieldUser.getWidth() / 2,
-                background.getY() + background.getHeight() - offsetTopBottom - backgroundTextFieldUser.getHeight());
+                backgroundLogin.getY() + backgroundLogin.getHeight() - offsetTopBottom - backgroundTextFieldUser.getHeight());
 
         backgroundTextFieldPassword = new Rectangle(400, textFieldHeight);
-        backgroundTextFieldPassword.setZ(background.getZ() + 1);
+        backgroundTextFieldPassword.setZ(backgroundLogin.getZ() + 1);
         backgroundTextFieldPassword.setColor(lightGray);
         backgroundTextFieldPassword.setLocation(engine.getScreenWidth() / 2 - backgroundTextFieldPassword.getWidth() / 2,
                 backgroundTextFieldUser.getY() - offset - backgroundTextFieldPassword.getHeight());
@@ -78,15 +99,19 @@ public final class Login extends State {
 
         buttonNotRegistered = new TextField("Not registered?");
         buttonNotRegistered.setTextSize(16);
-        buttonNotRegistered.setZ(background.getZ() + 1);
+        buttonNotRegistered.setZ(backgroundLogin.getZ() + 1);
         buttonNotRegistered.setTextColor(DARK_SLATE_GRAY);
         buttonNotRegistered.setLocation(engine.getScreenWidth() / 2 - buttonNotRegistered.getWidth(), buttonLogin.getY() - offsetCreateAccount - buttonNotRegistered.getHeight());
 
         buttonCreateAccount = new Button("Create an Account.");
         buttonCreateAccount.setTextSize(16);
-        buttonCreateAccount.setZ(background.getZ() + 1);
+        buttonCreateAccount.setZ(backgroundLogin.getZ() + 1);
         buttonCreateAccount.setTextColor(GREEN);
         buttonCreateAccount.setLocation(engine.getScreenWidth() / 2, buttonNotRegistered.getY());
+        buttonCreateAccount.onMousePress(() -> {
+            if (state == State.LOGIN)
+                switchState(State.TRANSITION_REGISTER);
+        });
 
         buttonUserName = new Button("Username");
         buttonUserName.setFont(SOURCE_CODE_PRO);
@@ -101,6 +126,43 @@ public final class Login extends State {
         buttonPassword.setTextColor(DARK_GRAY);
         buttonPassword.setTextSize(28);
         buttonPassword.setLocation(backgroundTextFieldPassword.getX(), backgroundTextFieldPassword.getY() + buttonPassword.getHeight() / 2 - 4);
+
+        loginComponents = new ArrayList<>(8);
+
+        loginComponents.add(backgroundLogin);
+        loginComponents.add(backgroundTextFieldUser);
+        loginComponents.add(backgroundTextFieldPassword);
+        loginComponents.add(buttonUserName);
+        loginComponents.add(buttonPassword);
+        loginComponents.add(buttonLogin);
+        loginComponents.add(buttonNotRegistered);
+        loginComponents.add(buttonCreateAccount);
+        
+        final int moveOffset = MOVE_INTERVAL * TIME;
+
+        backgroundRegister = new Rectangle(500, 340);
+        backgroundRegister.setColor(WHITE);
+
+        backgroundRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - backgroundRegister.getWidth() / 2,
+                engine.getScreenHeight() / 2 - backgroundRegister.getHeight() / 2);
+
+        buttonRegister = new Button("Register.", CENTER);
+        buttonRegister.setFont(SOURCE_CODE_PRO);
+        buttonRegister.setZ(backgroundTextFieldPassword.getZ() + 1);
+        buttonRegister.setTextColor(WHITE);
+        buttonRegister.setTextSize(28);
+        buttonRegister.setSize(400, buttonRegister.getHeight() + (int) (buttonRegister.getHeight() * 0.4f));
+        buttonRegister.setBackgroundColor(new ColorARGB(0, 180, 65));
+        buttonRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - buttonRegister.getWidth() / 2, backgroundTextFieldPassword.getY() - (offset + 5) - buttonRegister.getHeight());
+        buttonRegister.onMousePress(() -> {
+            if (state == State.REGISTER)
+                switchState(State.TRANSITION_LOGIN);
+        });
+
+        registerComponents = new ArrayList<>();
+
+        registerComponents.add(backgroundRegister);
+        registerComponents.add(buttonRegister);
     }
 
     // <- Abstract ->
@@ -110,20 +172,81 @@ public final class Login extends State {
     public void init() {
         game.setBackgroundColor(new ColorARGB(115, 195, 90));
 
-        game.add(background);
-        game.add(backgroundTextFieldUser);
-        game.add(buttonUserName);
-        game.add(backgroundTextFieldPassword);
-        game.add(buttonPassword);
-        game.add(buttonLogin);
-        game.add(buttonNotRegistered);
-        game.add(buttonCreateAccount);
+        loginComponents.forEach(game::add);
+        registerComponents.forEach(game::add);
+
+        switchState(state);
+    }
+
+    private void switchState(final State nextState) {
+        switch (nextState) {
+            case LOGIN: {
+                registerComponents.forEach(e -> e.setVisible(false));
+
+                break;
+            }
+            case REGISTER: {
+                loginComponents.forEach(e -> e.setVisible(false));
+
+                break;
+            }
+            case TRANSITION_LOGIN:{
+                loginComponents.forEach(e -> e.setVisible(true));
+
+                timer = TIME;
+
+                break;
+            }
+            case TRANSITION_REGISTER: {
+                registerComponents.forEach(e -> e.setVisible(true));
+
+                timer = TIME;
+
+                break;
+            }
+        }
+
+        state = nextState;
     }
 
     @Override
     public void tick(final long ticks, final Engine engine) {
+        switch (state) {
+            case LOGIN:
+                break;
+            case REGISTER:
+                break;
+            case TRANSITION_LOGIN:
+                if (timer > 0) {
+                    loginComponents.forEach(e -> e.setLocation(e.getX() + MOVE_INTERVAL, e.getY()));
+
+                    registerComponents.forEach(e -> e.setLocation(e.getX() + MOVE_INTERVAL, e.getY()));
+
+                    timer--;
+                } else
+                    switchState(State.LOGIN);
+                break;
+            case TRANSITION_REGISTER:
+                if (timer > 0) {
+                    loginComponents.forEach(e -> e.setLocation(e.getX() - MOVE_INTERVAL, e.getY()));
+
+                    registerComponents.forEach(e -> e.setLocation(e.getX() - MOVE_INTERVAL, e.getY()));
+
+                    timer--;
+                } else
+                    switchState(State.REGISTER);
+
+                break;
+        }
     }
 
     // <- Getter & Setter ->
+
     // <- Static ->
+    private enum State {
+        LOGIN,
+        REGISTER,
+        TRANSITION_LOGIN,
+        TRANSITION_REGISTER
+    }
 }

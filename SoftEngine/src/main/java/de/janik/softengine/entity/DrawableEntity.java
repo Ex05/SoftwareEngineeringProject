@@ -46,6 +46,17 @@ public abstract class DrawableEntity extends Entity implements Drawable {
             super.pressKey(keyCode);
     }
 
+    @Override
+    public boolean handleMousePress(final InputManager input) {
+        return isVisible() && super.handleMousePress(input);
+    }
+
+    @Override
+    public void handleMouseOver(final InputManager input) {
+        if (isVisible())
+            super.handleMouseOver(input);
+    }
+
     // <- Getter & Setter ->
     public boolean isVisible() {
         return visible;
