@@ -8,8 +8,10 @@ import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.Rectangle;
+import de.janik.softengine.ui.TextField;
 import de.janik.softengine.util.ColorARGB;
 
+import static de.janik.softengine.ui.Button.TextLocation.CENTER;
 import static de.janik.softengine.util.ColorARGB.DARK_GRAY;
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
@@ -25,13 +27,13 @@ public final class Login extends State {
 
     // <- Private->
     private final Button buttonLogin;
-    private final Button buttonNotRegistered;
     private final Button buttonCreateAccount;
     private final Button buttonUserName;
     private final Button buttonPassword;
 
+    private final TextField buttonNotRegistered;
+
     private final Rectangle background;
-    private final Rectangle backgroundButtonLogin;
     private final Rectangle backgroundTextFieldUser;
     private final Rectangle backgroundTextFieldPassword;
 
@@ -65,25 +67,20 @@ public final class Login extends State {
         backgroundTextFieldPassword.setLocation(engine.getScreenWidth() / 2 - backgroundTextFieldPassword.getWidth() / 2,
                 backgroundTextFieldUser.getY() - offset - backgroundTextFieldPassword.getHeight());
 
-        buttonLogin = new Button("Login.");
+        buttonLogin = new Button("Login.", CENTER);
         buttonLogin.setFont(SOURCE_CODE_PRO);
         buttonLogin.setZ(backgroundTextFieldPassword.getZ() + 1);
         buttonLogin.setTextColor(WHITE);
         buttonLogin.setTextSize(28);
+        buttonLogin.setSize(400, buttonLogin.getHeight() + (int) (buttonLogin.getHeight() * 0.4f));
+        buttonLogin.setBackgroundColor(new ColorARGB(0, 180, 65));
         buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, backgroundTextFieldPassword.getY() - (offset + 5) - buttonLogin.getHeight());
 
-        backgroundButtonLogin = new Rectangle(400, buttonLogin.getHeight() + (int) (buttonLogin.getHeight() * 0.4f));
-        backgroundButtonLogin.setZ(background.getZ() + 1);
-        backgroundButtonLogin.setColor(new ColorARGB(0, 180, 65));
-        backgroundButtonLogin.setZ(buttonLogin.getZ() - 1);
-        backgroundButtonLogin.setLocation(buttonLogin.getX() - (backgroundButtonLogin.getWidth() / 2 - buttonLogin.getWidth() / 2),
-                buttonLogin.getY() - (backgroundButtonLogin.getHeight() / 2 - buttonLogin.getHeight() / 2));
-
-        buttonNotRegistered = new Button("Not registered?");
+        buttonNotRegistered = new TextField("Not registered?");
         buttonNotRegistered.setTextSize(16);
         buttonNotRegistered.setZ(background.getZ() + 1);
         buttonNotRegistered.setTextColor(DARK_SLATE_GRAY);
-        buttonNotRegistered.setLocation(engine.getScreenWidth() / 2 - buttonNotRegistered.getWidth(), backgroundButtonLogin.getY() - offsetCreateAccount - buttonNotRegistered.getHeight());
+        buttonNotRegistered.setLocation(engine.getScreenWidth() / 2 - buttonNotRegistered.getWidth(), buttonLogin.getY() - offsetCreateAccount - buttonNotRegistered.getHeight());
 
         buttonCreateAccount = new Button("Create an Account.");
         buttonCreateAccount.setTextSize(16);
@@ -118,7 +115,6 @@ public final class Login extends State {
         game.add(buttonUserName);
         game.add(backgroundTextFieldPassword);
         game.add(buttonPassword);
-        game.add(backgroundButtonLogin);
         game.add(buttonLogin);
         game.add(buttonNotRegistered);
         game.add(buttonCreateAccount);

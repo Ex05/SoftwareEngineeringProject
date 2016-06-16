@@ -15,9 +15,11 @@ public final class Rectangle extends DrawableEntity {
     // <- Protected ->
 
     // <- Private->
-    private final int[] pixels;
+    private int[] pixels;
 
-    private final Bitmap background;
+    private Bitmap background;
+
+    private ColorARGB color = new ColorARGB(0, 0, 0, 0);
 
     // <- Static ->
 
@@ -25,11 +27,7 @@ public final class Rectangle extends DrawableEntity {
     public Rectangle(final int width, final int height) {
         super(0, 0);
 
-        pixels = new int[width * height];
-
-        background = new Bitmap(width, height, pixels);
-
-        setSprite(background);
+        resize(width, height);
     }
 
     // <- Abstract ->
@@ -40,12 +38,33 @@ public final class Rectangle extends DrawableEntity {
 
     }
 
+    public void resize(final int width, final int height) {
+        pixels = new int[width * height];
+
+        background = new Bitmap(width, height, pixels);
+
+        setSprite(background);
+
+        fill(color);
+    }
+
     // <- Getter & Setter ->
     public void setColor(final ColorARGB color) {
-        background.fill(color);
+        this.color = color;
+
+        fill(color);
 
         /* background.getGraphics().setColor(ColorARGB.ToAWT_Color(color));
         background.getGraphics().fillRect(0,0,background.getWidth(), background.getHeight()); */
+    }
+
+    private void fill(final ColorARGB color) {
+        background.fill(color);
+    }
+
+    @Override
+    public Bitmap getSprite() {
+        return (Bitmap) super.getSprite();
     }
 
     // <- Static ->
