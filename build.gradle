@@ -38,10 +38,9 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     compile project(':SoftEngine')
-
     compile project(':ResourceLoader')
-
     compile project(':Network')
+    compile project(':PasswordService')
 }
 
 task buildSrcJar(type: Jar, dependsOn: 'classes') {
@@ -68,6 +67,13 @@ task copySoftEngineJar(type: Copy, dependsOn: 'buildDependents') {
     from project(':SoftEngine').getTasksByName('jar', false)
 
     into file("${projectDir}\\res\\lib\\softEngine")
+
+    include '*.jar'
+}
+task copyPasswordService(type: Copy, dependsOn: 'buildDependents') {
+    from project(':PasswordService').getTasksByName('jar', false)
+
+    into file("${projectDir}\\res\\lib\\passwordService")
 
     include '*.jar'
 }
@@ -101,6 +107,7 @@ task export(type: Copy, dependsOn: ['copySoftEngineJar',
                                     'copyResourceLoaderJar',
                                     'copyNetworkJar',
                                     'copyCrashHandler',
+                                    'copyPasswordService',
                                     'exportResources',]) {
     from jar
 
