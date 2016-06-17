@@ -77,7 +77,7 @@ public final class JungleKingGame extends Game {
 
     @Override
     public int getDesiredTicksPerSecond() {
-        return 20;
+        return 60;
     }
 
     @Override

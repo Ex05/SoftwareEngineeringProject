@@ -9,7 +9,7 @@ import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.Rectangle;
-import de.janik.softengine.ui.TextField;
+import de.janik.softengine.ui.Label;
 import de.janik.softengine.util.ColorARGB;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public final class Login extends State {
     private final Button buttonUserName;
     private final Button buttonPassword;
 
-    private final TextField buttonNotRegistered;
+    private final Label buttonNotRegistered;
 
     private final Rectangle backgroundLogin;
     private final Rectangle backgroundRegister;
@@ -55,7 +55,7 @@ public final class Login extends State {
 
     // <- Static ->
     static {
-        TIME = 20;
+        TIME = 45;
 
         MOVE_INTERVAL = 900 / TIME;
     }
@@ -97,7 +97,7 @@ public final class Login extends State {
         buttonLogin.setBackgroundColor(new ColorARGB(0, 180, 65));
         buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, backgroundTextFieldPassword.getY() - (offset + 5) - buttonLogin.getHeight());
 
-        buttonNotRegistered = new TextField("Not registered?");
+        buttonNotRegistered = new Label("Not registered?");
         buttonNotRegistered.setTextSize(16);
         buttonNotRegistered.setZ(backgroundLogin.getZ() + 1);
         buttonNotRegistered.setTextColor(DARK_SLATE_GRAY);
