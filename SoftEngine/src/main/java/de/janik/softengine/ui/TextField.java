@@ -40,13 +40,8 @@ public class TextField extends DrawableEntity {
     public TextField(final String defaultText) {
         this(0, 0);
 
-        if (defaultText != null)
-        {
-            this.defaultText = defaultText;
-            this.text.setText(defaultText);
-        }
-
-
+        this.defaultText = defaultText;
+        this.text.setText(defaultText);
     }
 
     public TextField(int x, int y) {
@@ -61,9 +56,7 @@ public class TextField extends DrawableEntity {
         setSprite(background.getSprite());
     }
 
-
     // <- Abstract ->
-
     // <- Object ->
     @Override
     public void tick(long ticks, InputManager input) {
