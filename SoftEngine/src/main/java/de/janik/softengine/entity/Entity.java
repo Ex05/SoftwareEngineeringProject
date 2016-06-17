@@ -162,7 +162,7 @@ public abstract class Entity implements Comparable<Entity> {
         return (int) location.x;
     }
 
-    public void setX(final int x) {
+    public void setX(final float x) {
         location.x = x;
     }
 

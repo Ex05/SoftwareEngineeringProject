@@ -20,6 +20,7 @@ import static de.janik.softengine.util.ColorARGB.DARK_GRAY;
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
 import static de.janik.softengine.util.ColorARGB.WHITE;
+import static de.presidente.jungle_king.util.Constants.TICKS_PER_SECOND;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
 
 /**
@@ -55,7 +56,7 @@ public final class Login extends State {
 
     // <- Static ->
     static {
-        TIME = 20;
+        TIME = (int) (0.75f * TICKS_PER_SECOND);
 
         MOVE_INTERVAL = 900 / TIME;
     }
@@ -137,7 +138,7 @@ public final class Login extends State {
         loginComponents.add(buttonLogin);
         loginComponents.add(buttonNotRegistered);
         loginComponents.add(buttonCreateAccount);
-        
+
         final int moveOffset = MOVE_INTERVAL * TIME;
 
         backgroundRegister = new Rectangle(500, 340);
@@ -190,7 +191,7 @@ public final class Login extends State {
 
                 break;
             }
-            case TRANSITION_LOGIN:{
+            case TRANSITION_LOGIN: {
                 loginComponents.forEach(e -> e.setVisible(true));
 
                 timer = TIME;

@@ -8,6 +8,7 @@ import de.janik.softengine.Engine;
 import de.janik.softengine.InputManager;
 import de.janik.softengine.game.Game;
 import de.janik.windowing.Window;
+import de.presidente.jungle_king.util.Constants;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import static de.janik.softengine.util.Constants.FONT_SOURCE_CODE_PRO_LOCATION;
 import static de.janik.windowing.WindowType.BORDERLESS_NO_CONTROLS;
 import static de.presidente.jungle_king.util.Constants.GAME_TITLE;
+import static de.presidente.jungle_king.util.Constants.TICKS_PER_SECOND;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
 import static java.awt.Font.TRUETYPE_FONT;
 import static java.awt.event.KeyEvent.VK_F10;
@@ -77,7 +79,7 @@ public final class JungleKingGame extends Game {
 
     @Override
     public int getDesiredTicksPerSecond() {
-        return 20;
+        return TICKS_PER_SECOND;
     }
 
     @Override
