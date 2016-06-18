@@ -1,7 +1,28 @@
-apply plugin:'java'
+apply plugin: 'java'
 
 version '0.1.0'
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': version,
+                'Main-Class': 'de.janik.presidente.server.Main',
+                'Class-Path': ['.\\res\\lib\\network\\network.jar'].join(' ')
+        )
+    }
+}
 
 dependencies {
     compile project(':Network')
 }
+
+task exportDependencies(type: Copy) {
+    from project(':Network').getTasksByName('jar', false);
+
+    into file("${projectDir}\\res\\lib\\network")
+}
+
+task export(type: Copy, dependsOn: ['buildDependents', 'exportDependencies'])
+
+build.finalizedBy export

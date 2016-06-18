@@ -102,13 +102,26 @@ task copyNetworkJar(type: Copy, dependsOn: 'buildDependents') {
     into file("${projectDir}\\res\\lib\\network")
 }
 
+task exportServerResources(type: Copy) {
+    from file(project(':Server').getProjectDir().toString() + '\\res')
+
+    into file(exportDirectory + '\\server\\res')
+}
+
+task exportServer(type: Copy, dependsOn: 'exportServerResources') {
+    from project(':Server').getTasksByName('jar', false)
+
+    into file(exportDirectory + '\\server')
+}
+
 task export(type: Copy, dependsOn: ['copySoftEngineJar',
                                     'copySoftEngineLibraries',
                                     'copyResourceLoaderJar',
                                     'copyNetworkJar',
                                     'copyCrashHandler',
                                     'copyPasswordService',
-                                    'exportResources',]) {
+                                    'exportResources',
+                                    'exportServer']) {
     from jar
 
     into file(exportDirectory)
