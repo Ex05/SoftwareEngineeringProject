@@ -90,10 +90,18 @@ task copyResourceLoaderJar(type: Copy, dependsOn: 'buildDependents') {
     into file("${projectDir}\\res\\lib\\resourceLoader")
 }
 
-task copyCrashHandler(type: Copy, dependsOn: 'buildDependents') {
+task copyCrashHandlerClient(type: Copy, dependsOn: 'buildDependents') {
     from project(':CrashHandler').getTasksByName('jar', false)
 
     into file(exportDirectory)
+}
+
+task copyCrashHandlerServer(type: Copy, dependsOn: 'buildDependents') {
+    from project(':CrashHandler').getTasksByName('jar', false)
+
+    into file(exportDirectory)
+
+    into file(exportDirectory + '\\server')
 }
 
 task copyNetworkJar(type: Copy, dependsOn: 'buildDependents') {
@@ -118,7 +126,8 @@ task export(type: Copy, dependsOn: ['copySoftEngineJar',
                                     'copySoftEngineLibraries',
                                     'copyResourceLoaderJar',
                                     'copyNetworkJar',
-                                    'copyCrashHandler',
+                                    'copyCrashHandlerClient',
+                                    'copyCrashHandlerServer',
                                     'copyPasswordService',
                                     'exportResources',
                                     'exportServer']) {
@@ -133,7 +142,7 @@ build.finalizedBy export
 
 // <- Subprojects ->
 subprojects {
-    apply plugin:'java'
+    apply plugin: 'java'
 
     group 'SWT_II'
 

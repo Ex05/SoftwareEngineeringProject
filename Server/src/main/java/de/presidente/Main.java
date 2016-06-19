@@ -29,7 +29,6 @@ public final class Main {
 
     // <- Static ->
     public static void main(final String[] args) {
-
         PropertyFile properties;
         try {
             properties = PropertyFile.CreateNewFile("./res/options.properties");

@@ -39,7 +39,6 @@ public final class Intro extends State implements LaunchComponent {
 
     private float textWelcomePosY;
 
-    private boolean enterPressed = false;
     private boolean resourcesFinishedLoading = false;
     private boolean launcherStarted = false;
     private boolean dirty = false;
@@ -73,8 +72,8 @@ public final class Intro extends State implements LaunchComponent {
         buttonPressEnter.setTextColor(DARK_ORANGE);
         buttonPressEnter.setTextSize(86);
         buttonPressEnter.setVisible(false);
-        buttonPressEnter.onKeyPress(keyCode -> {
-            if (keyCode == VK_ENTER) {
+        buttonPressEnter.onKeyPress(e -> {
+            if (e.getKeyCode() == VK_ENTER) {
                 game.switchState(Login.class);
             }
         });
@@ -119,13 +118,6 @@ public final class Intro extends State implements LaunchComponent {
             buttonPressEnter.setVisible(true);
 
         buttonPressEnter.setLocation(engine.getScreenWidth() / 2 - buttonPressEnter.getWidth() / 2, textWelcome.getY() - 40);
-
-        if (!enterPressed)
-            if (buttonPressEnter.isVisible() && engine.getInput().isKeyDown(VK_ENTER)) {
-                buttonPressEnter.pressKey(VK_ENTER);
-
-                enterPressed = true;
-            }
 
         if (!launcherStarted) {
             loadingBar.setVisible(true);

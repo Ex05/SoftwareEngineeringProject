@@ -13,6 +13,9 @@ import de.presidente.jungle_king.util.Constants;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import static de.janik.softengine.util.Constants.FONT_SOURCE_CODE_PRO_LOCATION;
 import static de.janik.windowing.WindowType.BORDERLESS_NO_CONTROLS;
@@ -29,7 +32,10 @@ import static java.awt.event.KeyEvent.VK_F11;
 public final class JungleKingGame extends Game {
     // <- Public ->
     // <- Protected ->
+
     // <- Private->
+    private Socket socket;
+
     // <- Static ->
 
     // <- Constructor ->
@@ -50,6 +56,12 @@ public final class JungleKingGame extends Game {
 
         gameStates.add(new Intro(this));
         gameStates.add(new Login(this));
+
+        try {
+            socket = new Socket(InetAddress.getByName("janik-bau.nrw"), 5585);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
 
         switchState(Intro.class);
     }

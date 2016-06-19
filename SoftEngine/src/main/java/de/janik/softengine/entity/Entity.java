@@ -9,6 +9,7 @@ import de.janik.softengine.UI_KeyEvent;
 import de.janik.softengine.math.Vector;
 
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,9 +132,9 @@ public abstract class Entity implements Comparable<Entity> {
             e.onUI_Event();
     }
 
-    public void pressKey(final int keyCode) {
+    public void pressKey(final KeyEvent event) {
         for (final UI_KeyEvent e : keyPressEvents)
-            e.onUI_Event(keyCode);
+            e.onUI_Event(event);
     }
 
     public void onMousePress(final UI_Event e) {

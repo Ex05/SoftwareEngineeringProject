@@ -32,6 +32,11 @@ public abstract class State {
     public abstract void tick(final long ticks, final Engine engine);
 
     // <- Object ->
+
     // <- Getter & Setter ->
+    public Game getGame() {
+        return game;
+    }
+
     // <- Static ->
 }

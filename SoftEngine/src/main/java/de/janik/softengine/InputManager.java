@@ -73,10 +73,13 @@ public class InputManager extends MouseAdapter implements KeyListener {
     @Override
     public void keyReleased(final KeyEvent e) {
         keys[e.getKeyCode()] = false;
+
+        engine.keyPressed(e);
     }
 
     @Override
     public void keyTyped(final KeyEvent e) {
+
     }
 
     // <- Getter & Setter ->

@@ -13,6 +13,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import static de.janik.softengine.util.Constants.GAME_WINDOW_HEIGHT_PROPERTY;
@@ -228,6 +229,10 @@ public class Engine implements Runnable {
         setFullScreenExclusiveMode(!fullScreen);
     }
 
+    public void keyPressed(final KeyEvent e) {
+        game.keyPressed(e);
+    }
+
     // <- Getter & Setter ->
     public void setWindowSize(final int width, final int height) {
         window.setSize(width * game.getDisplayScaleFactor(), height * game.getDisplayScaleFactor());
@@ -300,5 +305,6 @@ public class Engine implements Runnable {
     public int getDisplayScaleFactor() {
         return game.getDisplayScaleFactor();
     }
+
     // <- Static ->
 }

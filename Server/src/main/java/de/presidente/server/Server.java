@@ -63,6 +63,8 @@ public final class Server {
         try {
             final Socket clientSocket = socket.accept();
 
+            System.out.printf("Client[%s] opened connection.\n", clientSocket.getRemoteSocketAddress());
+
             client = new Client(this, clientSocket);
         } catch (final IOException e) {
             e.printStackTrace();
@@ -80,8 +82,10 @@ public final class Server {
         }
     }
 
-    public void disconnect(final Client client){
-        synchronized (clients){
+    public void disconnect(final Client client) {
+        System.out.printf("Client[%s] closed connection.\n", client.getSocket().getRemoteSocketAddress());
+
+        synchronized (clients) {
             clients.remove(client);
 
             numConnectedClients--;
@@ -100,9 +104,9 @@ public final class Server {
         }
     }
 
-    public boolean login(final Client client, final LoginCredentials credentials){
+    public boolean login(final Client client, final LoginCredentials credentials) {
         boolean loggedIn = false;
-        
+
         // TODO:(jan) Check user credentials in DB. And set username & user ID in client.\
         System.out.println("Server.login");
 
@@ -110,6 +114,8 @@ public final class Server {
     }
 
     private void run() {
+        System.out.println("Starting server at port:" + port);
+
         try {
             socket = new ServerSocket(port);
 

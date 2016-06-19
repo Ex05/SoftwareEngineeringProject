@@ -17,7 +17,7 @@ public interface UI_KeyEvent{
     // <- Constructor ->
 
     // <- Abstract ->
-    void onUI_Event(final int keyCode);
+    void onUI_Event(final KeyEvent e);
 
     // <- Object ->
     // <- Getter & Setter ->

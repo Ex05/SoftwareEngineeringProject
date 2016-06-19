@@ -242,6 +242,10 @@ public final class Login extends State {
     }
 
     // <- Getter & Setter ->
+    @Override
+    public JungleKingGame getGame() {
+        return (JungleKingGame) super.getGame();
+    }
 
     // <- Static ->
     private enum State {
