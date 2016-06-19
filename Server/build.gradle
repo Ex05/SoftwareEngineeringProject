@@ -7,14 +7,17 @@ jar {
         attributes(
                 'Implementation-Title': project.name,
                 'Implementation-Version': version,
-                'Main-Class': 'de.janik.presidente.server.Main',
-                'Class-Path': ['.\\res\\lib\\network\\network.jar'].join(' ')
+                'Main-Class': 'de.presidente.Main',
+                'Class-Path': ['.\\res\\lib\\network\\network.jar',
+                               '.\\res\\lib\\propertyFile\\propertyFile.jar'].join(' ')
         )
     }
 }
 
 dependencies {
     compile project(':Network')
+
+    compile files('res\\lib\\propertyFile\\propertyFile.jar')
 }
 
 task exportDependencies(type: Copy) {
