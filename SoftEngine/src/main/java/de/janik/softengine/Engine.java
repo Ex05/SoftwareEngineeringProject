@@ -150,6 +150,8 @@ public class Engine implements Runnable {
         } catch (final NoSuchEntryException | IOException e) {
             e.printStackTrace();
         }
+
+        game.destroy();
     }
 
     public void run() {

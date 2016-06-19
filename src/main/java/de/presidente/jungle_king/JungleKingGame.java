@@ -8,14 +8,11 @@ import de.janik.softengine.Engine;
 import de.janik.softengine.InputManager;
 import de.janik.softengine.game.Game;
 import de.janik.windowing.Window;
-import de.presidente.jungle_king.util.Constants;
+import de.presidente.jungle_king.net.ConnectionManager;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 import static de.janik.softengine.util.Constants.FONT_SOURCE_CODE_PRO_LOCATION;
 import static de.janik.windowing.WindowType.BORDERLESS_NO_CONTROLS;
@@ -34,7 +31,7 @@ public final class JungleKingGame extends Game {
     // <- Protected ->
 
     // <- Private->
-    private Socket socket;
+    private ConnectionManager server;
 
     // <- Static ->
 
@@ -57,11 +54,7 @@ public final class JungleKingGame extends Game {
         gameStates.add(new Intro(this));
         gameStates.add(new Login(this));
 
-        try {
-            socket = new Socket(InetAddress.getByName("janik-bau.nrw"), 5585);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        server = new ConnectionManager("janik-bau.nrw", 5585);
 
         switchState(Intro.class);
     }
@@ -87,6 +80,11 @@ public final class JungleKingGame extends Game {
 
         if (input.isKeyDown(VK_F10))
             engine.toggleFullScreen();
+    }
+
+    @Override
+    public void destroy() {
+        server.close();
     }
 
     @Override

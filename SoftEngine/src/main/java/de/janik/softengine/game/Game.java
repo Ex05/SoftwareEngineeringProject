@@ -79,6 +79,8 @@ public abstract class Game {
 
     public abstract int getDisplayScaleFactor();
 
+    public abstract void destroy();
+
     // <- Object ->
     public void add(final DrawableEntity entity) {
         drawableEntities.add(entity);

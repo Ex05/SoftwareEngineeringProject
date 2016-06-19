@@ -16,7 +16,6 @@ import static java.awt.Color.BLACK;
 import static java.awt.Color.LIGHT_GRAY;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.MONOSPACED;
-import static java.awt.Window.Type.UTILITY;
 import static java.lang.String.*;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
@@ -47,7 +46,6 @@ public final class ProcessMonitor {
     // <- Constructor ->
     public ProcessMonitor(final JavaProcess process) {
         frame = new JFrame();
-        frame.setType(UTILITY);
         frame.setTitle("CrashHandler");
         frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         frame.setSize(1280, 720);

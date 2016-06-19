@@ -68,6 +68,18 @@ public final class Client implements Runnable {
             // Ignored
         }
 
+        if (packet != null)
+            System.out.printf("%s\n", packet.getClass().getSimpleName());
+
+        if(packet instanceof Packet_000_ConnectionClosed)
+            try {
+                socket.close();
+
+                return null;
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+
         return packet;
     }
 
