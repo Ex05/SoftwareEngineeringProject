@@ -4,6 +4,7 @@ package de.janik.softengine.game;
 // <- Static_Import ->
 
 import de.janik.softengine.Engine;
+import de.janik.softengine.entity.Entity;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -17,6 +18,7 @@ public abstract class State {
     protected final Game game;
 
     // <- Private->
+    private Entity actualFocused = null;
     // <- Static ->
 
     // <- Constructor ->
@@ -31,6 +33,17 @@ public abstract class State {
 
     public abstract void tick(final long ticks, final Engine engine);
 
+    public void getFocus(Entity e) {
+        if (actualFocused == null)
+            actualFocused = e;
+        else {
+            actualFocused.setFocus(false);
+            actualFocused = e;
+            actualFocused.setFocus(true);
+        }
+    }
+
+    ;
     // <- Object ->
 
     // <- Getter & Setter ->

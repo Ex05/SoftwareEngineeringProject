@@ -39,8 +39,8 @@ public final class Login extends State {
     private final Button buttonLogin;
     private final Button buttonRegister;
     private final Button buttonCreateAccount;
-    private final Button buttonUserName;
-    private final Button buttonPassword;
+    private final TextField buttonUserName;
+    private final TextField buttonPassword;
 
     private final Label buttonNotRegistered;
 
@@ -116,14 +116,14 @@ public final class Login extends State {
                 switchState(State.TRANSITION_REGISTER);
         });
 
-        buttonUserName = new Button("Username");
+        buttonUserName = new TextField("Username", this);
         buttonUserName.setFont(SOURCE_CODE_PRO);
         buttonUserName.setZ(backgroundTextFieldUser.getZ() + 1);
         buttonUserName.setTextColor(DARK_GRAY);
         buttonUserName.setTextSize(28);
         buttonUserName.setLocation(backgroundTextFieldUser.getX(), backgroundTextFieldUser.getY() + buttonUserName.getHeight() / 2 - 4);
 
-        buttonPassword = new Button("Password");
+        buttonPassword = new TextField("Password", this);
         buttonPassword.setFont(SOURCE_CODE_PRO);
         buttonPassword.setZ(backgroundTextFieldPassword.getZ() + 1);
         buttonPassword.setTextColor(DARK_GRAY);

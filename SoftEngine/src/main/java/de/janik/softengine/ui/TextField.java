@@ -6,18 +6,16 @@ package de.janik.softengine.ui;
 
 
 import de.janik.softengine.InputManager;
-import de.janik.softengine.UI_KeyEvent;
 import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.math.Vector;
 import de.janik.softengine.util.ColorARGB;
+import de.janik.softengine.game.State;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import static de.janik.softengine.ui.TextLocation.*;
-import static java.awt.event.KeyEvent.VK_BACK_SPACE;
-import static java.awt.event.KeyEvent.VK_MINUS;
-import static java.awt.event.KeyEvent.VK_SPACE;
+import static java.awt.event.KeyEvent.*;
 
 /**
  * @author Gorden.Kappenberg [©2016]
@@ -35,7 +33,6 @@ public class TextField extends DrawableEntity {
     private TextLocation textLocation = RIGHT;
 
     private boolean showdefaultText = true;
-    private boolean isSelected = false;
 
     private String defaultText;
     private String inputText = "";
@@ -43,17 +40,17 @@ public class TextField extends DrawableEntity {
     // <- Static ->
     // <- Constructor ->
     public TextField() {
-        this(null);
+        this(null, null);
     }
 
-    public TextField(final String defaultText) {
-        this(0, 0);
+    public TextField(final String defaultText, State state) {
+        this(0, 0, state);
 
         this.defaultText = defaultText;
         this.text.setText(defaultText);
     }
 
-    public TextField(int x, int y) {
+    public TextField(int x, int y, State state) {
         super(x, y);
 
         text = new Text();
@@ -64,8 +61,11 @@ public class TextField extends DrawableEntity {
 
         setSprite(background.getSprite());
 
+        if(state!=null)
+            setState(state);
+
         this.onKeyPress(e -> {
-            if (isSelected)
+            if (this.isFocus())
                 handleKeyEvent(e);
         });
     }
@@ -75,13 +75,21 @@ public class TextField extends DrawableEntity {
     @Override
     public void tick(long ticks, InputManager input) {
 
-        if (!isSelected && inputText.equals("") && !text.getText().equals(defaultText))
+        if (!this.isFocus() && inputText.equals("") && !text.getText().equals(defaultText))
+        {
+            text.setColor(ColorARGB.GRAY);
             this.setText(defaultText);
+        }
 
-        if (isSelected && !text.getText().equals(inputText))
+
+        if (this.isFocus() && !text.getText().equals(inputText))
+        {
+            text.setColor(ColorARGB.GRAY);
             this.setText(inputText);
+        }
 
-        if (!isSelected)
+
+        if (!this.isFocus())
             showdefaultText = true;
 
         switch (textLocation) {
@@ -103,8 +111,8 @@ public class TextField extends DrawableEntity {
 
     @Override
     public void pressMouse() {
-        if (!isSelected)
-            isSelected = true;
+        if (!this.isFocus())
+            this.getState().getFocus(this);
     }
 
     private void handleKeyEvent(KeyEvent e) {
@@ -112,6 +120,9 @@ public class TextField extends DrawableEntity {
         if (Character.isDigit(e.getKeyChar()) || Character.isLetter(e.getKeyChar()))
             inputText = inputText + e.getKeyChar();
         else {
+            if (e.getExtendedKeyCode() == VK_TAB)
+                this.getState().getFocus(this);
+
             if (e.getExtendedKeyCode() == VK_BACK_SPACE)
                 if (!inputText.equals(""))
                     inputText = inputText.substring(0, inputText.length() - 1);
@@ -223,9 +234,5 @@ public class TextField extends DrawableEntity {
         this.textLocation = textLocation;
     }
 
-    public void setSelected(boolean isSelected)
-    {
-        this.isSelected = isSelected;
-    }
     // <- Static ->
 }
