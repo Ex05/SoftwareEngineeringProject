@@ -34,7 +34,7 @@ public final class Menu extends DrawableEntity {
 
     private final List<DrawableEntity> menuItems;
 
-    private final TextField textFieldSelected;
+    private final Label labelSelected;
 
     private final int[] pixel;
 
@@ -75,10 +75,10 @@ public final class Menu extends DrawableEntity {
 
         setSprite(bitmap);
 
-        textFieldSelected = new TextField(">");
-        textFieldSelected.setTextSize(20);
-        textFieldSelected.setTextColor(BLACK);
-        textFieldSelected.setZ(getZ() + 2);
+        labelSelected = new Label(">");
+        labelSelected.setTextSize(20);
+        labelSelected.setTextColor(BLACK);
+        labelSelected.setZ(getZ() + 2);
 
         onKeyPress(e -> {
             if (e.getKeyCode() == VK_ENTER)
@@ -120,7 +120,7 @@ public final class Menu extends DrawableEntity {
         if (selectedItem instanceof Button)
             ((Button) selectedItem).setTextColor(DEFAULT_COLOR_MENU_ITEM_SELECTED);
 
-        textFieldSelected.setLocation(selectedItem.getX() - textFieldSelected.getWidth() - 8, selectedItem.getY() + (selectedItem.getHeight() / 2) - textFieldSelected.getHeight() / 2);
+        labelSelected.setLocation(selectedItem.getX() - labelSelected.getWidth() - 8, selectedItem.getY() + (selectedItem.getHeight() / 2) - labelSelected.getHeight() / 2);
 
         if (!isKeyDownDown)
             keyDownReleased = true;
@@ -135,11 +135,11 @@ public final class Menu extends DrawableEntity {
         // TODO: Sort for 'Z' without disturbing the item order.
         menuItems.forEach(e -> bitmap.draw(e.getX() - getX(), bitmap.getHeight() - (e.getY() - getY() + e.getHeight()), e.getSprite()));
 
-        bitmap.draw(textFieldSelected.getX() - getX(), bitmap.getHeight() - (textFieldSelected.getY() - getY() + textFieldSelected.getHeight()), textFieldSelected.getSprite());
+        bitmap.draw(labelSelected.getX() - getX(), bitmap.getHeight() - (labelSelected.getY() - getY() + labelSelected.getHeight()), labelSelected.getSprite());
     }
 
     public void init() {
-        game.add((Entity) textFieldSelected);
+        game.add((Entity) labelSelected);
 
         menuItems.forEach(e -> game.add((Entity) e));
     }

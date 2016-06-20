@@ -10,8 +10,7 @@ import de.janik.softengine.util.ColorARGB;
 
 import java.awt.Font;
 
-import static de.janik.softengine.ui.Button.TextLocation.ABSOLUTE;
-import static de.janik.softengine.ui.Button.TextLocation.RIGHT;
+import static de.janik.softengine.ui.TextLocation.*;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -218,10 +217,4 @@ public final class Button extends DrawableEntity {
     }
 
     // <- Static ->
-    public enum TextLocation {
-        LEFT,
-        RIGHT,
-        CENTER,
-        ABSOLUTE
-    }
 }

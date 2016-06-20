@@ -4,11 +4,12 @@ package de.janik.windowing;
 // <- Static_Import ->
 
 /**
- * @author Jan.Marcel.Janik [©2016]
+ * @author Jan.Marcel.Janik, Gorden Kappenberg [©2016]
  */
 public enum WindowType {
     // <- Public ->
     DEFAULT,
+    UTILITY,
     BORDERLESS,
     BORDERLESS_NO_CONTROLS
 

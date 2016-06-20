@@ -8,7 +8,7 @@ import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.util.ColorARGB;
 
 /**
- * @author Jan.Marcel.Janik [©2016]
+ * @author Jan.Marcel.Janik, Gorden.Kappenberg [©2016]
  */
 public final class Rectangle extends DrawableEntity {
     // <- Public ->
@@ -45,6 +45,11 @@ public final class Rectangle extends DrawableEntity {
 
         setSprite(background);
 
+        fill(color);
+    }
+
+    public void fill()
+    {
         fill(color);
     }
 

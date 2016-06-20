@@ -15,7 +15,7 @@ import java.awt.FontFormatException;
 import java.io.IOException;
 
 import static de.janik.softengine.util.Constants.FONT_SOURCE_CODE_PRO_LOCATION;
-import static de.janik.windowing.WindowType.BORDERLESS_NO_CONTROLS;
+import static de.janik.windowing.WindowType.*;
 import static de.presidente.jungle_king.util.Constants.GAME_TITLE;
 import static de.presidente.jungle_king.util.Constants.TICKS_PER_SECOND;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
@@ -24,7 +24,7 @@ import static java.awt.event.KeyEvent.VK_F10;
 import static java.awt.event.KeyEvent.VK_F11;
 
 /**
- * @author Jan.Marcel.Janik [©2016]
+ * @author Jan.Marcel.Janik, Gorden Kappenberg [©2016]
  */
 public final class JungleKingGame extends Game {
     // <- Public ->
@@ -63,7 +63,7 @@ public final class JungleKingGame extends Game {
     public Window constructWindow() {
         final Window window = new Window();
 
-        window.setType(BORDERLESS_NO_CONTROLS).setSize(1280, 720);
+        window.setType(UTILITY).setSize(1280, 720);
         window.setAlwaysOnTop(true);
 
         return window;
