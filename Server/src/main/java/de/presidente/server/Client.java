@@ -11,7 +11,7 @@ import de.presidente.net.Packet_004_LobbyEnter;
 import de.presidente.net.Packet_005_ReceiveSalt;
 import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_007_Register;
-import de.presidente.net.Packet_008_CheckUserNameAvailabity;
+import de.presidente.net.Packet_008_CheckUsernameAvailability;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -121,8 +121,8 @@ public final class Client implements Runnable {
                     send(new Packet_003_Permission(DENIED));
                 else
                     send(new Packet_006_Salt(salt));
-            } else if (packet instanceof Packet_008_CheckUserNameAvailabity) {
-                final boolean available = server.checkUserNameAvailability(((Packet_008_CheckUserNameAvailabity) packet).getUserName());
+            } else if (packet instanceof Packet_008_CheckUsernameAvailability) {
+                final boolean available = server.checkUserNameAvailability(((Packet_008_CheckUsernameAvailability) packet).getUserName());
 
                 send(new Packet_003_Permission(available ? GUARANTED : DENIED));
             } else if (packet instanceof Packet_007_Register) {
@@ -189,7 +189,7 @@ public final class Client implements Runnable {
     public void setUserName(final String userName) {
         this.userName = userName;
     }
-    
+
     public void setuID(final long uID) {
         this.uID = uID;
     }
