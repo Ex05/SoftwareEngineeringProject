@@ -28,6 +28,10 @@ public final class ConnectionManager {
 
     private final Thread threadOutbound;
 
+    private final String address;
+
+    private final int port;
+
     private ObjectOutputStream oos;
 
     private ObjectInputStream ois;
@@ -38,6 +42,9 @@ public final class ConnectionManager {
 
     // <- Constructor ->
     public ConnectionManager(final String address, final int port) {
+        this.address = address;
+        this.port = port;
+
         inboundPacketBuffer = new LinkedBlockingDeque<>(32);
 
         outboundPacketBuffer = new ArrayDeque<>(32);
@@ -48,15 +55,22 @@ public final class ConnectionManager {
         final Thread threadInbound = new Thread(this::inBoundHandler, "Async_Network Thread (Inbound)");
         threadInbound.setDaemon(true);
 
-        try {
-            socket = new Socket(InetAddress.getByName(address), port);
+        final Thread t1 = new Thread(() -> {
+            try {
+                socket = new Socket(InetAddress.getByName(address), port);
 
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
 
-        threadInbound.start();
-        threadOutbound.start();
+            System.out.println("ConnectionManager.inBoundHandler");
+
+            threadInbound.start();
+            threadOutbound.start();
+        });
+
+        t1.setDaemon(true);
+        t1.start();
     }
 
     // <- Abstract ->
@@ -143,13 +157,15 @@ public final class ConnectionManager {
         }
 
         return packet;
-    }   
+    }
 
     public void close() {
-        write(new Packet_000_ConnectionClosed());
+        if (socket != null && !socket.isClosed())
+            write(new Packet_000_ConnectionClosed());
 
         try {
-            socket.close();
+            if (socket != null)
+                socket.close();
         } catch (final IOException e) {
             e.printStackTrace();
         }
