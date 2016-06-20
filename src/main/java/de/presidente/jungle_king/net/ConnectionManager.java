@@ -9,7 +9,7 @@ import de.presidente.net.Packet_000_ConnectionClosed;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -49,15 +49,13 @@ public final class ConnectionManager {
         threadInbound.setDaemon(true);
 
         final Thread t1 = new Thread(() -> {
-            try {
-                socket = new Socket(InetAddress.getByName(address), port);
+            socket = OpenSocket(address, port, 200);
 
-            } catch (final IOException e) {
-                e.printStackTrace();
+            if (socket != null) {
+                threadInbound.start();
+
+                threadOutbound.start();
             }
-
-            threadInbound.start();
-            threadOutbound.start();
         });
 
         t1.setDaemon(true);
@@ -105,7 +103,8 @@ public final class ConnectionManager {
 
     private void write(final Packet packet) {
         try {
-            oos.writeObject(packet);
+            if (oos != null)
+                oos.writeObject(packet);
         } catch (final IOException e) {
             e.printStackTrace();
         }
@@ -163,5 +162,67 @@ public final class ConnectionManager {
     }
 
     // <- Getter & Setter ->
+    public static Socket OpenSocket(final String iNetAddress, final int port, final int timeout) {
+        final boolean[] available = {false};
+
+        final Thread thread = Thread.currentThread();
+
+        final Thread t1 = new Thread(() -> {
+            if (!Thread.currentThread().isInterrupted())
+                try {
+                    final Socket socket = new Socket();
+                    socket.setSoTimeout(timeout);
+                    socket.connect(new InetSocketAddress(iNetAddress, port));
+                    socket.close();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+
+            available[0] = true;
+
+            synchronized (thread) {
+                thread.notify();
+            }
+        });
+        t1.setDaemon(true);
+        t1.start();
+
+        @SuppressWarnings("deprecation")
+        final Thread t2 = new Thread(() -> {
+            try {
+                Thread.sleep(timeout);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+
+            t1.stop();
+
+            if (!available[0])
+                synchronized (thread) {
+                    thread.notify();
+                }
+        });
+        t2.setDaemon(true);
+        t2.start();
+
+        synchronized (thread) {
+            try {
+                thread.wait();
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Socket socket = null;
+        if (available[0])
+            try {
+                socket = new Socket(iNetAddress, port);
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+
+        return socket;
+    }
+
     // <- Static ->
 }
