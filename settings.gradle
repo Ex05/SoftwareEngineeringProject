@@ -6,4 +6,5 @@ include 'ResourceLoader'
 include 'WindowingSystem'
 include 'Server'
 include 'SoftEngine'
+include 'PasswordService'
 

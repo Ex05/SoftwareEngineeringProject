@@ -81,3 +81,6 @@ gradle-app.setting
 !/SoftEngine/res/lib/propertyFile/
 !/SoftEngine/res/lib/propertyFile/*
 *.properties
+
+!/Server/res/lib/propertyFile/
+!/Server/res/lib/propertyFile/*

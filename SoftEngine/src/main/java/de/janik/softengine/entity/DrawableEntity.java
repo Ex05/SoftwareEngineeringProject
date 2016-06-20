@@ -6,6 +6,8 @@ package de.janik.softengine.entity;
 import de.janik.softengine.InputManager;
 import de.janik.softengine.ui.A_Sprite;
 
+import java.awt.event.KeyEvent;
+
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
@@ -41,9 +43,9 @@ public abstract class DrawableEntity extends Entity implements Drawable {
     // <- Object ->
 
     @Override
-    public void pressKey(final int keyCode) {
+    public void pressKey(final KeyEvent e) {
         if (isVisible())
-            super.pressKey(keyCode);
+            super.pressKey(e);
     }
 
     @Override

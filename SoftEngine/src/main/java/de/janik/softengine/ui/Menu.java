@@ -79,6 +79,12 @@ public final class Menu extends DrawableEntity {
         labelSelected.setTextSize(20);
         labelSelected.setTextColor(BLACK);
         labelSelected.setZ(getZ() + 2);
+
+        onKeyPress(e -> {
+            if (e.getKeyCode() == VK_ENTER)
+                if (selectedItem != null)
+                    selectedItem.pressKey(e);
+        });
     }
 
     // <- Abstract ->
@@ -121,10 +127,6 @@ public final class Menu extends DrawableEntity {
 
         if (!isKeyUpDown)
             keyUpReleased = true;
-
-        if (input.isKeyDown(VK_ENTER))
-            if (selectedItem != null)
-                selectedItem.pressKey(VK_ENTER);
 
         background.setColor(ToAWT_Color(backgroundColor));
 

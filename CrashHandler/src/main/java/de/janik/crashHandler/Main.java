@@ -3,8 +3,11 @@ package de.janik.crashHandler;
 import de.janik.crashHandler.view.CrashView;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import static java.io.File.*;
+import static java.io.File.separator;
 
 // <- Import ->
 // <- Static_Import ->
@@ -28,10 +31,24 @@ public final class Main {
 
         final File workingDirectory = new File(System.getProperty("user.dir"));
 
+        Path path = null;
+        try {
+            path = Files.list(
+                    workingDirectory.toPath()).
+                    filter(e -> e.getFileName().toString().endsWith(".jar") &&
+                            !e.getFileName().toString().equals(
+                                    new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getName()))
+                    .findFirst().get();
+        } catch (final IOException e) {
+            e.printStackTrace();
+
+            System.exit(-1);
+        }
+
         final String[] commands = new String[]{
                 System.getProperty("java.home") + separator + "bin" + separator + "java",
                 "-jar",
-                workingDirectory + separator + "jungleKing.jar"};
+                workingDirectory + separator + path.getFileName()};
 
         new ProcessLauncher(workingDirectory.getAbsolutePath(), p -> {
             if (p.getExitCode() != 0)

@@ -8,6 +8,7 @@ import de.presidente.net.Packet_000_ConnectionClosed;
 import de.presidente.net.Packet_001_Login;
 import de.presidente.net.Packet_003_Permission;
 import de.presidente.net.Packet_004_LobbyEnter;
+import de.presidente.net.Packet_005_ReceiveSalt;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -63,9 +64,21 @@ public final class Client implements Runnable {
 
         try {
             packet = (Packet) ois.readObject();
-        } catch (final IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (final IOException | ClassNotFoundException | NullPointerException e) {
+            // Ignored
         }
+
+        if (packet != null)
+            System.out.printf("%s\n", packet.getClass().getSimpleName());
+
+        if(packet instanceof Packet_000_ConnectionClosed)
+            try {
+                socket.close();
+
+                return null;
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
 
         return packet;
     }
@@ -92,12 +105,22 @@ public final class Client implements Runnable {
         do {
             final Packet packet = accept();
 
-            if (packet instanceof Packet_001_Login) {
+            if (packet == null) {
+                close();
+
+                return;
+            }
+
+            if (packet instanceof Packet_005_ReceiveSalt) {
+                // TODO:(jan) Receive salt from Database.
+
+                System.err.println("Client.run[TODO:(jan) Receive salt from Database.]");
+            } else if (packet instanceof Packet_001_Login) {
                 final Packet_001_Login loginPacket = (Packet_001_Login) packet;
 
                 final boolean loggedIn = server.login(this, loginPacket.getLoginCredentials());
 
-                loginPacket.getLoginCredentials().errase();
+                loginPacket.getLoginCredentials().erase();
 
                 if (loggedIn) {
                     send(new Packet_003_Permission(GUARANTED));
@@ -120,7 +143,7 @@ public final class Client implements Runnable {
         }
     }
 
-    private boolean send(final Packet packet)  {
+    private boolean send(final Packet packet) {
         boolean successfulWrite = false;
 
         try {
@@ -141,6 +164,10 @@ public final class Client implements Runnable {
 
     public String getUserName() {
         return userName;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 
     // <- Static ->

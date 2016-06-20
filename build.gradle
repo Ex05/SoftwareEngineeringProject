@@ -38,10 +38,9 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     compile project(':SoftEngine')
-
     compile project(':ResourceLoader')
-
     compile project(':Network')
+    compile project(':PasswordService')
 }
 
 task buildSrcJar(type: Jar, dependsOn: 'classes') {
@@ -71,6 +70,13 @@ task copySoftEngineJar(type: Copy, dependsOn: 'buildDependents') {
 
     include '*.jar'
 }
+task copyPasswordService(type: Copy, dependsOn: 'buildDependents') {
+    from project(':PasswordService').getTasksByName('jar', false)
+
+    into file("${projectDir}\\res\\lib\\passwordService")
+
+    include '*.jar'
+}
 
 task exportResources(type: Copy, dependsOn: 'buildDependents') {
     from file("${projectDir}\\res")
@@ -84,10 +90,18 @@ task copyResourceLoaderJar(type: Copy, dependsOn: 'buildDependents') {
     into file("${projectDir}\\res\\lib\\resourceLoader")
 }
 
-task copyCrashHandler(type: Copy, dependsOn: 'buildDependents') {
+task copyCrashHandlerClient(type: Copy, dependsOn: 'buildDependents') {
     from project(':CrashHandler').getTasksByName('jar', false)
 
     into file(exportDirectory)
+}
+
+task copyCrashHandlerServer(type: Copy, dependsOn: 'buildDependents') {
+    from project(':CrashHandler').getTasksByName('jar', false)
+
+    into file(exportDirectory)
+
+    into file(exportDirectory + '\\server')
 }
 
 task copyNetworkJar(type: Copy, dependsOn: 'buildDependents') {
@@ -96,12 +110,27 @@ task copyNetworkJar(type: Copy, dependsOn: 'buildDependents') {
     into file("${projectDir}\\res\\lib\\network")
 }
 
+task exportServerResources(type: Copy) {
+    from file(project(':Server').getProjectDir().toString() + '\\res')
+
+    into file(exportDirectory + '\\server\\res')
+}
+
+task exportServer(type: Copy, dependsOn: 'exportServerResources') {
+    from project(':Server').getTasksByName('jar', false)
+
+    into file(exportDirectory + '\\server')
+}
+
 task export(type: Copy, dependsOn: ['copySoftEngineJar',
                                     'copySoftEngineLibraries',
                                     'copyResourceLoaderJar',
                                     'copyNetworkJar',
-                                    'copyCrashHandler',
-                                    'exportResources',]) {
+                                    'copyCrashHandlerClient',
+                                    'copyCrashHandlerServer',
+                                    'copyPasswordService',
+                                    'exportResources',
+                                    'exportServer']) {
     from jar
 
     into file(exportDirectory)
@@ -113,7 +142,7 @@ build.finalizedBy export
 
 // <- Subprojects ->
 subprojects {
-    apply plugin:'java'
+    apply plugin: 'java'
 
     group 'SWT_II'
 

@@ -12,6 +12,7 @@ import de.janik.softengine.entity.Entity;
 import de.janik.softengine.util.ColorARGB;
 import de.janik.windowing.Window;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,8 @@ public abstract class Game {
 
     protected final List<Entity> entities;
     protected final List<DrawableEntity> drawableEntities;
+
+    protected final List<KeyEvent> eventBuffer;
 
     protected PropertyFile properties;
 
@@ -60,6 +63,8 @@ public abstract class Game {
         entities = new ArrayList<>(256);
         drawableEntities = new ArrayList<>(256);
 
+        eventBuffer = new ArrayList<>(960 / getDesiredTicksPerSecond());
+
         backgroundColor = BLACK;
 
         gameStates = new ArrayList<>(2);
@@ -73,6 +78,8 @@ public abstract class Game {
     public abstract int getDesiredTicksPerSecond();
 
     public abstract int getDisplayScaleFactor();
+
+    public abstract void destroy();
 
     // <- Object ->
     public void add(final DrawableEntity entity) {
@@ -121,6 +128,14 @@ public abstract class Game {
                 break;
         }
 
+        synchronized (eventBuffer) {
+            for (final KeyEvent e : eventBuffer)
+                for (final Entity entity : entities)
+                    entity.pressKey(e);
+
+            eventBuffer.clear();
+        }
+
         for (final Entity e : entities)
             e.tick(ticks, input);
     }
@@ -146,6 +161,12 @@ public abstract class Game {
 
         currentState = state;
         nextState = null;
+    }
+
+    public void keyPressed(final KeyEvent e) {
+        synchronized (eventBuffer) {
+            eventBuffer.add(e);
+        }
     }
 
     // <- Getter & Setter ->
