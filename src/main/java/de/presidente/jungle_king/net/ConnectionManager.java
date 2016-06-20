@@ -28,10 +28,6 @@ public final class ConnectionManager {
 
     private final Thread threadOutbound;
 
-    private final String address;
-
-    private final int port;
-
     private ObjectOutputStream oos;
 
     private ObjectInputStream ois;
@@ -42,9 +38,6 @@ public final class ConnectionManager {
 
     // <- Constructor ->
     public ConnectionManager(final String address, final int port) {
-        this.address = address;
-        this.port = port;
-
         inboundPacketBuffer = new LinkedBlockingDeque<>(32);
 
         outboundPacketBuffer = new ArrayDeque<>(32);
@@ -62,8 +55,6 @@ public final class ConnectionManager {
             } catch (final IOException e) {
                 e.printStackTrace();
             }
-
-            System.out.println("ConnectionManager.inBoundHandler");
 
             threadInbound.start();
             threadOutbound.start();

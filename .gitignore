@@ -84,3 +84,6 @@ gradle-app.setting
 
 !/Server/res/lib/propertyFile/
 !/Server/res/lib/propertyFile/*
+
+!/Server/res/lib/mysqlDriver
+!/Server/res/lib/mysqlDriver/*
