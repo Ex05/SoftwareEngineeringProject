@@ -169,9 +169,7 @@ public final class ConnectionManager {
 
         final Thread t1 = new Thread(() -> {
             if (!Thread.currentThread().isInterrupted())
-                try {
-                    final Socket socket = new Socket();
-                    socket.setSoTimeout(timeout);
+                try (final Socket socket = new Socket()) {
                     socket.connect(new InetSocketAddress(iNetAddress, port));
                     socket.close();
                 } catch (final Exception e) {
