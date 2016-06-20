@@ -77,7 +77,7 @@ public class TextField extends DrawableEntity {
 
         if (!this.isFocus() && inputText.equals("") && !text.getText().equals(defaultText))
         {
-            text.setColor(ColorARGB.GRAY);
+            text.setColor(ColorARGB.DARK_GRAY);
             this.setText(defaultText);
         }
 
