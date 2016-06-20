@@ -23,8 +23,9 @@ import static de.presidente.server.util.Constants.DB_PORT;
 import static de.presidente.server.util.Constants.DB_URL;
 import static de.presidente.server.util.Constants.DB_USER;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_ID;
-import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_PASSWORD;
+import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_PASSWORD_AND_ID;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_SALT;
+import static de.presidente.server.util.Constants.TABLE_USER_COLUMN_ID;
 import static de.presidente.server.util.Constants.TABLE_USER_COLUMN_PASSWORD;
 import static de.presidente.server.util.Constants.TABLE_USER_COLUMN_SALT;
 import static de.presidente.server.util.DB_Manager.OpenConnection;
@@ -121,17 +122,21 @@ public final class Server {
         }
     }
 
-    public boolean login(final LoginCredentials credentials) {
+    public boolean login(final Client client, final LoginCredentials credentials) {
         boolean loggedIn = false;
 
         DB_CONNECTION = OpenConnection(DB_CONNECTION, DB_URL, DB_PORT, DB_NAME, DB_USER, DB_PASSWD);
 
-        try (final PreparedStatement ps = DB_CONNECTION.prepareStatement(PREPARED_STATEMENT_SELECT_PASSWORD)) {
+        long uID = -1;
+
+        try (final PreparedStatement ps = DB_CONNECTION.prepareStatement(PREPARED_STATEMENT_SELECT_PASSWORD_AND_ID)) {
             ps.setString(1, credentials.getUserName());
 
             final ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
+                uID = rs.getLong(TABLE_USER_COLUMN_ID);
+
                 final byte[] password = rs.getBytes(TABLE_USER_COLUMN_PASSWORD);
 
                 loggedIn = PasswordService.GetInstance().validate(password, credentials.getSaltedPasswordHash());
@@ -139,6 +144,12 @@ public final class Server {
 
         } catch (final SQLException e) {
             e.printStackTrace();
+        }
+
+        if(loggedIn) {
+            client.setUserName(credentials.getUserName());
+
+            client.setuID(uID);
         }
 
         return loggedIn;

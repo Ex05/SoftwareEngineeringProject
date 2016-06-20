@@ -134,7 +134,7 @@ public final class Client implements Runnable {
             } else if (packet instanceof Packet_001_Login) {
                 final Packet_001_Login loginPacket = (Packet_001_Login) packet;
 
-                final boolean loggedIn = server.login(loginPacket.getLoginCredentials());
+                final boolean loggedIn = server.login(this, loginPacket.getLoginCredentials());
 
                 loginPacket.getLoginCredentials().erase();
 
@@ -184,6 +184,14 @@ public final class Client implements Runnable {
 
     public Socket getSocket() {
         return socket;
+    }
+
+    public void setUserName(final String userName) {
+        this.userName = userName;
+    }
+    
+    public void setuID(final long uID) {
+        this.uID = uID;
     }
 
     // <- Static ->
