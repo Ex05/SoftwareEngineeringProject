@@ -9,6 +9,7 @@ jar {
                 'Implementation-Version': version,
                 'Main-Class': 'de.presidente.Main',
                 'Class-Path': ['.\\res\\lib\\network\\network.jar',
+                               '.\\res\\lib\\mysqlDriver\\mysql-connector-java-5.0.8-bin.jar',
                                '.\\res\\lib\\propertyFile\\propertyFile.jar'].join(' ')
         )
     }
@@ -18,6 +19,8 @@ dependencies {
     compile project(':Network')
 
     compile files('res\\lib\\propertyFile\\propertyFile.jar')
+
+    compile files('res\\lib\\mysqlDriver\\mysql-connector-java-5.0.8-bin.jar')
 }
 
 task exportDependencies(type: Copy) {
