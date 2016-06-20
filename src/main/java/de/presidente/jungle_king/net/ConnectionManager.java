@@ -23,14 +23,16 @@ public final class ConnectionManager {
     // <- Protected ->
 
     private final LinkedBlockingDeque<Packet> inboundPacketBuffer;
+
     private final Queue<Packet> outboundPacketBuffer;
 
     private final Thread threadOutbound;
 
     private ObjectOutputStream oos;
-    private ObjectInputStream ois;
-    private Socket socket;
 
+    private ObjectInputStream ois;
+
+    private Socket socket;
 
     // <- Static ->
 
@@ -48,7 +50,6 @@ public final class ConnectionManager {
 
         try {
             socket = new Socket(InetAddress.getByName(address), port);
-
 
         } catch (final IOException e) {
             e.printStackTrace();
