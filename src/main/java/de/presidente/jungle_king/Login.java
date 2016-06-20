@@ -10,12 +10,14 @@ import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.Label;
+import de.janik.softengine.ui.TextField;
 import de.janik.softengine.util.ColorARGB;
 
+import javax.xml.transform.Templates;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.janik.softengine.ui.Button.TextLocation.CENTER;
+import static de.janik.softengine.ui.TextLocation.CENTER;
 import static de.janik.softengine.util.ColorARGB.DARK_GRAY;
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
