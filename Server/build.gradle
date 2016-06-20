@@ -10,6 +10,7 @@ jar {
                 'Main-Class': 'de.presidente.Main',
                 'Class-Path': ['.\\res\\lib\\network\\network.jar',
                                '.\\res\\lib\\mysqlDriver\\mysql-connector-java-5.0.8-bin.jar',
+                               '.\\res\\lib\\passwordService\\passwordService.jar',
                                '.\\res\\lib\\propertyFile\\propertyFile.jar'].join(' ')
         )
     }
@@ -17,18 +18,24 @@ jar {
 
 dependencies {
     compile project(':Network')
+    compile project(':PasswordService')
 
     compile files('res\\lib\\propertyFile\\propertyFile.jar')
 
     compile files('res\\lib\\mysqlDriver\\mysql-connector-java-5.0.8-bin.jar')
 }
 
-task exportDependencies(type: Copy) {
+task exportNetworkJar(type: Copy) {
     from project(':Network').getTasksByName('jar', false);
 
     into file("${projectDir}\\res\\lib\\network")
 }
+task exportPasswordServiceJar(type: Copy) {
+    from project(':PasswordService').getTasksByName('jar', false);
 
-task export(type: Copy, dependsOn: ['buildDependents', 'exportDependencies'])
+    into file("${projectDir}\\res\\lib\\passwordService")
+}
+
+task export(type: Copy, dependsOn: ['buildDependents', 'exportNetworkJar', 'exportPasswordServiceJar'])
 
 build.finalizedBy export

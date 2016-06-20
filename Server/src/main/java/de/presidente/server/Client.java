@@ -9,6 +9,9 @@ import de.presidente.net.Packet_001_Login;
 import de.presidente.net.Packet_003_Permission;
 import de.presidente.net.Packet_004_LobbyEnter;
 import de.presidente.net.Packet_005_ReceiveSalt;
+import de.presidente.net.Packet_006_Salt;
+import de.presidente.net.Packet_007_Register;
+import de.presidente.net.Packet_008_CheckUserNameAvailabity;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -71,7 +74,7 @@ public final class Client implements Runnable {
         if (packet != null)
             System.out.printf("%s\n", packet.getClass().getSimpleName());
 
-        if(packet instanceof Packet_000_ConnectionClosed)
+        if (packet instanceof Packet_000_ConnectionClosed)
             try {
                 socket.close();
 
@@ -112,13 +115,26 @@ public final class Client implements Runnable {
             }
 
             if (packet instanceof Packet_005_ReceiveSalt) {
-                // TODO:(jan) Receive salt from Database.
+                final byte[] salt = server.receiveSalt(((Packet_005_ReceiveSalt) packet).getUserName());
 
-                System.err.println("Client.run[TODO:(jan) Receive salt from Database.]");
+                if (salt == null)
+                    send(new Packet_003_Permission(DENIED));
+                else
+                    send(new Packet_006_Salt(salt));
+            } else if (packet instanceof Packet_008_CheckUserNameAvailabity) {
+                final boolean available = server.checkUserNameAvailability(((Packet_008_CheckUserNameAvailabity) packet).getUserName());
+
+                send(new Packet_003_Permission(available ? GUARANTED : DENIED));
+            } else if (packet instanceof Packet_007_Register) {
+                final Packet_007_Register registerPacket = (Packet_007_Register) packet;
+
+                final boolean registered = server.register(registerPacket.getLoginCredentials(), registerPacket.getSalt());
+
+                send(new Packet_003_Permission(registered ? GUARANTED : DENIED));
             } else if (packet instanceof Packet_001_Login) {
                 final Packet_001_Login loginPacket = (Packet_001_Login) packet;
 
-                final boolean loggedIn = server.login(this, loginPacket.getLoginCredentials());
+                final boolean loggedIn = server.login(loginPacket.getLoginCredentials());
 
                 loginPacket.getLoginCredentials().erase();
 

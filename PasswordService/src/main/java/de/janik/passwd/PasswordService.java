@@ -58,6 +58,9 @@ public final class PasswordService {
 
         return slowEquals(pbkdf2Hash, hash, pbkdf2Hash.length);
     }
+    public boolean validate( final byte[] hash1, final byte[] hash2) {
+          return slowEquals(hash2, hash2, hash1.length);
+    }
 
     private byte[] pbkdf2Hash(final char[] password, final byte[] salt) {
         final PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, HASH_LENGTH);
