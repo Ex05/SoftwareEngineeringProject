@@ -54,8 +54,9 @@ public final class Client implements Runnable {
             ois = new ObjectInputStream(this.socket.getInputStream());
             oos = new ObjectOutputStream(this.socket.getOutputStream());
 
+            running = true;
         } catch (final IOException e) {
-            e.printStackTrace();
+            // running = false;
         }
     }
 
@@ -72,7 +73,7 @@ public final class Client implements Runnable {
         }
 
         if (packet != null)
-            System.out.printf("%s\n", packet.getClass().getSimpleName());
+            System.out.printf("<< %s\n", packet.getClass().getSimpleName());
 
         if (packet instanceof Packet_000_ConnectionClosed)
             try {
@@ -102,7 +103,11 @@ public final class Client implements Runnable {
 
     @Override
     public void run() {
-        running = true;
+        if (!running) {
+            close();
+
+            return;
+        }
 
         // Login.
         do {
@@ -164,6 +169,8 @@ public final class Client implements Runnable {
 
         try {
             oos.writeObject(packet);
+
+            System.out.printf(">> %s\n", packet.getClass().getSimpleName());
 
             successfulWrite = true;
         } catch (final IOException e) {

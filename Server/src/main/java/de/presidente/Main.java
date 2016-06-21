@@ -31,7 +31,7 @@ public final class Main {
     public static void main(final String[] args) {
         PropertyFile properties;
         try {
-            properties = PropertyFile.CreateNewFile("./res/options.properties");
+            properties = PropertyFile.CreateNewFile("./res/server.properties");
 
             final String propertyServerPort = "server_port";
 
@@ -41,9 +41,7 @@ public final class Main {
                 properties.getProperty(propertyServerPort).asInt().set(5585);
             }
 
-            final int port = properties.getProperty(propertyServerPort).asInt().get();
-
-            final Server server = new Server(port);
+            final Server server = new Server(properties);
             server.start();
         } catch (final IOException | NoSuchEntryException e) {
             e.printStackTrace();

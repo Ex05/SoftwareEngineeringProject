@@ -3,17 +3,20 @@ package de.presidente.jungle_king;
 
 // <- Static_Import ->
 
+import de.janik.passwd.PasswordService;
 import de.janik.softengine.Engine;
 import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
-import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.Label;
+import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.TextField;
 import de.janik.softengine.util.ColorARGB;
+import de.presidente.jungle_king.net.ConnectionManager;
+import de.presidente.net.LoginCredentials;
+import de.presidente.net.Packet_007_Register;
 
-import javax.xml.transform.Templates;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +54,8 @@ public final class Login extends State {
 
     private final List<DrawableEntity> loginComponents;
     private final List<DrawableEntity> registerComponents;
+
+    private ConnectionManager server;
 
     private State state = State.LOGIN;
 
@@ -99,6 +104,9 @@ public final class Login extends State {
         buttonLogin.setSize(400, buttonLogin.getHeight() + (int) (buttonLogin.getHeight() * 0.4f));
         buttonLogin.setBackgroundColor(new ColorARGB(0, 180, 65));
         buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, backgroundTextFieldPassword.getY() - (offset + 5) - buttonLogin.getHeight());
+        buttonLogin.onMousePress(() -> {
+            // TODO:(jan) Login... 
+        });
 
         buttonNotRegistered = new Label("Not registered?");
         buttonNotRegistered.setTextSize(16);
@@ -173,6 +181,8 @@ public final class Login extends State {
     // <- Object ->
     @Override
     public void init() {
+        server = getGame().getServerConnection();
+
         game.setBackgroundColor(new ColorARGB(115, 195, 90));
 
         loginComponents.forEach(game::add);

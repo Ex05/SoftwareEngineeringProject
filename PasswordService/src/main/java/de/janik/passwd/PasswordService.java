@@ -22,7 +22,7 @@ public final class PasswordService {
     private static final int ITERATIONS;
     private static final int HASH_LENGTH;
 
-    private static final String PBKDF2_WITH_HMAC_SHA256;
+    private static final String PBKDF2_WITH_HMAC_SHA1;
 
     private SecretKeyFactory keyFactory;
 
@@ -36,13 +36,13 @@ public final class PasswordService {
         ITERATIONS = 10_000;
         HASH_LENGTH = 256;
 
-        PBKDF2_WITH_HMAC_SHA256 = "PBKDF2WithHmacSHA256";
+        PBKDF2_WITH_HMAC_SHA1 = "PBKDF2WithHmacSHA1";
     }
 
     // <- Constructor ->
     private PasswordService() {
         try {
-            keyFactory = SecretKeyFactory.getInstance(PBKDF2_WITH_HMAC_SHA256);
+            keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
             secureRandomGenerator = SecureRandom.getInstance("SHA1PRNG");
         } catch (final NoSuchAlgorithmException e) {
@@ -62,7 +62,7 @@ public final class PasswordService {
           return slowEquals(hash2, hash2, hash1.length);
     }
 
-    private byte[] pbkdf2Hash(final char[] password, final byte[] salt) {
+    public byte[] pbkdf2Hash(final char[] password, final byte[] salt) {
         final PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, HASH_LENGTH);
 
         byte[] hash = null;
@@ -87,8 +87,7 @@ public final class PasswordService {
         return diff == 0;
     }
 
-    public byte[] salt(final int length) {
-
+    public byte[] generateSalt(final int length) {
         final byte[] salt = new byte[length];
 
         secureRandomGenerator.nextBytes(salt);

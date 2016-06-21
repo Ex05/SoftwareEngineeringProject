@@ -15,7 +15,7 @@ import java.awt.FontFormatException;
 import java.io.IOException;
 
 import static de.janik.softengine.util.Constants.FONT_SOURCE_CODE_PRO_LOCATION;
-import static de.janik.windowing.WindowType.*;
+import static de.janik.windowing.WindowType.BORDERLESS_NO_CONTROLS;
 import static de.presidente.jungle_king.util.Constants.GAME_TITLE;
 import static de.presidente.jungle_king.util.Constants.TICKS_PER_SECOND;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
@@ -88,6 +88,7 @@ public final class JungleKingGame extends Game {
         server.close();
     }
 
+    // <- Getter & Setter ->
     @Override
     public int getDesiredTicksPerSecond() {
         return TICKS_PER_SECOND;
@@ -98,7 +99,10 @@ public final class JungleKingGame extends Game {
         return 1;
     }
 
-    // <- Getter & Setter ->
+    public ConnectionManager getServerConnection() {
+        return server;
+    }
+
 
     // <- Static ->
 }

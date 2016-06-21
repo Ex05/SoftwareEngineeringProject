@@ -5,6 +5,7 @@ package de.presidente.jungle_king.net;
 
 import de.presidente.net.Packet;
 import de.presidente.net.Packet_000_ConnectionClosed;
+import de.presidente.net.Packet_005_ReceiveSalt;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -45,6 +46,7 @@ public final class ConnectionManager {
         threadOutbound = new Thread(this::outBoundHandler, "Async_Network Thread (Outbound)");
         threadOutbound.setDaemon(true);
 
+        // TODO:(jan) Check on every send/receive if the connection is alive.
         final Thread threadInbound = new Thread(this::inBoundHandler, "Async_Network Thread (Inbound)");
         threadInbound.setDaemon(true);
 
@@ -52,9 +54,9 @@ public final class ConnectionManager {
             socket = OpenSocket(address, port, 200);
 
             if (socket != null) {
-                threadInbound.start();
-
                 threadOutbound.start();
+
+                threadInbound.start();
             }
         });
 

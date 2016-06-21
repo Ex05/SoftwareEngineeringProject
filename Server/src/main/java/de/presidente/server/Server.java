@@ -4,7 +4,10 @@ package de.presidente.server;
 // <- Static_Import ->
 
 import de.janik.passwd.PasswordService;
+import de.janik.propertyFile.PropertyFile;
+import de.janik.propertyFile.exception.NoSuchEntryException;
 import de.presidente.net.LoginCredentials;
+import de.presidente.server.util.Constants;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,11 +20,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static de.presidente.server.util.Constants.DB_NAME;
-import static de.presidente.server.util.Constants.DB_PASSWD;
-import static de.presidente.server.util.Constants.DB_PORT;
-import static de.presidente.server.util.Constants.DB_URL;
-import static de.presidente.server.util.Constants.DB_USER;
+import static de.presidente.server.util.Constants.*;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_ID;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_PASSWORD_AND_ID;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_SALT;
@@ -39,7 +38,13 @@ public final class Server {
     // <- Protected ->
 
     // <- Private->
-    private final int port;
+    private int port;
+    private int databasePort;
+
+    private String databaseUrl;
+    private String databaseName;
+    private String databaseUser;
+    private String databasePasswd;
 
     private ServerSocket socket;
 
@@ -58,8 +63,20 @@ public final class Server {
     // <- Static ->
 
     // <- Constructor ->
-    public Server(final int port) {
-        this.port = port;
+    public Server(final PropertyFile properties) {
+        try {
+            port = properties.getProperty("server_port").asInt().get();
+            databasePort = properties.getProperty("database_port").asInt().get();
+
+            databaseUrl = properties.getProperty("database_url").asString().get();
+            databaseName = properties.getProperty("database_name").asString().get();
+            databaseUser = properties.getProperty("database_user").asString().get();
+            databasePasswd = properties.getProperty("database_passwd").asString().get();
+        } catch (final NoSuchEntryException | IOException e) {
+            e.printStackTrace();
+
+            System.exit(-1);
+        }
 
         threadFactory = new ServerThreadFactory("ClientThreads", 0, "ClientThread");
 
@@ -125,7 +142,7 @@ public final class Server {
     public boolean login(final Client client, final LoginCredentials credentials) {
         boolean loggedIn = false;
 
-        DB_CONNECTION = OpenConnection(DB_CONNECTION, DB_URL, DB_PORT, DB_NAME, DB_USER, DB_PASSWD);
+        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
 
         long uID = -1;
 
@@ -146,7 +163,7 @@ public final class Server {
             e.printStackTrace();
         }
 
-        if(loggedIn) {
+        if (loggedIn) {
             client.setUserName(credentials.getUserName());
 
             client.setuID(uID);
@@ -156,7 +173,7 @@ public final class Server {
     }
 
     public byte[] receiveSalt(final String userName) {
-        DB_CONNECTION = OpenConnection(DB_CONNECTION, DB_URL, DB_PORT, DB_NAME, DB_USER, DB_PASSWD);
+        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
 
         byte[] salt = null;
 
@@ -179,7 +196,7 @@ public final class Server {
     public boolean checkUserNameAvailability(final String userName) {
         boolean available = false;
 
-        DB_CONNECTION = OpenConnection(DB_CONNECTION, DB_URL, DB_PORT, DB_NAME, DB_USER, DB_PASSWD);
+        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
 
         try (final PreparedStatement ps = DB_CONNECTION.prepareStatement(PREPARED_STATEMENT_SELECT_ID)) {
             ps.setString(1, userName);
@@ -200,16 +217,18 @@ public final class Server {
         boolean registered = false;
 
         if (checkUserNameAvailability(loginCredentials.getUserName())) {
+            DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
 
-            DB_CONNECTION = OpenConnection(DB_CONNECTION, DB_URL, DB_PORT, DB_NAME, DB_USER, DB_PASSWD);
-
-            try (final PreparedStatement ps = DB_CONNECTION.prepareStatement(PREPARED_STATEMENT_SELECT_ID)) {
+            try (final PreparedStatement ps = DB_CONNECTION.prepareStatement(PREPARED_STATEMENT_INSERT_NEW_USER)) {
                 ps.setString(1, loginCredentials.getUserName());
                 ps.setBytes(2, loginCredentials.getSaltedPasswordHash());
                 ps.setBytes(3, salt);
 
-                if (ps.executeUpdate() == 1)
+                if (ps.executeUpdate() == 1) {
                     registered = true;
+
+                    System.out.printf("%s registered successfully.\n", loginCredentials.getUserName());
+                }
 
             } catch (final SQLException e) {
                 e.printStackTrace();
