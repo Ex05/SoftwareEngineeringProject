@@ -7,15 +7,19 @@ package de.janik.softengine.ui;
 
 import de.janik.softengine.InputManager;
 import de.janik.softengine.entity.DrawableEntity;
+import de.janik.softengine.game.State;
 import de.janik.softengine.math.Vector;
 import de.janik.softengine.util.ColorARGB;
-import de.janik.softengine.game.State;
 
-import java.awt.*;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 
-import static de.janik.softengine.ui.TextLocation.*;
-import static java.awt.event.KeyEvent.*;
+import static de.janik.softengine.ui.TextLocation.ABSOLUTE;
+import static de.janik.softengine.ui.TextLocation.RIGHT;
+import static java.awt.event.KeyEvent.VK_BACK_SPACE;
+import static java.awt.event.KeyEvent.VK_MINUS;
+import static java.awt.event.KeyEvent.VK_SPACE;
+import static java.awt.event.KeyEvent.VK_TAB;
 
 /**
  * @author Gorden.Kappenberg [©2016]
@@ -61,7 +65,7 @@ public class TextField extends DrawableEntity {
 
         setSprite(background.getSprite());
 
-        if(state!=null)
+        if (state != null)
             setState(state);
 
         this.onKeyPress(e -> {
@@ -74,20 +78,15 @@ public class TextField extends DrawableEntity {
     // <- Object ->
     @Override
     public void tick(long ticks, InputManager input) {
-
-        if (!this.isFocus() && inputText.equals("") && !text.getText().equals(defaultText))
-        {
+        if (!this.isFocus() && inputText.equals("") && !text.getText().equals(defaultText)) {
             text.setColor(ColorARGB.DARK_GRAY);
             this.setText(defaultText);
         }
 
-
-        if (this.isFocus() && !text.getText().equals(inputText))
-        {
+        if (this.isFocus() && !text.getText().equals(inputText)) {
             text.setColor(ColorARGB.GRAY);
             this.setText(inputText);
         }
-
 
         if (!this.isFocus())
             showdefaultText = true;
@@ -127,7 +126,8 @@ public class TextField extends DrawableEntity {
                 if (!inputText.equals(""))
                     inputText = inputText.substring(0, inputText.length() - 1);
 
-            if (e.getExtendedKeyCode() == VK_MINUS || e.getExtendedKeyCode() == VK_SPACE) inputText = inputText + e.getKeyChar();
+            if (e.getExtendedKeyCode() == VK_MINUS || e.getExtendedKeyCode() == VK_SPACE)
+                inputText = inputText + e.getKeyChar();
         }
     }
 
