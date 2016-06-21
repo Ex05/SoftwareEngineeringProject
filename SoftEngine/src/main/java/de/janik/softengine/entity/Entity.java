@@ -7,7 +7,6 @@ import de.janik.softengine.InputManager;
 import de.janik.softengine.UI_Event;
 import de.janik.softengine.UI_KeyEvent;
 import de.janik.softengine.math.Vector;
-import de.janik.softengine.game.State;
 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -34,10 +33,6 @@ public abstract class Entity implements Comparable<Entity> {
 
     // <- Private->
     private boolean mouseOver = false;
-
-    private boolean focus;
-
-    private State state;
 
     // <- Static ->
 
@@ -206,22 +201,6 @@ public abstract class Entity implements Comparable<Entity> {
 
     public boolean isMouseOver() {
         return mouseOver;
-    }
-
-    public void setFocus(boolean focus) {
-        this.focus = focus;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public boolean isFocus() {
-        return focus;
-    }
-
-    public State getState() {
-        return state;
     }
 
     // <- Static ->

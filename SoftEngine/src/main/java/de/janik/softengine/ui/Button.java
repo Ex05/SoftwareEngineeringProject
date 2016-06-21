@@ -4,25 +4,23 @@ package de.janik.softengine.ui;
 // <- Static_Import ->
 
 import de.janik.softengine.InputManager;
-import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.math.Vector;
 import de.janik.softengine.util.ColorARGB;
 
 import java.awt.Font;
 
-import static de.janik.softengine.ui.TextLocation.*;
+import static de.janik.softengine.ui.TextLocation.ABSOLUTE;
+import static de.janik.softengine.ui.TextLocation.RIGHT;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Button extends DrawableEntity {
+public final class Button extends UI_Component {
     // <- Public ->
     // <- Protected ->
 
     // <- Private->
     private static final int DEFAULT_MOUSE_PRESS_COOLDOWN;
-
-    private final Rectangle background;
 
     private final Text text;
 
@@ -41,12 +39,8 @@ public final class Button extends DrawableEntity {
     }
 
     // <- Constructor ->
-    public Button() {
-        this(null);
-    }
-
     public Button(final String text) {
-        this(0, 0);
+        this();
 
         if (text != null)
             setText(text);
@@ -58,16 +52,12 @@ public final class Button extends DrawableEntity {
         setTextLocation(textLocation);
     }
 
-    public Button(int x, int y) {
-        super(x, y);
+    public Button() {
+        super();
 
         text = new Text();
 
         textPosition = new Vector();
-
-        background = new Rectangle(0, 0);
-
-        setSprite(background.getSprite());
     }
 
     // <- Abstract ->
@@ -116,7 +106,8 @@ public final class Button extends DrawableEntity {
             mousePressed = false;
     }
 
-    private void update() {
+    @Override
+    protected void update() {
         if (background.getWidth() < text.getWidth())
             background.resize(text.getWidth(), background.getHeight());
 

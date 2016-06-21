@@ -6,8 +6,6 @@ package de.janik.softengine.ui;
 
 
 import de.janik.softengine.InputManager;
-import de.janik.softengine.entity.DrawableEntity;
-import de.janik.softengine.game.State;
 import de.janik.softengine.math.Vector;
 import de.janik.softengine.util.ColorARGB;
 
@@ -19,18 +17,15 @@ import static de.janik.softengine.ui.TextLocation.RIGHT;
 import static java.awt.event.KeyEvent.VK_BACK_SPACE;
 import static java.awt.event.KeyEvent.VK_MINUS;
 import static java.awt.event.KeyEvent.VK_SPACE;
-import static java.awt.event.KeyEvent.VK_TAB;
 
 /**
  * @author Gorden.Kappenberg [©2016]
  */
-public class TextField extends DrawableEntity {
+public class TextField extends UI_Component {
     // <- Public ->
     // <- Protected ->
     // <- Private->
     private final Vector textPosition;
-
-    private final Rectangle background;
 
     private Text text;
 
@@ -43,52 +38,38 @@ public class TextField extends DrawableEntity {
 
     // <- Static ->
     // <- Constructor ->
-    public TextField() {
-        this(null, null);
-    }
-
-    public TextField(final String defaultText, State state) {
-        this(0, 0, state);
+    public TextField(final String defaultText) {
+        this();
 
         this.defaultText = defaultText;
+
         this.text.setText(defaultText);
     }
 
-    public TextField(int x, int y, State state) {
-        super(x, y);
-
+    public TextField() {
         text = new Text();
 
         textPosition = new Vector();
 
-        background = new Rectangle(0, 0);
-
-        setSprite(background.getSprite());
-
-        if (state != null)
-            setState(state);
-
-        this.onKeyPress(e -> {
-            if (this.isFocus())
-                handleKeyEvent(e);
-        });
+        onKeyPress(this::handleKeyEvent);
+        onMousePress(() -> setFocus(true));
     }
 
     // <- Abstract ->
     // <- Object ->
     @Override
     public void tick(long ticks, InputManager input) {
-        if (!this.isFocus() && inputText.equals("") && !text.getText().equals(defaultText)) {
+        if (!hasFocus() && inputText.equals("") && !text.getText().equals(defaultText)) {
             text.setColor(ColorARGB.DARK_GRAY);
             this.setText(defaultText);
         }
 
-        if (this.isFocus() && !text.getText().equals(inputText)) {
+        if (hasFocus() && !text.getText().equals(inputText)) {
             text.setColor(ColorARGB.GRAY);
             this.setText(inputText);
         }
 
-        if (!this.isFocus())
+        if (!hasFocus())
             showdefaultText = true;
 
         switch (textLocation) {
@@ -108,20 +89,10 @@ public class TextField extends DrawableEntity {
         getSprite().draw((int) textPosition.getX(), (int) textPosition.getY(), text);
     }
 
-    @Override
-    public void pressMouse() {
-        if (!this.isFocus())
-            this.getState().getFocus(this);
-    }
-
-    private void handleKeyEvent(KeyEvent e) {
-
+    private void handleKeyEvent(final KeyEvent e) {
         if (Character.isDigit(e.getKeyChar()) || Character.isLetter(e.getKeyChar()))
             inputText = inputText + e.getKeyChar();
         else {
-            if (e.getExtendedKeyCode() == VK_TAB)
-                this.getState().getFocus(this);
-
             if (e.getExtendedKeyCode() == VK_BACK_SPACE)
                 if (!inputText.equals(""))
                     inputText = inputText.substring(0, inputText.length() - 1);
@@ -131,7 +102,8 @@ public class TextField extends DrawableEntity {
         }
     }
 
-    private void update() {
+    @Override
+    protected void update() {
         if (background.getWidth() < text.getWidth())
             background.resize(text.getWidth(), background.getHeight());
 
@@ -144,27 +116,6 @@ public class TextField extends DrawableEntity {
     }
 
     // <- Getter & Setter ->
-
-    @Override
-    public void setWidth(final int width) {
-        super.setWidth(width);
-
-        if (width != background.getWidth())
-            background.resize(width, background.getHeight());
-
-        update();
-    }
-
-    @Override
-    public void setHeight(final int height) {
-        super.setHeight(height);
-
-        if (height != background.getHeight())
-            background.resize(background.getWidth(), height);
-
-        update();
-    }
-
     public void setSize(final int width, final int height) {
         this.width = width;
         this.height = height;
@@ -199,10 +150,6 @@ public class TextField extends DrawableEntity {
         update();
     }
 
-    public void setBackgroundColor(final ColorARGB color) {
-        background.setColor(color);
-    }
-
     public void setAntialiasing(final boolean antialiasing) {
         text.setAntialiasing(antialiasing);
 
@@ -217,11 +164,6 @@ public class TextField extends DrawableEntity {
 
     public Text getText() {
         return text;
-    }
-
-    @Override
-    public Bitmap getSprite() {
-        return (Bitmap) super.getSprite();
     }
 
     public void setTextLocation(final int x, final int y) {

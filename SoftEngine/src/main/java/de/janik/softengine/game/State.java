@@ -4,7 +4,9 @@ package de.janik.softengine.game;
 // <- Static_Import ->
 
 import de.janik.softengine.Engine;
+import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.entity.Entity;
+import de.janik.softengine.ui.UI_Component;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -18,7 +20,8 @@ public abstract class State {
     protected final Game game;
 
     // <- Private->
-    private Entity actualFocused = null;
+    private UI_Component focusHolder = null;
+
     // <- Static ->
 
     // <- Constructor ->
@@ -33,22 +36,36 @@ public abstract class State {
 
     public abstract void tick(final long ticks, final Engine engine);
 
-    public void getFocus(Entity e) {
-        if (actualFocused == null)
-            actualFocused = e;
-        else {
-            actualFocused.setFocus(false);
-            actualFocused = e;
-            actualFocused.setFocus(true);
-        }
+    // <- Object ->
+    protected void add(final DrawableEntity entity) {
+        if(entity instanceof UI_Component)
+            ((UI_Component)entity).setStateCallBack(this);
+
+        game.add(entity);
     }
 
-    ;
-    // <- Object ->
+    protected void add(final Entity entity) {
+        game.add(entity);
+    }
 
     // <- Getter & Setter ->
     public Game getGame() {
         return game;
+    }
+
+    public UI_Component getFocusHolder() {
+        return focusHolder;
+    }
+
+    public void setFocusHolder(final UI_Component focusHolder) {
+        if (this.focusHolder != null) {
+            this.focusHolder.setFocus(false);
+            this.focusHolder.loseFocus();
+        }
+
+        this.focusHolder = focusHolder;
+
+        this.focusHolder.gainFocus();
     }
 
     // <- Static ->

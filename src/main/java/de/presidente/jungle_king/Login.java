@@ -3,7 +3,6 @@ package de.presidente.jungle_king;
 
 // <- Static_Import ->
 
-import de.janik.passwd.PasswordService;
 import de.janik.softengine.Engine;
 import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.Game;
@@ -14,8 +13,6 @@ import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.TextField;
 import de.janik.softengine.util.ColorARGB;
 import de.presidente.jungle_king.net.ConnectionManager;
-import de.presidente.net.LoginCredentials;
-import de.presidente.net.Packet_007_Register;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +102,7 @@ public final class Login extends State {
         buttonLogin.setBackgroundColor(new ColorARGB(0, 180, 65));
         buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, backgroundTextFieldPassword.getY() - (offset + 5) - buttonLogin.getHeight());
         buttonLogin.onMousePress(() -> {
-            // TODO:(jan) Login... 
+            // TODO:(jan) Login...
         });
 
         buttonNotRegistered = new Label("Not registered?");
@@ -124,14 +121,14 @@ public final class Login extends State {
                 switchState(State.TRANSITION_REGISTER);
         });
 
-        buttonUserName = new TextField("Username", this);
+        buttonUserName = new TextField("Username");
         buttonUserName.setFont(SOURCE_CODE_PRO);
         buttonUserName.setZ(backgroundTextFieldUser.getZ() + 1);
         buttonUserName.setTextColor(DARK_GRAY);
         buttonUserName.setTextSize(28);
         buttonUserName.setLocation(backgroundTextFieldUser.getX(), backgroundTextFieldUser.getY() + buttonUserName.getHeight() / 2 - 4);
 
-        buttonPassword = new TextField("Password", this);
+        buttonPassword = new TextField("Password");
         buttonPassword.setFont(SOURCE_CODE_PRO);
         buttonPassword.setZ(backgroundTextFieldPassword.getZ() + 1);
         buttonPassword.setTextColor(DARK_GRAY);
@@ -185,8 +182,8 @@ public final class Login extends State {
 
         game.setBackgroundColor(new ColorARGB(115, 195, 90));
 
-        loginComponents.forEach(game::add);
-        registerComponents.forEach(game::add);
+        loginComponents.forEach(this::add);
+        registerComponents.forEach(this::add);
 
         switchState(state);
     }

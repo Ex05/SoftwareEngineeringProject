@@ -22,8 +22,6 @@ public final class PasswordService {
     private static final int ITERATIONS;
     private static final int HASH_LENGTH;
 
-    private static final String PBKDF2_WITH_HMAC_SHA1;
-
     private SecretKeyFactory keyFactory;
 
     private SecureRandom secureRandomGenerator;
@@ -35,14 +33,13 @@ public final class PasswordService {
         // TODO:(jan) Test what is reasonable here, I used 10_000 for Android-Phones.
         ITERATIONS = 10_000;
         HASH_LENGTH = 256;
-
-        PBKDF2_WITH_HMAC_SHA1 = "PBKDF2WithHmacSHA1";
     }
 
     // <- Constructor ->
     private PasswordService() {
         try {
-            keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            // http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#SecretKeyFactory
+            keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
             secureRandomGenerator = SecureRandom.getInstance("SHA1PRNG");
         } catch (final NoSuchAlgorithmException e) {
