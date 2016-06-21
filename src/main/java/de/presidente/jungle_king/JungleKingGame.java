@@ -63,7 +63,8 @@ public final class JungleKingGame extends Game {
     public Window constructWindow() {
         final Window window = new Window();
 
-        window.setType(UTILITY).setSize(1280, 720);
+        // TODO:(jan) Fix Entity hit boxes so we can use a bordered window.
+        window.setType(BORDERLESS_NO_CONTROLS).setSize(1280, 720);
         window.setAlwaysOnTop(true);
 
         return window;

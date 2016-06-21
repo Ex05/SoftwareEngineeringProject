@@ -73,7 +73,7 @@ public class Engine implements Runnable {
         input = new InputManager(this);
 
         canvas = new Canvas(window, game.getDisplayScaleFactor());
-        canvas.setDragableByMouse(false, window);
+        canvas.setDragableByMouse(true, window);
         canvas.addKeyListener(input);
         canvas.addMouseListener(input);
 
