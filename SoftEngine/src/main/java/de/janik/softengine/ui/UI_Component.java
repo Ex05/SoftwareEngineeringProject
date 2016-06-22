@@ -3,7 +3,6 @@ package de.janik.softengine.ui;
 
 // <- Static_Import ->
 
-import de.janik.softengine.UI_Event;
 import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.State;
 import de.janik.softengine.util.ColorARGB;
@@ -24,8 +23,8 @@ public abstract class UI_Component extends DrawableEntity {
     protected boolean focusAble = true;
 
     // <- Private->
-    private final List<UI_Event> onFocusGain;
-    private final List<UI_Event> onFocusLos;
+    private final List<UI_Event> focusGainEvents;
+    private final List<UI_Event> focusLosEvents;
 
     private State stateCallBack;
 
@@ -39,8 +38,10 @@ public abstract class UI_Component extends DrawableEntity {
 
         setSprite(background.getSprite());
 
-        onFocusGain = new ArrayList<>(1);
-        onFocusLos = new ArrayList<>(1);
+        focusGainEvents = new ArrayList<>(1);
+        focusLosEvents = new ArrayList<>(1);
+
+        onMousePress(() -> setFocus(true));
     }
 
     // <- Abstract ->
@@ -48,11 +49,11 @@ public abstract class UI_Component extends DrawableEntity {
 
     // <- Object ->
     public void onFocusGain(final UI_Event e) {
-        onFocusGain.add(e);
+        focusGainEvents.add(e);
     }
 
     public void onFocusLos(final UI_Event e) {
-        onFocusLos.add(e);
+        focusLosEvents.add(e);
     }
 
     // <- Getter & Setter ->
@@ -109,11 +110,11 @@ public abstract class UI_Component extends DrawableEntity {
     }
 
     public void loseFocus() {
-        onFocusLos.forEach(UI_Event::onUI_Event);
+        focusLosEvents.forEach(UI_Event::onUI_Event);
     }
 
     public void gainFocus() {
-        onFocusGain.forEach(UI_Event::onUI_Event);
+        focusGainEvents.forEach(UI_Event::onUI_Event);
     }
 
     // <- Static ->

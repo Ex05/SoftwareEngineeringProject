@@ -319,6 +319,12 @@ public class ColorARGB {
      * The color 'silver'.
      */
     public static final ColorARGB SILVER;
+
+    /**
+     * The color 'silver gray'
+     */
+    public static final ColorARGB SILVER_GRAY;
+
     /**
      * The color 'dark gray'.
      */
@@ -414,6 +420,7 @@ public class ColorARGB {
         SMOKE_WHITE = Decode("#F5_F5_F5");
         LIGHT_GRAY = Decode("#D3_D3_D3");
         SILVER = Decode("#C0_C0_C0");
+        SILVER_GRAY = Decode("#A2_A2_A2");
         DARK_GRAY = Decode("#A9_A9_A9");
         GRAY = Decode("#80_80_80");
         DIM_GRAY = Decode("#69_69_69");

@@ -4,8 +4,8 @@ package de.janik.softengine.entity;
 // <- Static_Import ->
 
 import de.janik.softengine.InputManager;
-import de.janik.softengine.UI_Event;
-import de.janik.softengine.UI_KeyEvent;
+import de.janik.softengine.ui.UI_Event;
+import de.janik.softengine.ui.UI_KeyEvent;
 import de.janik.softengine.math.Vector;
 
 import java.awt.Point;

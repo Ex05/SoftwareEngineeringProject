@@ -1,4 +1,4 @@
-package de.janik.softengine;
+package de.janik.softengine.ui;
 // <- Import ->
 
 // <- Static_Import ->
