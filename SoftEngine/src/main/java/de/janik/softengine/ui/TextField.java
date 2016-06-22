@@ -68,7 +68,7 @@ public class TextField extends Button {
         inputChangeEvents.forEach(UI_Event::onUI_Event);
     }
 
-    public void inInputChange(final UI_Event event) {
+    public void onInputChange(final UI_Event event) {
         inputChangeEvents.add(event);
     }
 

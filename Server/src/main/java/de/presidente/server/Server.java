@@ -7,7 +7,6 @@ import de.janik.passwd.PasswordService;
 import de.janik.propertyFile.PropertyFile;
 import de.janik.propertyFile.exception.NoSuchEntryException;
 import de.presidente.net.LoginCredentials;
-import de.presidente.server.util.Constants;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,7 +44,7 @@ public final class Server {
     private String databaseUrl;
     private String databaseName;
     private String databaseUser;
-    private String databasePasswd;
+    private String databasePassword;
 
     private ServerSocket socket;
 
@@ -71,7 +71,7 @@ public final class Server {
             databaseUrl = properties.getProperty("database_url").asString().get();
             databaseName = properties.getProperty("database_name").asString().get();
             databaseUser = properties.getProperty("database_user").asString().get();
-            databasePasswd = properties.getProperty("database_passwd").asString().get();
+            databasePassword = properties.getProperty("database_passwd").asString().get();
         } catch (final NoSuchEntryException | IOException e) {
             e.printStackTrace();
 
@@ -142,7 +142,7 @@ public final class Server {
     public boolean login(final Client client, final LoginCredentials credentials) {
         boolean loggedIn = false;
 
-        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
+        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePassword);
 
         long uID = -1;
 
@@ -173,7 +173,7 @@ public final class Server {
     }
 
     public byte[] receiveSalt(final String userName) {
-        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
+        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePassword);
 
         byte[] salt = null;
 
@@ -196,7 +196,7 @@ public final class Server {
     public boolean checkUserNameAvailability(final String userName) {
         boolean available = false;
 
-        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
+        DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePassword);
 
         try (final PreparedStatement ps = DB_CONNECTION.prepareStatement(PREPARED_STATEMENT_SELECT_ID)) {
             ps.setString(1, userName);
@@ -217,7 +217,7 @@ public final class Server {
         boolean registered = false;
 
         if (checkUserNameAvailability(loginCredentials.getUserName())) {
-            DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePasswd);
+            DB_CONNECTION = OpenConnection(DB_CONNECTION, databaseUrl, databasePort, databaseName, databaseUser, databasePassword);
 
             try (final PreparedStatement ps = DB_CONNECTION.prepareStatement(PREPARED_STATEMENT_INSERT_NEW_USER)) {
                 ps.setString(1, loginCredentials.getUserName());

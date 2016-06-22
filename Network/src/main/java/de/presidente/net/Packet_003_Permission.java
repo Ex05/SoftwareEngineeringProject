@@ -8,7 +8,7 @@ import static de.presidente.net.Permission.GUARANTED;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Packet_003_Permission extends Packet {
+public class Packet_003_Permission extends Packet {
     // <- Public ->
     // <- Protected ->
 

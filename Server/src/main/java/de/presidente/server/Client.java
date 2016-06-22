@@ -12,6 +12,7 @@ import de.presidente.net.Packet_005_ReceiveSalt;
 import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_007_Register;
 import de.presidente.net.Packet_008_CheckUsernameAvailability;
+import de.presidente.net.Packet_009_UsernameAvailable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -129,7 +130,7 @@ public final class Client implements Runnable {
             } else if (packet instanceof Packet_008_CheckUsernameAvailability) {
                 final boolean available = server.checkUserNameAvailability(((Packet_008_CheckUsernameAvailability) packet).getUserName());
 
-                send(new Packet_003_Permission(available ? GUARANTED : DENIED));
+                send(new Packet_009_UsernameAvailable(available ? GUARANTED : DENIED));
             } else if (packet instanceof Packet_007_Register) {
                 final Packet_007_Register registerPacket = (Packet_007_Register) packet;
 
@@ -161,6 +162,9 @@ public final class Client implements Runnable {
             server.enterLobby(this);
 
             // TODO:(jan) Handle Lobby actions.
+            System.out.println("Client.run[TODO:(jan) Handle Lobby actions.]");
+
+            break;
         }
     }
 

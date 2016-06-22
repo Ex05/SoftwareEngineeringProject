@@ -98,6 +98,7 @@ public class Text extends A_Sprite {
             g.setRenderingHint(KEY_INTERPOLATION, interpolation.getValue());
 
             g.setFont(font);
+
             g.setColor(ToAWT_Color(color));
 
             final FontMetrics fm = g.getFontMetrics();

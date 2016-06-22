@@ -56,7 +56,7 @@ public final class PasswordService {
         return slowEquals(pbkdf2Hash, hash, pbkdf2Hash.length);
     }
     public boolean validate( final byte[] hash1, final byte[] hash2) {
-          return slowEquals(hash2, hash2, hash1.length);
+          return slowEquals(hash1, hash2, hash1.length);
     }
 
     public byte[] pbkdf2Hash(final char[] password, final byte[] salt) {
@@ -84,8 +84,11 @@ public final class PasswordService {
         return diff == 0;
     }
 
-    public byte[] generateSalt(final int length) {
-        final byte[] salt = new byte[length];
+    public byte[] generateSalt() {
+        if(HASH_LENGTH % 8 != 0)
+            throw new IllegalArgumentException("Hash length[" + HASH_LENGTH + "] has to be multiple of 8.");
+
+        final byte[] salt = new byte[HASH_LENGTH / 8];
 
         secureRandomGenerator.nextBytes(salt);
 

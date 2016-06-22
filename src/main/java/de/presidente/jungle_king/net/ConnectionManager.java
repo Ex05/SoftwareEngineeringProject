@@ -5,7 +5,6 @@ package de.presidente.jungle_king.net;
 
 import de.presidente.net.Packet;
 import de.presidente.net.Packet_000_ConnectionClosed;
-import de.presidente.net.Packet_005_ReceiveSalt;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -124,13 +123,14 @@ public final class ConnectionManager {
         return false;
     }
 
-    public Packet retriev() {
+    public Packet retrievePacket() {
         Packet packet = null;
-        try {
-            packet = inboundPacketBuffer.take();
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
-        }
+        if (inboundPacketBuffer.size() != 0)
+            try {
+                packet = inboundPacketBuffer.take();
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
 
         return packet;
     }

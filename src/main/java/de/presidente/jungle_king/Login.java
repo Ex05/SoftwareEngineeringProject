@@ -3,6 +3,7 @@ package de.presidente.jungle_king;
 
 // <- Static_Import ->
 
+import de.janik.passwd.PasswordService;
 import de.janik.softengine.Engine;
 import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.Game;
@@ -14,16 +15,27 @@ import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.TextField;
 import de.janik.softengine.util.ColorARGB;
 import de.presidente.jungle_king.net.ConnectionManager;
+import de.presidente.net.LoginCredentials;
+import de.presidente.net.Packet;
+import de.presidente.net.Packet_001_Login;
+import de.presidente.net.Packet_003_Permission;
+import de.presidente.net.Packet_005_ReceiveSalt;
+import de.presidente.net.Packet_006_Salt;
+import de.presidente.net.Packet_007_Register;
+import de.presidente.net.Packet_008_CheckUsernameAvailability;
+import de.presidente.net.Packet_009_UsernameAvailable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
+import static de.janik.softengine.util.ColorARGB.RED;
 import static de.janik.softengine.util.ColorARGB.WHITE;
 import static de.presidente.jungle_king.util.Constants.TICKS_PER_SECOND;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
+import static de.presidente.net.Permission.DENIED;
+import static de.presidente.net.Permission.GUARANTED;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -53,6 +65,8 @@ public final class Login extends State {
     private ConnectionManager server;
 
     private State state = State.LOGIN;
+
+    private SubState subState = SubState.USER_INPUT;
 
     private long timer;
 
@@ -87,6 +101,12 @@ public final class Login extends State {
         textFieldUserName.setTextSize(28);
         textFieldUserName.setLocation(engine.getScreenWidth() / 2 - textFieldUserName.getWidth() / 2,
                 backgroundLogin.getY() + backgroundLogin.getHeight() - offsetTopBottom - textFieldUserName.getHeight());
+        textFieldUserName.onInputChange(() -> {
+            final String userName = textFieldUserName.getUserInput();
+
+            if (!userName.equals(""))
+                server.send(new Packet_008_CheckUsernameAvailability(userName));
+        });
 
         passwordFieldPassword = new PasswordField("Password");
         passwordFieldPassword.setSize(400, textFieldHeight);
@@ -106,10 +126,11 @@ public final class Login extends State {
         buttonLogin.setBackgroundColor(new ColorARGB(0, 180, 65));
         buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, passwordFieldPassword.getY() - (offset + 5) - buttonLogin.getHeight());
         buttonLogin.onMousePress(() -> {
-            // TODO:(jan) Login...
+            // TODO:(jan) Check that a password was entered.
 
-            System.out.println("Username:" + textFieldUserName.getUserInput());
-            System.out.println("Password:" + Arrays.toString(passwordFieldPassword.getPassword()));
+            server.send(new Packet_005_ReceiveSalt(textFieldUserName.getUserInput()));
+
+            subState = SubState.AWAITING_SALT;
         });
 
         labelNotRegistered = new Label("Not registered?");
@@ -239,6 +260,69 @@ public final class Login extends State {
 
                 break;
         }
+
+        switch (subState) {
+            case USER_INPUT: {
+                break;
+            }
+            case AWAITING_SALT: {
+                Packet p;
+
+                while ((p = server.retrievePacket()) != null) {
+                    if (p instanceof Packet_003_Permission) {
+                        final Packet_003_Permission packet = (Packet_003_Permission) p;
+
+                        if (packet.getPermission() == DENIED)
+                            textFieldUserName.setTextColor(RED);
+
+                    } else if (p instanceof Packet_006_Salt) {
+                        final Packet_006_Salt packet = (Packet_006_Salt) p;
+
+                        subState = SubState.LOGGING_IN;
+
+                        final byte[] salt = packet.getSalt();
+
+                        final byte[] pbkdf2Hash = PasswordService.GetInstance().pbkdf2Hash(passwordFieldPassword.getPassword(), salt);
+
+                        server.send(new Packet_001_Login(new LoginCredentials(textFieldUserName.getUserInput(), pbkdf2Hash)));
+                    }
+                }
+
+                break;
+            }
+            case LOGGING_IN: {
+                Packet p;
+
+                while ((p = server.retrievePacket()) != null) {
+                    if (p instanceof Packet_003_Permission) {
+                        final Packet_003_Permission packet = (Packet_003_Permission) p;
+
+                        if (packet.getPermission() == GUARANTED)
+                            // TODO:(jan) Enter lobby.
+                            System.out.println("Logged in.");
+                        else
+                            // TODO:(jan) Handle wrong password.
+                                passwordFieldPassword.setTextColor(RED);
+                    }
+                }
+
+                break;
+            }
+            case CHECK_USERNAME: {
+                Packet p;
+
+                while ((p = server.retrievePacket()) != null) {
+                    if (p instanceof Packet_009_UsernameAvailable) {
+                        final Packet_009_UsernameAvailable packet = (Packet_009_UsernameAvailable) p;
+
+                        textFieldUserName.setTextColor(packet.getPermission() == GUARANTED ? GREEN : RED);
+                    }
+                }
+
+                break;
+            }
+
+        }
     }
 
     // <- Getter & Setter ->
@@ -253,5 +337,12 @@ public final class Login extends State {
         REGISTER,
         TRANSITION_LOGIN,
         TRANSITION_REGISTER
+    }
+
+    private enum SubState {
+        USER_INPUT,
+        AWAITING_SALT,
+        LOGGING_IN,
+        CHECK_USERNAME
     }
 }

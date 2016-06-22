@@ -24,6 +24,7 @@ jar {
                                '.\\res\\lib\\softEngine\\propertyFile\\propertyFile.jar',
                                '.\\res\\lib\\resourceLoader\\resourceLoader.jar',
                                '.\\res\\lib\\netWork\\network.jar',
+                               '.\\res\\lib\\passwordService\\passwordService.jar',
                                '.\\res\\lib\\softEngine\\windowingSystem\\windowingSystem.jar'].join(' ')
         )
     }
