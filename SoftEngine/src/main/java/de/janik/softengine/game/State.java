@@ -24,6 +24,10 @@ public abstract class State {
 
     protected final Game game;
 
+    protected final List<State> substates;
+
+    protected State currentState;
+
     // <- Private->
     private final List<UI_Component> focusableElements;
 
@@ -37,13 +41,18 @@ public abstract class State {
 
         this.game = game;
 
+        substates = new ArrayList<>(1);
+
         focusableElements = new ArrayList<>();
     }
 
     // <- Abstract ->
     public abstract void init();
 
-    public abstract void tick(final long ticks, final Engine engine);
+    public void tick(final long ticks, final Engine engine) {
+        if (currentState != null)
+            currentState.tick(ticks, engine);
+    }
 
     // <- Object ->
     protected void add(final DrawableEntity entity) {
@@ -84,7 +93,18 @@ public abstract class State {
         game.add(entity);
     }
 
+    public void add(final State state) {
+        if (currentState == null)
+            currentState = state;
+
+        substates.add(state);
+    }
+
     // <- Getter & Setter ->
+    public State getState(final Class<?> state) {
+        return substates.stream().filter(s -> s.getClass().equals(state)).findAny().orElse(null);
+    }
+
     public Game getGame() {
         return game;
     }

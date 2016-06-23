@@ -52,7 +52,7 @@ public final class JungleKingGame extends Game {
         }
 
         gameStates.add(new Intro(this));
-        gameStates.add(new Login(this));
+        gameStates.add(new LoginAndRegister(this));
 
         server = new ConnectionManager("janik-bau.nrw", 5585);
 

@@ -8,6 +8,7 @@ import de.janik.softengine.entity.DrawableEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -61,6 +62,10 @@ public final class Container<T extends DrawableEntity> extends DrawableEntity {
 
     public List<T> getChildren() {
         return children;
+    }
+
+    public void forEach(final Consumer<? super T> action) {
+        children.forEach(action);
     }
 
     // <- Static ->

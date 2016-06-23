@@ -74,7 +74,7 @@ public final class Intro extends State implements LaunchComponent {
         buttonPressEnter.setVisible(false);
         buttonPressEnter.onKeyPress(e -> {
             if (e.getKeyCode() == VK_ENTER) {
-                game.switchState(Login.class);
+                game.switchState(LoginAndRegister.class);
             }
         });
 
@@ -107,7 +107,7 @@ public final class Intro extends State implements LaunchComponent {
     @Override
     public void tick(final long ticks, final Engine engine) {
         // TODO:(jan) Remove debug code.
-        game.switchState(Login.class);
+        game.switchState(LoginAndRegister.class);
 
         System.err.println("Intro.tick[TODO:(jan) Remove debug code.]");
 

@@ -187,10 +187,12 @@ public class Engine implements Runnable {
                 }
 
                 tps++;
+
                 tickDelta--;
             }
 
             render();
+
             fps++;
         }
 

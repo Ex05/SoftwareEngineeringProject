@@ -52,8 +52,6 @@ public abstract class UI_Component extends DrawableEntity {
     protected abstract void update();
 
     // <- Object ->
-
-
     @Override
     public void pressKey(final KeyEvent e) {
         if (hasFocus())

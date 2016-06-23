@@ -9,6 +9,7 @@ import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
+import de.janik.softengine.ui.Container;
 import de.janik.softengine.ui.Label;
 import de.janik.softengine.ui.PasswordField;
 import de.janik.softengine.ui.Rectangle;
@@ -21,12 +22,8 @@ import de.presidente.net.Packet_001_Login;
 import de.presidente.net.Packet_003_Permission;
 import de.presidente.net.Packet_005_ReceiveSalt;
 import de.presidente.net.Packet_006_Salt;
-import de.presidente.net.Packet_007_Register;
 import de.presidente.net.Packet_008_CheckUsernameAvailability;
 import de.presidente.net.Packet_009_UsernameAvailable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
@@ -40,7 +37,7 @@ import static de.presidente.net.Permission.GUARANTED;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Login extends State {
+public final class LoginAndRegister extends State {
     // <- Public ->
     // <- Protected ->
 
@@ -59,8 +56,8 @@ public final class Login extends State {
     private final Rectangle backgroundLogin;
     private final Rectangle backgroundRegister;
 
-    private final List<DrawableEntity> loginComponents;
-    private final List<DrawableEntity> registerComponents;
+    private final Container<DrawableEntity> loginComponents;
+    private final Container<DrawableEntity> registerComponents;
 
     private ConnectionManager server;
 
@@ -78,7 +75,7 @@ public final class Login extends State {
     }
 
     // <- Constructor ->
-    public Login(final Game game) {
+    public LoginAndRegister(final Game game) {
         super(game);
 
         backgroundLogin = new Rectangle(500, 314);
@@ -98,7 +95,7 @@ public final class Login extends State {
         textFieldUserName.setFont(SOURCE_CODE_PRO);
         textFieldUserName.setBackgroundColor(lightGray);
         textFieldUserName.setZ(backgroundLogin.getZ() + 1);
-        textFieldUserName.setTextSize(28);
+        textFieldUserName.setTextSize(30);
         textFieldUserName.setLocation(engine.getScreenWidth() / 2 - textFieldUserName.getWidth() / 2,
                 backgroundLogin.getY() + backgroundLogin.getHeight() - offsetTopBottom - textFieldUserName.getHeight());
         textFieldUserName.onInputChange(() -> {
@@ -113,7 +110,7 @@ public final class Login extends State {
         passwordFieldPassword.setFont(SOURCE_CODE_PRO);
         passwordFieldPassword.setBackgroundColor(lightGray);
         passwordFieldPassword.setZ(backgroundLogin.getZ() + 1);
-        passwordFieldPassword.setTextSize(28);
+        passwordFieldPassword.setTextSize(30);
         passwordFieldPassword.setLocation(engine.getScreenWidth() / 2 - passwordFieldPassword.getWidth() / 2,
                 textFieldUserName.getY() - offset - passwordFieldPassword.getHeight());
 
@@ -150,7 +147,7 @@ public final class Login extends State {
                 switchState(State.TRANSITION_REGISTER);
         });
 
-        loginComponents = new ArrayList<>(8);
+        loginComponents = new Container<>();
 
         loginComponents.add(backgroundLogin);
         loginComponents.add(textFieldUserName);
@@ -180,7 +177,7 @@ public final class Login extends State {
                 switchState(State.TRANSITION_LOGIN);
         });
 
-        registerComponents = new ArrayList<>();
+        registerComponents = new Container<>();
 
         registerComponents.add(backgroundRegister);
         registerComponents.add(buttonRegister);
@@ -307,8 +304,7 @@ public final class Login extends State {
                             System.err.println("Login.tick[TODO:(jan) Enter lobby.]");
 
                             System.out.println("Logged in.");
-                        }
-                        else {
+                        } else {
                             // TODO:(jan) Handle wrong password.
 
                             System.err.println("Login.tick[TODO:(jan) Handle wrong password.]");
