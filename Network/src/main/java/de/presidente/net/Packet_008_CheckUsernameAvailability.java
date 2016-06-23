@@ -21,7 +21,13 @@ public final class Packet_008_CheckUsernameAvailability extends Packet {
     }
 
     // <- Abstract ->
+
     // <- Object ->
+    @Override
+    public String toString() {
+        return String.format("%s[Username:%s]", getClass().getSimpleName(), userName);
+    }
+
 
     // <- Getter & Setter ->
     public String getUserName() {

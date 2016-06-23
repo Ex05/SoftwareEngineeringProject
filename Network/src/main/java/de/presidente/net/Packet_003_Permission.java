@@ -25,7 +25,13 @@ public class Packet_003_Permission extends Packet {
     }
 
     // <- Abstract ->
+
     // <- Object ->
+    @Override
+    public String toString() {
+        return String.format("%s[Permission:%s]", getClass().getSimpleName(), permission);
+    }
+
 
     // <- Getter & Setter ->
     public boolean isPermissionGuranted() {

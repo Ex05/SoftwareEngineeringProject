@@ -23,7 +23,13 @@ public final class Packet_007_Register extends Packet_001_Login {
     }
 
     // <- Abstract ->
+
     // <- Object ->
+    @Override
+    public String toString() {
+        return String.format("%s[Username:%s]", getClass().getSimpleName(), getLoginCredentials().getUserName());
+    }
+
 
     // <- Getter & Setter ->
     public byte[] getSalt() {

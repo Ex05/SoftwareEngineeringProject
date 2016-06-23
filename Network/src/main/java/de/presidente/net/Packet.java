@@ -18,7 +18,13 @@ public abstract class Packet implements Serializable {
     // <- Static ->
     // <- Constructor ->
     // <- Abstract ->
+
     // <- Object ->
+    @Override
+    public String toString() {
+        return String.format("%s", getClass().getSimpleName());
+    }
+
     // <- Getter & Setter ->
     // <- Static ->
 }

@@ -23,7 +23,12 @@ public class Packet_001_Login extends Packet {
     }
 
     // <- Abstract ->
+
     // <- Object ->
+    @Override
+    public String toString() {
+        return String.format("%s[Username:%s, Password: ****]", getClass().getSimpleName(), loginCredentials.getUserName());
+    }
 
     // <- Getter & Setter ->
     public LoginCredentials getLoginCredentials() {

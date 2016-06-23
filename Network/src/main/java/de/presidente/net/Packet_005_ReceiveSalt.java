@@ -23,7 +23,12 @@ public final class Packet_005_ReceiveSalt extends Packet {
     }
 
     // <- Abstract ->
+
     // <- Object ->
+    @Override
+    public String toString() {
+        return String.format("%s[Username:%s]", getClass().getSimpleName(), userName);
+    }
 
     // <- Getter & Setter ->
     public String getUserName() {

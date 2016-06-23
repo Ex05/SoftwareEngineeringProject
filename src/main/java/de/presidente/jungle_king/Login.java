@@ -272,8 +272,12 @@ public final class Login extends State {
                     if (p instanceof Packet_003_Permission) {
                         final Packet_003_Permission packet = (Packet_003_Permission) p;
 
-                        if (packet.getPermission() == DENIED)
+                        if (packet.getPermission() == DENIED) {
+                            // TODO:(jan) Handle wrong username.
+                            System.err.println("Login.tick[TODO:(jan) Handle wrong username.]");
+
                             textFieldUserName.setTextColor(RED);
+                        }
 
                     } else if (p instanceof Packet_006_Salt) {
                         final Packet_006_Salt packet = (Packet_006_Salt) p;
@@ -297,12 +301,19 @@ public final class Login extends State {
                     if (p instanceof Packet_003_Permission) {
                         final Packet_003_Permission packet = (Packet_003_Permission) p;
 
-                        if (packet.getPermission() == GUARANTED)
+                        if (packet.getPermission() == GUARANTED) {
                             // TODO:(jan) Enter lobby.
+                            System.err.println("Login.tick[TODO:(jan) Enter lobby.]");
+
                             System.out.println("Logged in.");
-                        else
+                        }
+                        else {
                             // TODO:(jan) Handle wrong password.
-                                passwordFieldPassword.setTextColor(RED);
+
+                            System.err.println("Login.tick[TODO:(jan) Handle wrong password.]");
+
+                            passwordFieldPassword.setTextColor(RED);
+                        }
                     }
                 }
 
