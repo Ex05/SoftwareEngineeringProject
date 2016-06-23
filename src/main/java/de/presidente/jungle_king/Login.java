@@ -140,6 +140,7 @@ public final class Login extends State {
         labelNotRegistered.setLocation(engine.getScreenWidth() / 2 - labelNotRegistered.getWidth(), buttonLogin.getY() - offsetCreateAccount - labelNotRegistered.getHeight());
 
         buttonCreateAccount = new Button("Create an Account.");
+        buttonCreateAccount.setFocusAble(false);
         buttonCreateAccount.setTextSize(16);
         buttonCreateAccount.setZ(backgroundLogin.getZ() + 1);
         buttonCreateAccount.setTextColor(GREEN);

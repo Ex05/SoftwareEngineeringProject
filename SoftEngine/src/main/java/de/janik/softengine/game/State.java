@@ -50,27 +50,33 @@ public abstract class State {
         if (entity instanceof UI_Component) {
             final UI_Component component = (UI_Component) entity;
 
-            component.setStateCallBack(this);
+            if (component.isFocusAble()) {
+                component.setStateCallBack(this);
 
-            focusableElements.add(component);
+                if (focusableElements.size() == 0)
+                    component.setFocus(true);
 
-            component.onKeyPress(e -> {
-                if (e.getKeyCode() == VK_TAB) {
-                    if (component.hasFocus()) {
-                        final int componentIndex = focusableElements.indexOf(component);
+                focusableElements.add(component);
 
-                        if (componentIndex != -1) {
-                            System.out.println((componentIndex + 1) % focusableElements.size());
+                component.onKeyPress(e -> {
+                    if (e.getKeyCode() == VK_TAB && !e.isConsumed()) {
+                        if (component.hasFocus()) {
+                            final int componentIndex = focusableElements.indexOf(component);
 
-                            final UI_Component nextComponent = focusableElements.get((componentIndex + 1) % focusableElements.size());
+                            if (componentIndex != -1) {
+                                final int nextIndex = componentIndex + 1 < focusableElements.size() - 1 ? componentIndex + 1 : 0;
 
-                            System.out.println(nextComponent.getClass().getSimpleName());
+                                final UI_Component nextComponent = focusableElements.get(nextIndex);
+                                nextComponent.setFocus(true);
 
-                            nextComponent.setFocus(true);
+                                System.out.println(componentIndex + "|" + nextIndex);
+
+                                e.consume();
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
 
         game.add(entity);

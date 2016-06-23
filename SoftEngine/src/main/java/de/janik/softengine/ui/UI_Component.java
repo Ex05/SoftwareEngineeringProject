@@ -41,7 +41,10 @@ public abstract class UI_Component extends DrawableEntity {
         focusGainEvents = new ArrayList<>(1);
         focusLosEvents = new ArrayList<>(1);
 
-        onMousePress(() -> setFocus(true));
+        onMousePress(() -> {
+            if (isFocusAble())
+                setFocus(true);
+        });
     }
 
     // <- Abstract ->
