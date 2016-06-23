@@ -105,7 +105,7 @@ public class TextField extends Button {
     }
 
     // <- Getter & Setter ->
-    public String getUserInput(){
+    public String getUserInput() {
         return text;
     }
 

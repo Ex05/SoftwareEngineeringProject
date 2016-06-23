@@ -131,7 +131,8 @@ public abstract class Game {
         synchronized (eventBuffer) {
             for (final KeyEvent e : eventBuffer)
                 for (final Entity entity : entities)
-                    entity.pressKey(e);
+                    if (!e.isConsumed())
+                        entity.pressKey(e);
 
             eventBuffer.clear();
         }

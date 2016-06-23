@@ -7,6 +7,7 @@ import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.State;
 import de.janik.softengine.util.ColorARGB;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public abstract class UI_Component extends DrawableEntity {
         focusLosEvents = new ArrayList<>(1);
 
         onMousePress(() -> {
-            if (isFocusAble())
+            if (isFocusAble() && !hasFocus())
                 setFocus(true);
         });
     }
@@ -51,6 +52,14 @@ public abstract class UI_Component extends DrawableEntity {
     protected abstract void update();
 
     // <- Object ->
+
+
+    @Override
+    public void pressKey(final KeyEvent e) {
+        if (hasFocus())
+            super.pressKey(e);
+    }
+
     public void onFocusGain(final UI_Event e) {
         focusGainEvents.add(e);
     }

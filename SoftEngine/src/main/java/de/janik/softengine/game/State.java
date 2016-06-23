@@ -69,8 +69,6 @@ public abstract class State {
                                 final UI_Component nextComponent = focusableElements.get(nextIndex);
                                 nextComponent.setFocus(true);
 
-                                System.out.println(componentIndex + "|" + nextIndex);
-
                                 e.consume();
                             }
                         }

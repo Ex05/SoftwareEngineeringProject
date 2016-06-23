@@ -74,7 +74,7 @@ public final class Client implements Runnable {
         }
 
         if (packet != null)
-            System.out.printf("<< %s\n", packet.getClass().getSimpleName());
+            System.out.printf("<< %s\n", packet);
 
         if (packet instanceof Packet_000_ConnectionClosed)
             try {
@@ -174,7 +174,7 @@ public final class Client implements Runnable {
         try {
             oos.writeObject(packet);
 
-            System.out.printf(">> %s\n", packet.getClass().getSimpleName());
+            System.out.printf(">> %s\n", packet);
 
             successfulWrite = true;
         } catch (final IOException e) {

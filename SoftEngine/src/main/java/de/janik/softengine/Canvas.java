@@ -6,14 +6,10 @@ package de.janik.softengine;
 import de.janik.windowing.Window;
 import de.janik.windowing.WindowComponent;
 
-import javax.swing.AbstractAction;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import java.awt.BorderLayout;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -69,6 +65,8 @@ public class Canvas extends WindowComponent<JPanel> {
         canvas.setBackground(BLACK);
         canvas.setIgnoreRepaint(true);
         canvas.setFocusTraversalKeysEnabled(false);
+        canvas.requestFocusInWindow();
+        canvas.requestFocus();
 
         img = new BufferedImage(width, height, TYPE_INT_ARGB);
 
