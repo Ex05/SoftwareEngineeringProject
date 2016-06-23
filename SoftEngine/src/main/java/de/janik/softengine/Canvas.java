@@ -6,8 +6,14 @@ package de.janik.softengine;
 import de.janik.windowing.Window;
 import de.janik.windowing.WindowComponent;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import java.awt.BorderLayout;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -19,7 +25,7 @@ import java.awt.image.DataBufferInt;
 
 import static java.awt.Color.BLACK;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static java.lang.System.arraycopy;
+import static java.lang.System.*;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -35,15 +41,20 @@ public class Canvas extends WindowComponent<JPanel> {
 
     private final BufferedImage img;
 
+    private final Window window;
+
     private int[] pixel;
 
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
+
     // <- Static ->
 
     // <- Constructor ->
     public Canvas(final Window window, final int scale) {
         super(new JPanel());
+
+        this.window = window;
 
         this.width = window.getWidth() / scale;
         this.height = window.getHeight() / scale;
@@ -57,6 +68,7 @@ public class Canvas extends WindowComponent<JPanel> {
         canvas.setFocusable(true);
         canvas.setBackground(BLACK);
         canvas.setIgnoreRepaint(true);
+        canvas.setFocusTraversalKeysEnabled(false);
 
         img = new BufferedImage(width, height, TYPE_INT_ARGB);
 

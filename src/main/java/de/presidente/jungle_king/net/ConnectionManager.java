@@ -53,6 +53,8 @@ public final class ConnectionManager {
             socket = OpenSocket(address, port, 200);
 
             if (socket != null) {
+                System.out.println("Connected to server.");
+
                 threadOutbound.start();
 
                 threadInbound.start();

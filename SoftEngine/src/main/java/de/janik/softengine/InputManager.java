@@ -122,6 +122,5 @@ public class InputManager extends MouseAdapter implements KeyListener {
     public Point getMousePosition() {
         return mouse;
     }
-
     // <- Static ->
 }
