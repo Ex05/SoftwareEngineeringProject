@@ -194,7 +194,7 @@ public final class LoginAndRegister extends State {
         passwordFieldPasswordRegisterConfirm.setLocation(moveOffset + engine.getScreenWidth() / 2 - passwordFieldPasswordRegisterConfirm.getWidth() / 2,
                 buttonRegister.getY() + offset + passwordFieldPasswordRegisterConfirm.getHeight());
 
-        passwordFieldPasswordRegister = new PasswordField("Repeat Password");
+        passwordFieldPasswordRegister = new PasswordField("Password");
         passwordFieldPasswordRegister.setSize(400, textFieldHeight);
         passwordFieldPasswordRegister.setFont(SOURCE_CODE_PRO);
         passwordFieldPasswordRegister.setBackgroundColor(lightGray);
