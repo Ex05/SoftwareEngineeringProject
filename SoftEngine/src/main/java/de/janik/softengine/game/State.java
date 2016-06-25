@@ -24,7 +24,7 @@ public abstract class State {
 
     protected final Game game;
 
-    protected final List<State> substates;
+    protected final List<State> subStates;
 
     protected State currentState;
 
@@ -41,7 +41,7 @@ public abstract class State {
 
         this.game = game;
 
-        substates = new ArrayList<>(1);
+        subStates = new ArrayList<>(1);
 
         focusableElements = new ArrayList<>();
     }
@@ -107,7 +107,7 @@ public abstract class State {
         if (currentState == null)
             currentState = state;
 
-        substates.add(state);
+        subStates.add(state);
     }
 
     public void remove(final DrawableEntity e) {
@@ -133,7 +133,7 @@ public abstract class State {
 
     // <- Getter & Setter ->
     public State getState(final Class<?> state) {
-        return substates.stream().filter(s -> s.getClass().equals(state)).findFirst().orElse(null);
+        return subStates.stream().filter(s -> s.getClass().equals(state)).findFirst().orElse(null);
     }
 
     public Game getGame() {

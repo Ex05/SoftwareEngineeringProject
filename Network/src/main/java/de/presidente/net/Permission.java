@@ -8,7 +8,7 @@ package de.presidente.net;
  */
 public enum Permission {
     // <- Public ->
-    GUARANTED, DENIED;
+    GRANTED, DENIED
 
     // <- Protected ->
     // <- Private->

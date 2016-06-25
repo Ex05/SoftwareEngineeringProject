@@ -13,6 +13,7 @@ import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_007_Register;
 import de.presidente.net.Packet_008_CheckUsernameAvailability;
 import de.presidente.net.Packet_009_UsernameAvailable;
+import de.presidente.net.Packet_010_RegistrationConfirmation;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,7 +21,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import static de.presidente.net.Permission.DENIED;
-import static de.presidente.net.Permission.GUARANTED;
+import static de.presidente.net.Permission.GRANTED;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -74,7 +75,7 @@ public final class Client implements Runnable {
         }
 
         if (packet != null)
-            System.out.printf("<< %s\n", packet);
+            System.out.printf(">> %s\n", packet);
 
         if (packet instanceof Packet_000_ConnectionClosed)
             try {
@@ -130,13 +131,13 @@ public final class Client implements Runnable {
             } else if (packet instanceof Packet_008_CheckUsernameAvailability) {
                 final boolean available = server.checkUserNameAvailability(((Packet_008_CheckUsernameAvailability) packet).getUserName());
 
-                send(new Packet_009_UsernameAvailable(available ? GUARANTED : DENIED));
+                send(new Packet_009_UsernameAvailable(available ? GRANTED : DENIED));
             } else if (packet instanceof Packet_007_Register) {
                 final Packet_007_Register registerPacket = (Packet_007_Register) packet;
 
                 final boolean registered = server.register(registerPacket.getLoginCredentials(), registerPacket.getSalt());
 
-                send(new Packet_003_Permission(registered ? GUARANTED : DENIED));
+                send(new Packet_010_RegistrationConfirmation(registered));
             } else if (packet instanceof Packet_001_Login) {
                 final Packet_001_Login loginPacket = (Packet_001_Login) packet;
 
@@ -145,7 +146,7 @@ public final class Client implements Runnable {
                 loginPacket.getLoginCredentials().erase();
 
                 if (loggedIn) {
-                    send(new Packet_003_Permission(GUARANTED));
+                    send(new Packet_003_Permission(GRANTED));
 
                     break;
                 } else
@@ -174,7 +175,7 @@ public final class Client implements Runnable {
         try {
             oos.writeObject(packet);
 
-            System.out.printf(">> %s\n", packet);
+            System.out.printf("<< %s\n", packet);
 
             successfulWrite = true;
         } catch (final IOException e) {

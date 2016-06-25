@@ -3,7 +3,8 @@ package de.presidente.net;
 
 // <- Static_Import ->
 
-import static de.presidente.net.Permission.GUARANTED;
+import static de.presidente.net.Permission.DENIED;
+import static de.presidente.net.Permission.GRANTED;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -20,6 +21,10 @@ public class Packet_003_Permission extends Packet {
     // <- Static ->
 
     // <- Constructor ->
+    public Packet_003_Permission(final boolean permissionGranted){
+        this(permissionGranted ? GRANTED : DENIED);
+    }
+
     public Packet_003_Permission(final Permission permission) {
         this.permission = permission;
     }
@@ -34,8 +39,8 @@ public class Packet_003_Permission extends Packet {
 
 
     // <- Getter & Setter ->
-    public boolean isPermissionGuranted() {
-        return permission == GUARANTED;
+    public boolean isGranted() {
+        return permission == GRANTED;
     }
 
     public Permission getPermission() {
