@@ -55,19 +55,21 @@ public final class PasswordField extends TextField {
     protected void removeLastCharacter() {
         final int length = password.length;
 
-        final char[] tmp = new char[length - 1];
+        if (length > 0) {
+            final char[] tmp = new char[length - 1];
 
-        System.arraycopy(password, 0, tmp, 0, length - 1);
+            System.arraycopy(password, 0, tmp, 0, length - 1);
 
-        Arrays.fill(password, (char) 0);
+            Arrays.fill(password, (char) 0);
 
-        password = tmp;
+            password = tmp;
+        }
 
         super.removeLastCharacter();
     }
 
     // <- Getter & Setter ->
-    public char[] getPassword(){
+    public char[] getPassword() {
         return password;
     }
 

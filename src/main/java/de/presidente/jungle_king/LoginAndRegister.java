@@ -32,6 +32,7 @@ import java.util.Arrays;
 import static de.janik.softengine.util.ColorARGB.BLACK;
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
+import static de.janik.softengine.util.ColorARGB.LIME_GREEN;
 import static de.janik.softengine.util.ColorARGB.RED;
 import static de.janik.softengine.util.ColorARGB.SLATE_BLUE;
 import static de.janik.softengine.util.ColorARGB.WHITE;
@@ -210,13 +211,9 @@ public final class LoginAndRegister extends State {
         passwordFieldPasswordRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - passwordFieldPasswordRegister.getWidth() / 2,
                 passwordFieldPasswordRegisterConfirm.getY() + offset / 2 + passwordFieldPasswordRegister.getHeight());
 
-        passwordFieldPasswordRegisterConfirm.onInputChange(()->{
-            System.out.println("LoginAndRegister.LoginAndRegister");
-
-            System.out.println(Arrays.toString(passwordFieldPasswordRegister.getPassword()) + " || " + Arrays.toString(passwordFieldPasswordRegisterConfirm.getPassword()));
-
-            if(passwordFieldPasswordRegister.getPassword().length != 0)
-                if(!Arrays.equals(passwordFieldPasswordRegisterConfirm.getPassword(), passwordFieldPasswordRegister.getPassword()))
+        passwordFieldPasswordRegisterConfirm.onInputChange(() -> {
+            if (passwordFieldPasswordRegister.getPassword().length != 0)
+                if (!Arrays.equals(passwordFieldPasswordRegisterConfirm.getPassword(), passwordFieldPasswordRegister.getPassword()))
                     passwordFieldPasswordRegisterConfirm.setTextColor(RED);
                 else
                     passwordFieldPasswordRegisterConfirm.setTextColor(BLACK);
@@ -230,6 +227,12 @@ public final class LoginAndRegister extends State {
         textFieldUserNameRegister.setTextSize(30);
         textFieldUserNameRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - textFieldUserNameRegister.getWidth() / 2,
                 passwordFieldPasswordRegister.getY() + offset - 5 + textFieldUserNameRegister.getHeight());
+        textFieldUserNameRegister.onInputChange(() -> {
+            final String userName = textFieldUserNameRegister.getUserInput();
+
+            if (!userName.equals(""))
+                server.send(new Packet_008_CheckUsernameAvailability(userName));
+        });
 
         labelCreateNewAccount = new Label("Create a new Account:");
         labelCreateNewAccount.setTextSize(30);
@@ -292,6 +295,8 @@ public final class LoginAndRegister extends State {
                     focusHolder.setFocus(true);
                 else
                     initDefaultFocus();
+
+                subState = SubState.CHECK_USERNAME_AVAILABILITY;
 
                 break;
             }
@@ -412,20 +417,21 @@ public final class LoginAndRegister extends State {
 
                 break;
             }
-            case CHECK_USERNAME: {
+
+            case CHECK_USERNAME_AVAILABILITY: {
                 Packet p;
 
                 while ((p = server.retrievePacket()) != null) {
                     if (p instanceof Packet_009_UsernameAvailable) {
                         final Packet_009_UsernameAvailable packet = (Packet_009_UsernameAvailable) p;
 
-                        textFieldUserNameLogin.setTextColor(packet.getPermission() == GUARANTED ? GREEN : RED);
+                        textFieldUserNameRegister.setTextColor(packet.getPermission() == GUARANTED ? LIME_GREEN : RED);
                     }
                 }
 
+
                 break;
             }
-
         }
     }
 
@@ -447,6 +453,6 @@ public final class LoginAndRegister extends State {
         USER_INPUT,
         AWAITING_SALT,
         LOGGING_IN,
-        CHECK_USERNAME
+        CHECK_USERNAME_AVAILABILITY
     }
 }
