@@ -83,11 +83,13 @@ public class TextField extends Button {
         }
     }
 
-    private void removeLastCharacter() {
+    protected void removeLastCharacter() {
         if (text.length() > 0)
             text = text.substring(0, text.length() - 1);
 
         setText(text);
+
+        onInputChange();
     }
 
     protected void append(final char keyChar) {
@@ -96,6 +98,8 @@ public class TextField extends Button {
         super.text.setColor(textColor);
 
         setText(text);
+
+        onInputChange();
     }
 
     private void displayDefaultText() {

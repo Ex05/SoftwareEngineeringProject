@@ -5,6 +5,7 @@ package de.presidente.jungle_king;
 
 import de.janik.passwd.PasswordService;
 import de.janik.softengine.Engine;
+import de.janik.softengine.InputManager;
 import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
@@ -26,14 +27,19 @@ import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_008_CheckUsernameAvailability;
 import de.presidente.net.Packet_009_UsernameAvailable;
 
+import java.util.Arrays;
+
+import static de.janik.softengine.util.ColorARGB.BLACK;
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
 import static de.janik.softengine.util.ColorARGB.RED;
+import static de.janik.softengine.util.ColorARGB.SLATE_BLUE;
 import static de.janik.softengine.util.ColorARGB.WHITE;
 import static de.presidente.jungle_king.util.Constants.TICKS_PER_SECOND;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
 import static de.presidente.net.Permission.DENIED;
 import static de.presidente.net.Permission.GUARANTED;
+import static java.awt.event.KeyEvent.VK_ENTER;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -59,6 +65,7 @@ public final class LoginAndRegister extends State {
 
     private final Label labelNotRegistered;
     private final Label labelCreateNewAccount;
+    private final Label labelGoBack;
 
     private final Rectangle backgroundLogin;
     private final Rectangle backgroundRegister;
@@ -123,6 +130,7 @@ public final class LoginAndRegister extends State {
 
         buttonLogin = new Button("Login.");
         buttonLogin.setFont(SOURCE_CODE_PRO);
+        buttonLogin.setFocusAble(false);
         buttonLogin.setZ(passwordFieldPasswordLogin.getZ() + 1);
         buttonLogin.setTextColor(WHITE);
         buttonLogin.setTextSize(28);
@@ -181,8 +189,7 @@ public final class LoginAndRegister extends State {
         buttonRegister.setBackgroundColor(new ColorARGB(0, 180, 65));
         buttonRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - buttonRegister.getWidth() / 2, backgroundRegister.getY() + (offset + 5));
         buttonRegister.onMousePress(() -> {
-            if (state == State.REGISTER)
-                switchState(State.TRANSITION_TO_LOGIN);
+
         });
 
         passwordFieldPasswordRegisterConfirm = new PasswordField("Repeat Password");
@@ -203,6 +210,18 @@ public final class LoginAndRegister extends State {
         passwordFieldPasswordRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - passwordFieldPasswordRegister.getWidth() / 2,
                 passwordFieldPasswordRegisterConfirm.getY() + offset / 2 + passwordFieldPasswordRegister.getHeight());
 
+        passwordFieldPasswordRegisterConfirm.onInputChange(()->{
+            System.out.println("LoginAndRegister.LoginAndRegister");
+
+            System.out.println(Arrays.toString(passwordFieldPasswordRegister.getPassword()) + " || " + Arrays.toString(passwordFieldPasswordRegisterConfirm.getPassword()));
+
+            if(passwordFieldPasswordRegister.getPassword().length != 0)
+                if(!Arrays.equals(passwordFieldPasswordRegisterConfirm.getPassword(), passwordFieldPasswordRegister.getPassword()))
+                    passwordFieldPasswordRegisterConfirm.setTextColor(RED);
+                else
+                    passwordFieldPasswordRegisterConfirm.setTextColor(BLACK);
+        });
+
         textFieldUserNameRegister = new TextField("Username");
         textFieldUserNameRegister.setSize(400, textFieldHeight);
         textFieldUserNameRegister.setFont(SOURCE_CODE_PRO);
@@ -219,6 +238,16 @@ public final class LoginAndRegister extends State {
         labelCreateNewAccount.setLocation(textFieldUserNameRegister.getX() - 15,
                 textFieldUserNameRegister.getY() + offset + 6 + labelCreateNewAccount.getHeight());
 
+        labelGoBack = new Label("<<go back");
+        labelGoBack.setTextSize(16);
+        labelGoBack.setZ(backgroundRegister.getZ() + 1);
+        labelGoBack.setTextColor(SLATE_BLUE);
+        labelGoBack.setLocation(backgroundRegister.getX() + 1, backgroundRegister.getY() + labelGoBack.getHeight() / 2 - 10);
+        labelGoBack.onMousePress(() -> {
+            if (state == State.REGISTER)
+                switchState(State.TRANSITION_TO_LOGIN);
+        });
+
         registerComponents = new Container<>();
 
         registerComponents.add(backgroundRegister);
@@ -227,6 +256,7 @@ public final class LoginAndRegister extends State {
         registerComponents.add(passwordFieldPasswordRegister);
         registerComponents.add(passwordFieldPasswordRegisterConfirm);
         registerComponents.add(buttonRegister);
+        registerComponents.add(labelGoBack);
     }
 
     // <- Abstract ->
@@ -260,7 +290,7 @@ public final class LoginAndRegister extends State {
 
                 if (focusHolder != null)
                     focusHolder.setFocus(true);
-                 else
+                else
                     initDefaultFocus();
 
                 break;
@@ -288,11 +318,20 @@ public final class LoginAndRegister extends State {
 
     @Override
     public void tick(final long ticks, final Engine engine) {
+        final InputManager inputManager = engine.getInput();
+
         switch (state) {
-            case LOGIN:
+            case LOGIN: {
+                if (inputManager.isKeyDown(VK_ENTER))
+                    buttonLogin.pressMouse();
+
                 break;
-            case REGISTER:
-                break;
+            }
+            case REGISTER: {
+                if (inputManager.isKeyDown(VK_ENTER))
+                    buttonRegister.pressMouse();
+            }
+            break;
             case TRANSITION_TO_LOGIN:
                 if (timer > 0) {
                     loginComponents.forEach(e -> e.setLocation(e.getX() + MOVE_INTERVAL, e.getY()));
