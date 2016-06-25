@@ -14,6 +14,7 @@ import de.janik.softengine.ui.Label;
 import de.janik.softengine.ui.PasswordField;
 import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.TextField;
+import de.janik.softengine.ui.UI_Component;
 import de.janik.softengine.util.ColorARGB;
 import de.presidente.jungle_king.net.ConnectionManager;
 import de.presidente.net.LoginCredentials;
@@ -48,10 +49,16 @@ public final class LoginAndRegister extends State {
     private final Button buttonLogin;
     private final Button buttonRegister;
     private final Button buttonCreateAccount;
-    private final TextField textFieldUserName;
-    private final PasswordField passwordFieldPassword;
+
+    private final TextField textFieldUserNameLogin;
+    private final TextField textFieldUserNameRegister;
+
+    private final PasswordField passwordFieldPasswordLogin;
+    private final PasswordField passwordFieldPasswordRegister;
+    private final PasswordField passwordFieldPasswordRegisterConfirm;
 
     private final Label labelNotRegistered;
+    private final Label labelCreateNewAccount;
 
     private final Rectangle backgroundLogin;
     private final Rectangle backgroundRegister;
@@ -90,42 +97,42 @@ public final class LoginAndRegister extends State {
 
         final ColorARGB lightGray = new ColorARGB(222, 222, 222);
 
-        textFieldUserName = new TextField("Username");
-        textFieldUserName.setSize(400, textFieldHeight);
-        textFieldUserName.setFont(SOURCE_CODE_PRO);
-        textFieldUserName.setBackgroundColor(lightGray);
-        textFieldUserName.setZ(backgroundLogin.getZ() + 1);
-        textFieldUserName.setTextSize(30);
-        textFieldUserName.setLocation(engine.getScreenWidth() / 2 - textFieldUserName.getWidth() / 2,
-                backgroundLogin.getY() + backgroundLogin.getHeight() - offsetTopBottom - textFieldUserName.getHeight());
-        textFieldUserName.onInputChange(() -> {
-            final String userName = textFieldUserName.getUserInput();
+        textFieldUserNameLogin = new TextField("Username");
+        textFieldUserNameLogin.setSize(400, textFieldHeight);
+        textFieldUserNameLogin.setFont(SOURCE_CODE_PRO);
+        textFieldUserNameLogin.setBackgroundColor(lightGray);
+        textFieldUserNameLogin.setZ(backgroundLogin.getZ() + 1);
+        textFieldUserNameLogin.setTextSize(30);
+        textFieldUserNameLogin.setLocation(engine.getScreenWidth() / 2 - textFieldUserNameLogin.getWidth() / 2,
+                backgroundLogin.getY() + backgroundLogin.getHeight() - offsetTopBottom - textFieldUserNameLogin.getHeight());
+        textFieldUserNameLogin.onInputChange(() -> {
+            final String userName = textFieldUserNameLogin.getUserInput();
 
             if (!userName.equals(""))
                 server.send(new Packet_008_CheckUsernameAvailability(userName));
         });
 
-        passwordFieldPassword = new PasswordField("Password");
-        passwordFieldPassword.setSize(400, textFieldHeight);
-        passwordFieldPassword.setFont(SOURCE_CODE_PRO);
-        passwordFieldPassword.setBackgroundColor(lightGray);
-        passwordFieldPassword.setZ(backgroundLogin.getZ() + 1);
-        passwordFieldPassword.setTextSize(30);
-        passwordFieldPassword.setLocation(engine.getScreenWidth() / 2 - passwordFieldPassword.getWidth() / 2,
-                textFieldUserName.getY() - offset - passwordFieldPassword.getHeight());
+        passwordFieldPasswordLogin = new PasswordField("Password");
+        passwordFieldPasswordLogin.setSize(400, textFieldHeight);
+        passwordFieldPasswordLogin.setFont(SOURCE_CODE_PRO);
+        passwordFieldPasswordLogin.setBackgroundColor(lightGray);
+        passwordFieldPasswordLogin.setZ(backgroundLogin.getZ() + 1);
+        passwordFieldPasswordLogin.setTextSize(30);
+        passwordFieldPasswordLogin.setLocation(engine.getScreenWidth() / 2 - passwordFieldPasswordLogin.getWidth() / 2,
+                textFieldUserNameLogin.getY() - offset - passwordFieldPasswordLogin.getHeight());
 
         buttonLogin = new Button("Login.");
         buttonLogin.setFont(SOURCE_CODE_PRO);
-        buttonLogin.setZ(passwordFieldPassword.getZ() + 1);
+        buttonLogin.setZ(passwordFieldPasswordLogin.getZ() + 1);
         buttonLogin.setTextColor(WHITE);
         buttonLogin.setTextSize(28);
         buttonLogin.setSize(400, buttonLogin.getHeight() + (int) (buttonLogin.getHeight() * 0.4f));
         buttonLogin.setBackgroundColor(new ColorARGB(0, 180, 65));
-        buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, passwordFieldPassword.getY() - (offset + 5) - buttonLogin.getHeight());
+        buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, passwordFieldPasswordLogin.getY() - (offset + 5) - buttonLogin.getHeight());
         buttonLogin.onMousePress(() -> {
             // TODO:(jan) Check that a password was entered.
 
-            server.send(new Packet_005_ReceiveSalt(textFieldUserName.getUserInput()));
+            server.send(new Packet_005_ReceiveSalt(textFieldUserNameLogin.getUserInput()));
 
             subState = SubState.AWAITING_SALT;
         });
@@ -144,27 +151,28 @@ public final class LoginAndRegister extends State {
         buttonCreateAccount.setLocation(engine.getScreenWidth() / 2, labelNotRegistered.getY());
         buttonCreateAccount.onMousePress(() -> {
             if (state == State.LOGIN)
-                switchState(State.TRANSITION_REGISTER);
+                switchState(State.TRANSITION_TO_REGISTER);
         });
 
         loginComponents = new Container<>();
 
         loginComponents.add(backgroundLogin);
-        loginComponents.add(textFieldUserName);
-        loginComponents.add(passwordFieldPassword);
+        loginComponents.add(textFieldUserNameLogin);
+        loginComponents.add(passwordFieldPasswordLogin);
         loginComponents.add(buttonLogin);
         loginComponents.add(labelNotRegistered);
         loginComponents.add(buttonCreateAccount);
 
         final int moveOffset = MOVE_INTERVAL * TIME;
 
-        backgroundRegister = new Rectangle(500, 340);
+        backgroundRegister = new Rectangle(500, 386);
         backgroundRegister.setColor(WHITE);
 
         backgroundRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - backgroundRegister.getWidth() / 2,
                 engine.getScreenHeight() / 2 - backgroundRegister.getHeight() / 2);
 
         buttonRegister = new Button("Register.");
+        buttonRegister.setFocusAble(false);
         buttonRegister.setFont(SOURCE_CODE_PRO);
         buttonRegister.setZ(backgroundRegister.getZ() + 1);
         buttonRegister.setTextColor(WHITE);
@@ -174,12 +182,50 @@ public final class LoginAndRegister extends State {
         buttonRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - buttonRegister.getWidth() / 2, backgroundRegister.getY() + (offset + 5));
         buttonRegister.onMousePress(() -> {
             if (state == State.REGISTER)
-                switchState(State.TRANSITION_LOGIN);
+                switchState(State.TRANSITION_TO_LOGIN);
         });
+
+        passwordFieldPasswordRegisterConfirm = new PasswordField("Repeat Password");
+        passwordFieldPasswordRegisterConfirm.setSize(400, textFieldHeight);
+        passwordFieldPasswordRegisterConfirm.setFont(SOURCE_CODE_PRO);
+        passwordFieldPasswordRegisterConfirm.setBackgroundColor(lightGray);
+        passwordFieldPasswordRegisterConfirm.setZ(backgroundLogin.getZ() + 1);
+        passwordFieldPasswordRegisterConfirm.setTextSize(26);
+        passwordFieldPasswordRegisterConfirm.setLocation(moveOffset + engine.getScreenWidth() / 2 - passwordFieldPasswordRegisterConfirm.getWidth() / 2,
+                buttonRegister.getY() + offset + passwordFieldPasswordRegisterConfirm.getHeight());
+
+        passwordFieldPasswordRegister = new PasswordField("Repeat Password");
+        passwordFieldPasswordRegister.setSize(400, textFieldHeight);
+        passwordFieldPasswordRegister.setFont(SOURCE_CODE_PRO);
+        passwordFieldPasswordRegister.setBackgroundColor(lightGray);
+        passwordFieldPasswordRegister.setZ(backgroundLogin.getZ() + 1);
+        passwordFieldPasswordRegister.setTextSize(26);
+        passwordFieldPasswordRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - passwordFieldPasswordRegister.getWidth() / 2,
+                passwordFieldPasswordRegisterConfirm.getY() + offset / 2 + passwordFieldPasswordRegister.getHeight());
+
+        textFieldUserNameRegister = new TextField("Username");
+        textFieldUserNameRegister.setSize(400, textFieldHeight);
+        textFieldUserNameRegister.setFont(SOURCE_CODE_PRO);
+        textFieldUserNameRegister.setBackgroundColor(lightGray);
+        textFieldUserNameRegister.setZ(backgroundLogin.getZ() + 1);
+        textFieldUserNameRegister.setTextSize(30);
+        textFieldUserNameRegister.setLocation(moveOffset + engine.getScreenWidth() / 2 - textFieldUserNameRegister.getWidth() / 2,
+                passwordFieldPasswordRegister.getY() + offset - 5 + textFieldUserNameRegister.getHeight());
+
+        labelCreateNewAccount = new Label("Create a new Account:");
+        labelCreateNewAccount.setTextSize(30);
+        labelCreateNewAccount.setZ(backgroundLogin.getZ() + 1);
+        labelCreateNewAccount.setTextColor(DARK_SLATE_GRAY);
+        labelCreateNewAccount.setLocation(textFieldUserNameRegister.getX() - 15,
+                textFieldUserNameRegister.getY() + offset + 6 + labelCreateNewAccount.getHeight());
 
         registerComponents = new Container<>();
 
         registerComponents.add(backgroundRegister);
+        registerComponents.add(labelCreateNewAccount);
+        registerComponents.add(textFieldUserNameRegister);
+        registerComponents.add(passwordFieldPasswordRegister);
+        registerComponents.add(passwordFieldPasswordRegisterConfirm);
         registerComponents.add(buttonRegister);
     }
 
@@ -193,32 +239,43 @@ public final class LoginAndRegister extends State {
         game.setBackgroundColor(new ColorARGB(115, 195, 90));
 
         loginComponents.forEach(this::add);
-        registerComponents.forEach(this::add);
+        initDefaultFocus();
 
         switchState(state);
     }
 
+    private UI_Component focusHolder;
+
     private void switchState(final State nextState) {
         switch (nextState) {
             case LOGIN: {
-                registerComponents.forEach(e -> e.setVisible(false));
+                registerComponents.forEach(this::remove);
+
+                initDefaultFocus();
 
                 break;
             }
             case REGISTER: {
-                loginComponents.forEach(e -> e.setVisible(false));
+                loginComponents.forEach(this::remove);
+
+                if (focusHolder != null)
+                    focusHolder.setFocus(true);
+                 else
+                    initDefaultFocus();
 
                 break;
             }
-            case TRANSITION_LOGIN: {
-                loginComponents.forEach(e -> e.setVisible(true));
+            case TRANSITION_TO_LOGIN: {
+                focusHolder = getFocusHolder();
+
+                loginComponents.forEach(this::add);
 
                 timer = TIME;
 
                 break;
             }
-            case TRANSITION_REGISTER: {
-                registerComponents.forEach(e -> e.setVisible(true));
+            case TRANSITION_TO_REGISTER: {
+                registerComponents.forEach(this::add);
 
                 timer = TIME;
 
@@ -236,7 +293,7 @@ public final class LoginAndRegister extends State {
                 break;
             case REGISTER:
                 break;
-            case TRANSITION_LOGIN:
+            case TRANSITION_TO_LOGIN:
                 if (timer > 0) {
                     loginComponents.forEach(e -> e.setLocation(e.getX() + MOVE_INTERVAL, e.getY()));
 
@@ -246,7 +303,7 @@ public final class LoginAndRegister extends State {
                 } else
                     switchState(State.LOGIN);
                 break;
-            case TRANSITION_REGISTER:
+            case TRANSITION_TO_REGISTER:
                 if (timer > 0) {
                     loginComponents.forEach(e -> e.setLocation(e.getX() - MOVE_INTERVAL, e.getY()));
 
@@ -274,7 +331,7 @@ public final class LoginAndRegister extends State {
                             // TODO:(jan) Handle wrong username.
                             System.err.println("Login.tick[TODO:(jan) Handle wrong username.]");
 
-                            textFieldUserName.setTextColor(RED);
+                            textFieldUserNameLogin.setTextColor(RED);
                         }
 
                     } else if (p instanceof Packet_006_Salt) {
@@ -284,9 +341,9 @@ public final class LoginAndRegister extends State {
 
                         final byte[] salt = packet.getSalt();
 
-                        final byte[] pbkdf2Hash = PasswordService.GetInstance().pbkdf2Hash(passwordFieldPassword.getPassword(), salt);
+                        final byte[] pbkdf2Hash = PasswordService.GetInstance().pbkdf2Hash(passwordFieldPasswordLogin.getPassword(), salt);
 
-                        server.send(new Packet_001_Login(new LoginCredentials(textFieldUserName.getUserInput(), pbkdf2Hash)));
+                        server.send(new Packet_001_Login(new LoginCredentials(textFieldUserNameLogin.getUserInput(), pbkdf2Hash)));
                     }
                 }
 
@@ -309,7 +366,7 @@ public final class LoginAndRegister extends State {
 
                             System.err.println("Login.tick[TODO:(jan) Handle wrong password.]");
 
-                            passwordFieldPassword.setTextColor(RED);
+                            passwordFieldPasswordLogin.setTextColor(RED);
                         }
                     }
                 }
@@ -323,7 +380,7 @@ public final class LoginAndRegister extends State {
                     if (p instanceof Packet_009_UsernameAvailable) {
                         final Packet_009_UsernameAvailable packet = (Packet_009_UsernameAvailable) p;
 
-                        textFieldUserName.setTextColor(packet.getPermission() == GUARANTED ? GREEN : RED);
+                        textFieldUserNameLogin.setTextColor(packet.getPermission() == GUARANTED ? GREEN : RED);
                     }
                 }
 
@@ -343,8 +400,8 @@ public final class LoginAndRegister extends State {
     private enum State {
         LOGIN,
         REGISTER,
-        TRANSITION_LOGIN,
-        TRANSITION_REGISTER
+        TRANSITION_TO_LOGIN,
+        TRANSITION_TO_REGISTER
     }
 
     private enum SubState {

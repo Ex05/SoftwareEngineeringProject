@@ -128,5 +128,9 @@ public class TextField extends Button {
 
         super.setTextColor(textColorDefaultText);
     }
+
+    public String getDefaultText() {
+        return defaultText;
+    }
     // <- Static ->
 }

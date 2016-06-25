@@ -62,9 +62,6 @@ public abstract class State {
             if (component.isFocusAble()) {
                 component.setStateCallBack(this);
 
-                if (focusableElements.size() == 0)
-                    component.setFocus(true);
-
                 focusableElements.add(component);
 
                 component.onKeyPress(e -> {
@@ -73,16 +70,29 @@ public abstract class State {
                             final int componentIndex = focusableElements.indexOf(component);
 
                             if (componentIndex != -1) {
-                                final int nextIndex = componentIndex + 1 < focusableElements.size() - 1 ? componentIndex + 1 : 0;
+                                int nextIndex = componentIndex;
 
-                                final UI_Component nextComponent = focusableElements.get(nextIndex);
-                                nextComponent.setFocus(true);
+                                do {
+                                    nextIndex = nextIndex < focusableElements.size() - 1 ? componentIndex + 1 : 0;
 
-                                e.consume();
+                                    final UI_Component nextComponent = focusableElements.get(nextIndex);
+
+                                    if (nextComponent.isVisible()) {
+                                        nextComponent.setFocus(true);
+
+                                        e.consume();
+
+                                        break;
+                                    }
+
+                                } while (nextIndex != componentIndex);
                             }
                         }
                     }
                 });
+
+                if(component.hasFocus())
+                    setFocusHolder(component);
             }
         }
 
@@ -100,9 +110,30 @@ public abstract class State {
         substates.add(state);
     }
 
+    public void remove(final DrawableEntity e) {
+        if (e instanceof UI_Component) {
+            focusableElements.remove(e);
+
+            if(focusHolder == e)
+                focusHolder = null;
+        }
+
+        game.remove(e);
+    }
+
+    public void remove(final Entity e) {
+        game.remove(e);
+    }
+
+    protected final void initDefaultFocus() {
+        if (focusableElements.size() > 0)
+            if (focusableElements.stream().filter(UI_Component::hasFocus).findFirst().orElse(null) == null)
+                focusableElements.get(0).setFocus(true);
+    }
+
     // <- Getter & Setter ->
     public State getState(final Class<?> state) {
-        return substates.stream().filter(s -> s.getClass().equals(state)).findAny().orElse(null);
+        return substates.stream().filter(s -> s.getClass().equals(state)).findFirst().orElse(null);
     }
 
     public Game getGame() {
