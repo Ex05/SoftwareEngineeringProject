@@ -52,6 +52,15 @@ public final class PasswordField extends TextField {
     }
 
     @Override
+    public void clear() {
+        super.clear();
+
+        Arrays.fill(password, (char) 0);
+
+        password = new char[0];
+    }
+
+    @Override
     protected void removeLastCharacter() {
         final int length = password.length;
 

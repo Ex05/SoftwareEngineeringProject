@@ -6,9 +6,8 @@ package de.presidente.jungle_king;
 import de.janik.softengine.Engine;
 import de.janik.softengine.InputManager;
 import de.janik.softengine.game.State;
+import de.janik.softengine.util.ColorARGB;
 import de.presidente.jungle_king.net.ConnectionManager;
-
-import static de.janik.softengine.util.ColorARGB.LIGHT_BLUE;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -34,7 +33,7 @@ public final class Lobby extends State {
     public void init() {
         server = getGame().getServerConnection();
 
-        game.setBackgroundColor(LIGHT_BLUE);
+        game.setBackgroundColor(new ColorARGB(115, 195, 90));
     }
 
     @Override

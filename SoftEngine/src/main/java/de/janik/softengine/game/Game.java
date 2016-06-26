@@ -156,6 +156,8 @@ public abstract class Game {
     }
 
     public void _switchState(final State state) {
+        System.out.printf("Switching state[%s].\n", state.getClass().getSimpleName());
+
         removeAll();
 
         state.init();

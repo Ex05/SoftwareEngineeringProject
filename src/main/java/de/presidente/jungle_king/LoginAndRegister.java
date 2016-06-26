@@ -291,6 +291,14 @@ public final class LoginAndRegister extends State {
         switchState(state);
     }
 
+    private void clearLoginForm() {
+        textFieldUserNameLogin.clear();
+
+        passwordFieldPasswordLogin.clear();
+
+        initDefaultFocus();
+    }
+
     private void switchState(final State nextState) {
         switch (nextState) {
             case LOGIN: {
@@ -383,12 +391,8 @@ public final class LoginAndRegister extends State {
                     if (p instanceof Packet_003_Permission) {
                         final Packet_003_Permission packet = (Packet_003_Permission) p;
 
-                        if (packet.getPermission() == DENIED) {
-                            // TODO:(jan) Handle wrong username.
-                            System.err.println("Login.tick[TODO:(jan) Handle wrong username.]");
-
-                            textFieldUserNameLogin.setTextColor(RED);
-                        }
+                        if (packet.getPermission() == DENIED)
+                            clearLoginForm();
 
                     } else if (p instanceof Packet_006_Salt) {
                         final Packet_006_Salt packet = (Packet_006_Salt) p;
@@ -413,13 +417,9 @@ public final class LoginAndRegister extends State {
                         final Packet_003_Permission packet = (Packet_003_Permission) p;
 
                         if (packet.getPermission() == GRANTED) {
-                                game.switchState(Lobby.class);
-                        } else {
-                            // TODO:(jan) Handle wrong password.
-                            System.err.println("Login.tick[TODO:(jan) Handle wrong password.]");
-
-                            passwordFieldPasswordLogin.setTextColor(RED);
-                        }
+                            game.switchState(Lobby.class);
+                        } else
+                            clearLoginForm();
                     }
                 }
 
