@@ -27,7 +27,7 @@ public final class Rectangle extends DrawableEntity {
     public Rectangle(final int width, final int height) {
         super(0, 0);
 
-        resize(width, height);
+        setSize(width, height);
     }
 
     // <- Abstract ->
@@ -38,7 +38,13 @@ public final class Rectangle extends DrawableEntity {
 
     }
 
-    public void resize(final int width, final int height) {
+    public void fill()
+    {
+        fill(color);
+    }
+
+    // <- Getter & Setter ->
+    public void setSize(final int width, final int height) {
         pixels = new int[width * height];
 
         background = new Bitmap(width, height, pixels);
@@ -48,12 +54,6 @@ public final class Rectangle extends DrawableEntity {
         fill(color);
     }
 
-    public void fill()
-    {
-        fill(color);
-    }
-
-    // <- Getter & Setter ->
     public void setColor(final ColorARGB color) {
         this.color = color;
 

@@ -109,7 +109,7 @@ public final class Intro extends State implements LaunchComponent {
         // TODO:(jan) Remove debug code.
         game.switchState(LoginAndRegister.class);
 
-        System.err.println("Intro.tick[TODO:(jan) Remove debug code.]");
+        System.err.println("Intro.tick[TODO:(jan) Remove debug code].");
 
         if (textWelcomePosY < engine.getScreenHeight() / 2 - textWelcome.getHeight() / 4) {
             textWelcomePosY += 10;

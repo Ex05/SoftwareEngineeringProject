@@ -63,10 +63,10 @@ public abstract class TextComponent extends UI_Component{
     @Override
     protected void update() {
         if (background.getWidth() < text.getWidth())
-            background.resize(text.getWidth(), background.getHeight());
+            background.setSize(text.getWidth(), background.getHeight());
 
         if (background.getHeight() < text.getHeight())
-            background.resize(background.getWidth(), text.getHeight());
+            background.setSize(background.getWidth(), text.getHeight());
 
         background.fill();
 
@@ -90,7 +90,7 @@ public abstract class TextComponent extends UI_Component{
         super.setWidth(width);
 
         if (width != background.getWidth())
-            background.resize(width, background.getHeight());
+            background.setSize(width, background.getHeight());
 
         update();
     }
@@ -100,7 +100,7 @@ public abstract class TextComponent extends UI_Component{
         super.setHeight(height);
 
         if (height != background.getHeight())
-            background.resize(background.getWidth(), height);
+            background.setSize(background.getWidth(), height);
 
         update();
     }
@@ -110,7 +110,7 @@ public abstract class TextComponent extends UI_Component{
         this.height = height;
 
         if (width != background.getWidth() || height != background.getHeight())
-            background.resize(width, height);
+            background.setSize(width, height);
 
         update();
     }

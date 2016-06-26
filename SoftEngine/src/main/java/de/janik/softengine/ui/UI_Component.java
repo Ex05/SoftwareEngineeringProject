@@ -72,7 +72,7 @@ public abstract class UI_Component extends DrawableEntity {
         super.setWidth(width);
 
         if (width != background.getWidth())
-            background.resize(width, background.getHeight());
+            background.setSize(width, background.getHeight());
 
         update();
     }
@@ -82,7 +82,7 @@ public abstract class UI_Component extends DrawableEntity {
         super.setHeight(height);
 
         if (height != background.getHeight())
-            background.resize(background.getWidth(), height);
+            background.setSize(background.getWidth(), height);
 
         update();
     }

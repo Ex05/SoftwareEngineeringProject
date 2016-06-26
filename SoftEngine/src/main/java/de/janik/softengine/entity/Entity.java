@@ -4,9 +4,9 @@ package de.janik.softengine.entity;
 // <- Static_Import ->
 
 import de.janik.softengine.InputManager;
+import de.janik.softengine.math.Vector;
 import de.janik.softengine.ui.UI_Event;
 import de.janik.softengine.ui.UI_KeyEvent;
-import de.janik.softengine.math.Vector;
 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -201,6 +201,16 @@ public abstract class Entity implements Comparable<Entity> {
 
     public boolean isMouseOver() {
         return mouseOver;
+    }
+
+    public Vector getLocation() {
+        return location;
+    }
+
+    public void setLocation(final Vector location) {
+        this.location.setX(location.getX());
+        this.location.setY(location.getY());
+        this.location.setZ(location.getZ());
     }
 
     // <- Static ->
