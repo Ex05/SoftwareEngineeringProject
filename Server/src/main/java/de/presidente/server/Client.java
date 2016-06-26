@@ -22,6 +22,8 @@ import java.net.Socket;
 
 import static de.presidente.net.Permission.DENIED;
 import static de.presidente.net.Permission.GRANTED;
+import static java.time.ZonedDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -75,7 +77,7 @@ public final class Client implements Runnable {
         }
 
         if (packet != null)
-            System.out.printf(">> %s\n", packet);
+            System.out.printf("%s >> %s\n", now().format(ofPattern("HH:mm:ss_SSS")), packet);
 
         if (packet instanceof Packet_000_ConnectionClosed)
             try {
@@ -121,38 +123,22 @@ public final class Client implements Runnable {
                 return;
             }
 
-            if (packet instanceof Packet_005_ReceiveSalt) {
-                final byte[] salt = server.receiveSalt(((Packet_005_ReceiveSalt) packet).getUserName());
-
-                if (salt == null)
-                    send(new Packet_003_Permission(DENIED));
-                else
-                    send(new Packet_006_Salt(salt));
-            } else if (packet instanceof Packet_008_CheckUsernameAvailability) {
-                final boolean available = server.checkUserNameAvailability(((Packet_008_CheckUsernameAvailability) packet).getUserName());
-
-                send(new Packet_009_UsernameAvailable(available ? GRANTED : DENIED));
-            } else if (packet instanceof Packet_007_Register) {
-                final Packet_007_Register registerPacket = (Packet_007_Register) packet;
-
-                final boolean registered = server.register(registerPacket.getLoginCredentials(), registerPacket.getSalt());
-
-                send(new Packet_010_RegistrationConfirmation(registered));
-            } else if (packet instanceof Packet_001_Login) {
-                final Packet_001_Login loginPacket = (Packet_001_Login) packet;
-
-                final boolean loggedIn = server.login(this, loginPacket.getLoginCredentials());
-
-                loginPacket.getLoginCredentials().erase();
-
-                if (loggedIn) {
-                    send(new Packet_003_Permission(GRANTED));
-
+            if (packet instanceof Packet_005_ReceiveSalt)
+                handlePacket_005_ReceiveSalt((Packet_005_ReceiveSalt) packet);
+            else if (packet instanceof Packet_008_CheckUsernameAvailability)
+                handlePacket_008_CheckUserNameAvailability((Packet_008_CheckUsernameAvailability) packet);
+            else if (packet instanceof Packet_007_Register)
+                handelPacket_007_Register((Packet_007_Register) packet);
+            else if (packet instanceof Packet_001_Login) {
+                if (handlePacket_001_Login((Packet_001_Login) packet))
                     break;
-                } else
-                    send(new Packet_003_Permission(DENIED));
-            } else
+            } else {
                 send(new Packet_000_ConnectionClosed());
+
+                close();
+
+                return;
+            }
         } while (true);
 
         while (running) {
@@ -169,13 +155,47 @@ public final class Client implements Runnable {
         }
     }
 
+    private boolean handlePacket_001_Login(final Packet_001_Login packet) {
+        final boolean loggedIn = server.login(this, packet.getLoginCredentials());
+
+        packet.getLoginCredentials().erase();
+
+        if (loggedIn)
+            send(new Packet_003_Permission(GRANTED));
+        else
+            send(new Packet_003_Permission(DENIED));
+
+        return loggedIn;
+    }
+
+    private void handelPacket_007_Register(final Packet_007_Register packet) {
+        final boolean registered = server.register(packet.getLoginCredentials(), packet.getSalt());
+
+        send(new Packet_010_RegistrationConfirmation(registered));
+    }
+
+    private void handlePacket_008_CheckUserNameAvailability(final Packet_008_CheckUsernameAvailability packet) {
+        final boolean available = server.checkUserNameAvailability(packet.getUserName());
+
+        send(new Packet_009_UsernameAvailable(available ? GRANTED : DENIED));
+    }
+
+    private void handlePacket_005_ReceiveSalt(final Packet_005_ReceiveSalt salt1) {
+        final byte[] salt = server.receiveSalt(salt1.getUserName());
+
+        if (salt == null)
+            send(new Packet_003_Permission(DENIED));
+        else
+            send(new Packet_006_Salt(salt));
+    }
+
     private boolean send(final Packet packet) {
         boolean successfulWrite = false;
 
         try {
             oos.writeObject(packet);
 
-            System.out.printf("<< %s\n", packet);
+            System.out.printf("%s << %s\n", now().format(ofPattern("HH:mm:ss_SSS")), packet);
 
             successfulWrite = true;
         } catch (final IOException e) {
