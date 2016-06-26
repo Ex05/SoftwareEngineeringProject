@@ -119,12 +119,6 @@ public final class LoginAndRegister extends State {
         textFieldUserNameLogin.setTextSize(30);
         textFieldUserNameLogin.setLocation(engine.getScreenWidth() / 2 - textFieldUserNameLogin.getWidth() / 2,
                 backgroundLogin.getY() + backgroundLogin.getHeight() - offsetTopBottom - textFieldUserNameLogin.getHeight());
-        textFieldUserNameLogin.onInputChange(() -> {
-            final String userName = textFieldUserNameLogin.getUserInput();
-
-            if (!userName.equals(""))
-                server.send(new Packet_008_CheckUsernameAvailability(userName));
-        });
 
         passwordFieldPasswordLogin = new PasswordField("Password");
         passwordFieldPasswordLogin.setSize(400, textFieldHeight);
@@ -419,10 +413,7 @@ public final class LoginAndRegister extends State {
                         final Packet_003_Permission packet = (Packet_003_Permission) p;
 
                         if (packet.getPermission() == GRANTED) {
-                            // TODO:(jan) Enter lobby.
-                            System.err.println("Login.tick[TODO:(jan) Enter lobby.]");
-
-                            System.out.println("Logged in.");
+                                game.switchState(Lobby.class);
                         } else {
                             // TODO:(jan) Handle wrong password.
                             System.err.println("Login.tick[TODO:(jan) Handle wrong password.]");
