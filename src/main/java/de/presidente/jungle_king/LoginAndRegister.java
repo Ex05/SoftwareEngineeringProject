@@ -25,8 +25,8 @@ import de.presidente.net.Packet_003_Permission;
 import de.presidente.net.Packet_005_ReceiveSalt;
 import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_007_Register;
-import de.presidente.net.Packet_008_CheckUsernameAvailability;
-import de.presidente.net.Packet_009_UsernameAvailable;
+import de.presidente.net.Packet_008_CheckUserNameAvailability;
+import de.presidente.net.Packet_009_UserNameAvailable;
 import de.presidente.net.Packet_010_RegistrationConfirmation;
 
 import java.util.Arrays;
@@ -231,7 +231,7 @@ public final class LoginAndRegister extends State {
             final String userName = textFieldUserNameRegister.getUserInput();
 
             if (!userName.equals(""))
-                server.send(new Packet_008_CheckUsernameAvailability(userName));
+                server.send(new Packet_008_CheckUserNameAvailability(userName));
         });
 
         buttonRegister.onMousePress(() -> {
@@ -439,8 +439,8 @@ public final class LoginAndRegister extends State {
                 Packet p;
 
                 while ((p = server.retrievePacket()) != null) {
-                    if (p instanceof Packet_009_UsernameAvailable) {
-                        final Packet_009_UsernameAvailable packet = (Packet_009_UsernameAvailable) p;
+                    if (p instanceof Packet_009_UserNameAvailable) {
+                        final Packet_009_UserNameAvailable packet = (Packet_009_UserNameAvailable) p;
 
 
                         if (packet.getPermission() == GRANTED) {
