@@ -387,94 +387,64 @@ public final class LoginAndRegister extends State {
                 break;
         }
 
-        switch (subState) {
-            case USER_INPUT: {
-                break;
-            }
-            case AWAITING_SALT: {
-                Packet p;
+        Packet p;
 
-                while ((p = server.retrievePacket()) != null) {
-                    if (p instanceof Packet_003_Permission) {
-                        final Packet_003_Permission packet = (Packet_003_Permission) p;
+        while ((p = server.retrievePacket()) != null) {
+            System.out.println(p.getClass().getSimpleName());
 
-                        if (packet.getPermission() == DENIED)
-                            clearLoginForm();
-
-                    } else if (p instanceof Packet_006_Salt) {
-                        final Packet_006_Salt packet = (Packet_006_Salt) p;
-
-                        subState = SubState.LOGGING_IN;
-
-                        final byte[] salt = packet.getSalt();
-
-                        final byte[] pbkdf2Hash = PasswordService.GetInstance().pbkdf2Hash(passwordFieldPasswordLogin.getPassword(), salt);
-
-                        server.send(new Packet_001_Login(new LoginCredentials(textFieldUserNameLogin.getUserInput(), pbkdf2Hash)));
-                    }
-                }
-
-                break;
-            }
-            case LOGGING_IN: {
-                Packet p;
-
-                while ((p = server.retrievePacket()) != null) {
-                    if (p instanceof Packet_003_Permission) {
-                        final Packet_003_Permission packet = (Packet_003_Permission) p;
-
-                        if (packet.getPermission() == GRANTED) {
-                            game.switchState(Lobby.class);
-
-                            return;
-                        } else
-                            clearLoginForm();
-                    }
-                }
-
-                break;
-            }
-
-            case CHECK_USERNAME_AVAILABILITY: {
-                Packet p;
-
-                while ((p = server.retrievePacket()) != null) {
-                    if (p instanceof Packet_009_UserNameAvailable) {
-                        final Packet_009_UserNameAvailable packet = (Packet_009_UserNameAvailable) p;
-
-
-                        if (packet.getPermission() == GRANTED) {
-                            textFieldUserNameRegister.setTextColor(LIME_GREEN);
-
-                            userNameApproved = true;
-                        } else {
-                            textFieldUserNameRegister.setTextColor(RED);
-
-                            userNameApproved = false;
-                        }
-                    }
-                }
-
-                break;
-            }
-
-            case AWAIT_REGISTRATION_RESPONSE: {
-                Packet p;
-
-                while ((p = server.retrievePacket()) != null) {
-                    if (p instanceof Packet_010_RegistrationConfirmation) {
-                        final Packet_010_RegistrationConfirmation packet = (Packet_010_RegistrationConfirmation) p;
-
-                        if (packet.isGranted())
-                            System.out.println("Registered.");
-                        else
-                            System.err.println("Failed to register");
-                    }
-                }
-
-                break;
-            }
+            if (p.getClass().equals(Packet_003_Permission.class))
+                handlePacket_003_Permission((Packet_003_Permission) p);
+            else if (p.getClass().equals(Packet_006_Salt.class))
+                handlePacket_006_Salt((Packet_006_Salt) p);
+            else if (p.getClass().equals(Packet_009_UserNameAvailable.class))
+                handlePacket_009_UserNameAvailable((Packet_009_UserNameAvailable) p);
+            else if (p.getClass().equals(Packet_010_RegistrationConfirmation.class))
+                handlePacket_010_RegistrationConfirmation((Packet_010_RegistrationConfirmation) p);
         }
+    }
+
+    private void handlePacket_010_RegistrationConfirmation(final Packet_010_RegistrationConfirmation packet) {
+        if (subState == SubState.AWAIT_REGISTRATION_RESPONSE)
+            if (packet.isGranted())
+                System.out.println("Registered.");
+            else
+                System.err.println("Failed to register");
+    }
+
+    private void handlePacket_009_UserNameAvailable(final Packet_009_UserNameAvailable packet) {
+        if (subState == SubState.CHECK_USERNAME_AVAILABILITY)
+            if (packet.getPermission() == GRANTED) {
+                textFieldUserNameRegister.setTextColor(LIME_GREEN);
+
+                userNameApproved = true;
+            } else {
+                textFieldUserNameRegister.setTextColor(RED);
+
+                userNameApproved = false;
+            }
+    }
+
+    private void handlePacket_006_Salt(final Packet_006_Salt packet) {
+        if (subState == SubState.AWAITING_SALT) {
+            subState = SubState.LOGGING_IN;
+
+            final byte[] salt = packet.getSalt();
+
+            final byte[] pbkdf2Hash = PasswordService.GetInstance().pbkdf2Hash(passwordFieldPasswordLogin.getPassword(), salt);
+
+            server.send(new Packet_001_Login(new LoginCredentials(textFieldUserNameLogin.getUserInput(), pbkdf2Hash)));
+        }
+    }
+
+    private void handlePacket_003_Permission(final Packet_003_Permission packet) {
+        if (subState == SubState.AWAITING_SALT) {
+            if (packet.getPermission() == DENIED)
+                clearLoginForm();
+        } else if (subState == SubState.LOGGING_IN)
+            if (packet.getPermission() == GRANTED)
+                game.switchState(Lobby.class);
+            else
+                clearLoginForm();
     }
 
     // <- Getter & Setter ->
