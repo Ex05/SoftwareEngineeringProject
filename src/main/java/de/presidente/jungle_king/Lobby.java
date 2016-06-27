@@ -18,7 +18,7 @@ import de.presidente.net.Packet_004_LobbyEnter;
 import de.presidente.net.Packet_011_CheckGameName;
 import de.presidente.net.Packet_012_GameNameAvailable;
 import de.presidente.net.Packet_013_CreateNewGame;
-import de.presidente.net.Packet_014_CreateNewGameConfirmation;
+import de.presidente.net.Packet_014_CreateNewgameConfirmation;
 
 import static de.janik.softengine.util.ColorARGB.CYAN;
 import static de.janik.softengine.util.ColorARGB.FIREBRICK_RED;
@@ -225,12 +225,12 @@ public final class Lobby extends State {
                 handlePacket_004_LobbyEnter((Packet_004_LobbyEnter) p);
             else if (p.getClass().equals(Packet_012_GameNameAvailable.class))
                 handlePacket_012_GameNameAvailable((Packet_012_GameNameAvailable) p);
-            else if (p.getClass().equals(Packet_014_CreateNewGameConfirmation.class))
-                handlePacket_014_CreateNewGameConfirmation((Packet_014_CreateNewGameConfirmation) p);
+            else if (p.getClass().equals(Packet_014_CreateNewgameConfirmation.class))
+                handlePacket_014_CreateNewGameConfirmation((Packet_014_CreateNewgameConfirmation) p);
         }
     }
 
-    private void handlePacket_014_CreateNewGameConfirmation(final Packet_014_CreateNewGameConfirmation packet) {
+    private void handlePacket_014_CreateNewGameConfirmation(final Packet_014_CreateNewgameConfirmation packet) {
         if (state == State.AWAIT_GAME_CREATION_CONFIRMATION) {
             if (packet.isGranted())
                 // TODO:(jan) Enter pre game lobby.

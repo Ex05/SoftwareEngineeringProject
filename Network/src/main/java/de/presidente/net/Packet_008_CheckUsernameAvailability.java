@@ -6,7 +6,7 @@ package de.presidente.net;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Packet_008_CheckUserNameAvailability extends Packet {
+public final class Packet_008_CheckUsernameAvailability extends Packet {
     // <- Public ->
     // <- Protected ->
 
@@ -16,7 +16,7 @@ public final class Packet_008_CheckUserNameAvailability extends Packet {
     // <- Static ->
 
     // <- Constructor ->
-    public Packet_008_CheckUserNameAvailability(final String userName) {
+    public Packet_008_CheckUsernameAvailability(final String userName) {
         this.userName = userName;
     }
 
