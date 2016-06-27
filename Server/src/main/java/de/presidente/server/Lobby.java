@@ -10,7 +10,6 @@ import java.util.List;
  * @author Jan.Marcel.Janik [©2016]
  */
 public final class Lobby {
-
     // <- Public ->
     // <- Protected ->
 

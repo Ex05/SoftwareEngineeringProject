@@ -11,7 +11,7 @@ import de.presidente.net.Packet_004_LobbyEnter;
 import de.presidente.net.Packet_005_ReceiveSalt;
 import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_007_Register;
-import de.presidente.net.Packet_008_CheckUsernameAvailability;
+import de.presidente.net.Packet_008_CheckUserNameAvailability;
 import de.presidente.net.Packet_009_UserNameAvailable;
 import de.presidente.net.Packet_010_RegistrationConfirmation;
 import de.presidente.net.Packet_011_CheckGameName;
@@ -129,8 +129,8 @@ public final class Client implements Runnable {
 
             if (packet.getClass().equals(Packet_005_ReceiveSalt.class))
                 handlePacket_005_ReceiveSalt((Packet_005_ReceiveSalt) packet);
-            else if (packet.getClass().equals(Packet_008_CheckUsernameAvailability.class))
-                handlePacket_008_CheckUserNameAvailability((Packet_008_CheckUsernameAvailability) packet);
+            else if (packet.getClass().equals(Packet_008_CheckUserNameAvailability.class))
+                handlePacket_008_CheckUserNameAvailability((Packet_008_CheckUserNameAvailability) packet);
             else if (packet.getClass().equals(Packet_007_Register.class))
                 handelPacket_007_Register((Packet_007_Register) packet);
             else if (packet.getClass().equals(Packet_001_Login.class))
@@ -176,7 +176,7 @@ public final class Client implements Runnable {
         send(new Packet_010_RegistrationConfirmation(registered));
     }
 
-    private void handlePacket_008_CheckUserNameAvailability(final Packet_008_CheckUsernameAvailability packet) {
+    private void handlePacket_008_CheckUserNameAvailability(final Packet_008_CheckUserNameAvailability packet) {
         final boolean available = server.checkUserNameAvailability(packet.getUserName());
 
         send(new Packet_009_UserNameAvailable(available ? GRANTED : DENIED));
