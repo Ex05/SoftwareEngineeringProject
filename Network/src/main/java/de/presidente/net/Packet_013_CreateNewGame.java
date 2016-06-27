@@ -6,15 +6,15 @@ package de.presidente.net;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Packet_009_UserNameAvailable extends Packet_003_Permission {
+public final class Packet_013_CreateNewGame extends Packet_011_CheckGameName {
     // <- Public ->
     // <- Protected ->
     // <- Private->
     // <- Static ->
 
     // <- Constructor ->
-    public Packet_009_UserNameAvailable(final Permission permission) {
-        super(permission);
+    public Packet_013_CreateNewGame(final String gameName) {
+        super(gameName);
     }
 
     // <- Abstract ->

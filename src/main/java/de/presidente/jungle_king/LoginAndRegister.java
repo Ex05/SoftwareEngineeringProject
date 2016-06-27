@@ -26,7 +26,7 @@ import de.presidente.net.Packet_005_ReceiveSalt;
 import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_007_Register;
 import de.presidente.net.Packet_008_CheckUsernameAvailability;
-import de.presidente.net.Packet_009_UsernameAvailable;
+import de.presidente.net.Packet_009_UserNameAvailable;
 import de.presidente.net.Packet_010_RegistrationConfirmation;
 
 import java.util.Arrays;
@@ -425,6 +425,8 @@ public final class LoginAndRegister extends State {
 
                         if (packet.getPermission() == GRANTED) {
                             game.switchState(Lobby.class);
+
+                            return;
                         } else
                             clearLoginForm();
                     }
@@ -437,8 +439,8 @@ public final class LoginAndRegister extends State {
                 Packet p;
 
                 while ((p = server.retrievePacket()) != null) {
-                    if (p instanceof Packet_009_UsernameAvailable) {
-                        final Packet_009_UsernameAvailable packet = (Packet_009_UsernameAvailable) p;
+                    if (p instanceof Packet_009_UserNameAvailable) {
+                        final Packet_009_UserNameAvailable packet = (Packet_009_UserNameAvailable) p;
 
 
                         if (packet.getPermission() == GRANTED) {

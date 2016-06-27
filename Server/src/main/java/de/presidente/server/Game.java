@@ -13,11 +13,14 @@ public final class Game {
     // <- Private->
     private final String name;
 
+    private final Client owner;
+
     // <- Static ->
 
     // <- Constructor ->
-    public Game(final String name) {
+    public Game(final String name, final Client owner) {
         this.name = name;
+        this.owner = owner;
     }
 
     // <- Abstract ->
@@ -26,6 +29,10 @@ public final class Game {
     // <- Getter & Setter ->
     public String getName() {
         return name;
+    }
+
+    public Client getOwner() {
+        return owner;
     }
 
     // <- Static ->

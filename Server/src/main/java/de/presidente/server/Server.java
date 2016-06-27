@@ -15,12 +15,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static de.presidente.server.util.Constants.*;
+import static de.presidente.server.util.Constants.PREPARED_STATEMENT_INSERT_NEW_USER;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_ID;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_PASSWORD_AND_ID;
 import static de.presidente.server.util.Constants.PREPARED_STATEMENT_SELECT_SALT;
@@ -125,6 +124,8 @@ public final class Server {
 
             numConnectedClients--;
         }
+
+        lobby.leave(client);
     }
 
     public void enterLobby(final Client client) {

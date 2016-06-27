@@ -31,20 +31,45 @@ public final class Lobby {
 
     // <- Object ->
     public void enter(final Client client) {
-        clients.add(client);
+        synchronized (clients) {
+            clients.add(client);
+        }
     }
 
     public void leave(final Client client) {
-        clients.remove(client);
+        synchronized (clients) {
+            clients.remove(client);
+        }
     }
 
     // <- Getter & Setter ->
     public String[] getGameNames() {
-        return  games.stream().map(Game::getName).toArray(String[]::new);
+        return games.stream().map(Game::getName).toArray(String[]::new);
     }
 
-    public String[] getConnectedClients(){
-        return  clients.stream().map(Client::getUserName).toArray(String[]::new);
+    public String[] getConnectedClients() {
+        return clients.stream().map(Client::getUserName).toArray(String[]::new);
+    }
+
+    public boolean isGameNameAvailable(final String name) {
+        synchronized (games) {
+            return games.stream().filter(g -> g.getName().equals(name)).findFirst().orElse(null) == null;
+        }
+    }
+
+    public boolean createGame(final Client client, final String name) {
+        boolean created = false;
+
+        if (isGameNameAvailable(name)) {
+
+            synchronized (games) {
+                games.add(new Game(name, client));
+            }
+
+            created = true;
+        }
+
+        return created;
     }
 
     // <- Static ->

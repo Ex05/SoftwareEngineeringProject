@@ -12,8 +12,12 @@ import de.presidente.net.Packet_005_ReceiveSalt;
 import de.presidente.net.Packet_006_Salt;
 import de.presidente.net.Packet_007_Register;
 import de.presidente.net.Packet_008_CheckUsernameAvailability;
-import de.presidente.net.Packet_009_UsernameAvailable;
+import de.presidente.net.Packet_009_UserNameAvailable;
 import de.presidente.net.Packet_010_RegistrationConfirmation;
+import de.presidente.net.Packet_011_CheckGameName;
+import de.presidente.net.Packet_012_GameNameAvailable;
+import de.presidente.net.Packet_013_CreateNewGame;
+import de.presidente.net.Packet_014_CreateNewgameConfirmation;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -123,36 +127,28 @@ public final class Client implements Runnable {
                 return;
             }
 
-            if (packet instanceof Packet_005_ReceiveSalt)
+            if (packet.getClass().equals(Packet_005_ReceiveSalt.class) )
                 handlePacket_005_ReceiveSalt((Packet_005_ReceiveSalt) packet);
-            else if (packet instanceof Packet_008_CheckUsernameAvailability)
+            else if (packet.getClass().equals(Packet_008_CheckUsernameAvailability.class))
                 handlePacket_008_CheckUserNameAvailability((Packet_008_CheckUsernameAvailability) packet);
-            else if (packet instanceof Packet_007_Register)
+            else if (packet.getClass().equals(Packet_007_Register.class))
                 handelPacket_007_Register((Packet_007_Register) packet);
-            else if (packet instanceof Packet_001_Login) {
-                if (handlePacket_001_Login((Packet_001_Login) packet))
-                    break;
-            } else {
-                send(new Packet_000_ConnectionClosed());
-
-                close();
-
-                return;
-            }
-        } while (true);
-
-        while (running) {
-            final Lobby lobby = server.getLobby();
-
-            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getConnectedClients()));
-
-            server.enterLobby(this);
-
-            // TODO:(jan) Handle Lobby actions.
-            System.out.println("Client.run[TODO:(jan) Handle Lobby actions.]");
-
-            break;
+            else if (packet.getClass().equals(Packet_001_Login.class))
+                handlePacket_001_Login((Packet_001_Login) packet);
+            else if (packet.getClass().equals(Packet_011_CheckGameName.class))
+                handlePacket_011_CheckGameName((Packet_011_CheckGameName) packet);
+            else if (packet.getClass().equals(Packet_013_CreateNewGame.class))
+                handlePacket_013_CreateNewGame((Packet_013_CreateNewGame) packet);
         }
+        while (true);
+    }
+
+    private void handlePacket_013_CreateNewGame(final Packet_013_CreateNewGame packet) {
+        send(new Packet_014_CreateNewgameConfirmation(server.getLobby().createGame(this, packet.getGameName())));
+    }
+
+    private void handlePacket_011_CheckGameName(final Packet_011_CheckGameName packet) {
+        send(new Packet_012_GameNameAvailable(server.getLobby().isGameNameAvailable(packet.getGameName())));
     }
 
     private boolean handlePacket_001_Login(final Packet_001_Login packet) {
@@ -160,9 +156,15 @@ public final class Client implements Runnable {
 
         packet.getLoginCredentials().erase();
 
-        if (loggedIn)
+        if (loggedIn) {
             send(new Packet_003_Permission(GRANTED));
-        else
+
+            final Lobby lobby = server.getLobby();
+
+            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getConnectedClients()));
+
+            server.enterLobby(this);
+        } else
             send(new Packet_003_Permission(DENIED));
 
         return loggedIn;
@@ -177,7 +179,7 @@ public final class Client implements Runnable {
     private void handlePacket_008_CheckUserNameAvailability(final Packet_008_CheckUsernameAvailability packet) {
         final boolean available = server.checkUserNameAvailability(packet.getUserName());
 
-        send(new Packet_009_UsernameAvailable(available ? GRANTED : DENIED));
+        send(new Packet_009_UserNameAvailable(available ? GRANTED : DENIED));
     }
 
     private void handlePacket_005_ReceiveSalt(final Packet_005_ReceiveSalt salt1) {
