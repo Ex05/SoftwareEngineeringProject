@@ -60,6 +60,13 @@ public final class Container<T extends DrawableEntity> extends DrawableEntity {
         children.forEach(e -> e.setY(e.getY() + y));
     }
 
+    @Override
+    public void setLocation(final float x, final float y) {
+        super.setLocation(x, y);
+
+        children.forEach(e -> e.setLocation(e.getX() + x, e.getY() + y));
+    }
+
     public List<T> getChildren() {
         return children;
     }

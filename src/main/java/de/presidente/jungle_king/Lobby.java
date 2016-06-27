@@ -4,7 +4,6 @@ package de.presidente.jungle_king;
 // <- Static_Import ->
 
 import de.janik.softengine.Engine;
-import de.janik.softengine.InputManager;
 import de.janik.softengine.entity.DrawableEntity;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
@@ -19,7 +18,7 @@ import de.presidente.net.Packet_004_LobbyEnter;
 import de.presidente.net.Packet_011_CheckGameName;
 import de.presidente.net.Packet_012_GameNameAvailable;
 import de.presidente.net.Packet_013_CreateNewGame;
-import de.presidente.net.Packet_014_CreateNewgameConfirmation;
+import de.presidente.net.Packet_014_CreateNewGameConfirmation;
 
 import java.util.Arrays;
 
@@ -27,7 +26,9 @@ import static de.janik.softengine.util.ColorARGB.CYAN;
 import static de.janik.softengine.util.ColorARGB.FIREBRICK_RED;
 import static de.janik.softengine.util.ColorARGB.GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
+import static de.janik.softengine.util.ColorARGB.LIGHT_GRAY;
 import static de.janik.softengine.util.ColorARGB.RED;
+import static de.janik.softengine.util.ColorARGB.SILVER_GRAY;
 import static de.janik.softengine.util.ColorARGB.WHITE;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
 
@@ -113,7 +114,7 @@ public final class Lobby extends State {
         backGroundUsers.setLocation(textFieldSearchBar.getX(), textFieldSearchBar.getY() - backGroundUsers.getHeight() - labelUser.getHeight());
 
         labelGameName.setLocation(backGroundGames.getX(), backGroundGames.getY() + backGroundGames.getHeight());
-        labelOwner.setLocation(backGroundGames.getX() + backGroundGames.getWidth() / 2, backGroundGames.getY() + backGroundGames.getHeight());
+        labelOwner.setLocation(backGroundGames.getX() + backGroundGames.getWidth() / 2 - labelOwner.getWidth(), backGroundGames.getY() + backGroundGames.getHeight());
         labelUser.setLocation(backGroundUsers.getX(), backGroundUsers.getY() + backGroundUsers.getHeight());
         labelPlayer.setLocation(backGroundGames.getX() + backGroundGames.getWidth() - labelPlayer.getWidth() - 10, backGroundGames.getY() + backGroundGames.getHeight());
 
@@ -217,41 +218,85 @@ public final class Lobby extends State {
 
     @Override
     public void tick(final long ticks, final Engine engine) {
-        final InputManager inputManager = engine.getInput();
-
         Packet p;
 
         while ((p = server.retrievePacket()) != null) {
-            if (p.getClass().equals(Packet_004_LobbyEnter.class)) {
-                if (state == State.ENTERING_LOBBY) {
-                    handleLobbyEnter((Packet_004_LobbyEnter) p);
+            if (p.getClass().equals(Packet_004_LobbyEnter.class))
+                handlePacket_004_LobbyEnter((Packet_004_LobbyEnter) p);
+            else if (p.getClass().equals(Packet_012_GameNameAvailable.class))
+                handlePacket_012_GameNameAvailable((Packet_012_GameNameAvailable) p);
+            else if (p.getClass().equals(Packet_014_CreateNewGameConfirmation.class))
+                handlePacket_014_CreateNewGameConfirmation((Packet_014_CreateNewGameConfirmation) p);
+        }
+    }
 
-                    state = State.IN_LOBBY;
-                }
-            } else if (p.getClass().equals(Packet_012_GameNameAvailable.class)) {
-                if (state == State.CREATE_GAME)
-                    if (!textFieldNewGameName.getUserInput().equals(""))
-                        textFieldNewGameName.setTextColor(((Packet_012_GameNameAvailable) p).isGranted() ? GREEN : RED);
-            } else if (p.getClass().equals(Packet_014_CreateNewgameConfirmation.class)) {
-                if (state == State.AWAIT_GAME_CREATION_CONFIRMATION) {
-                    if (((Packet_014_CreateNewgameConfirmation) p).isGranted())
-                        // TODO:(jan) Enter pre game lobby.
-                        System.err.println("Lobby.tick[TODO:(jan) Enter pre game lobby].");
-                    else {
-                        textFieldNewGameName.clear();
+    private void handlePacket_014_CreateNewGameConfirmation(final Packet_014_CreateNewGameConfirmation packet) {
+        if (state == State.AWAIT_GAME_CREATION_CONFIRMATION) {
+            if (packet.isGranted())
+                // TODO:(jan) Enter pre game lobby.
+                System.err.println("Lobby.tick[TODO:(jan) Enter pre game lobby].");
+            else {
+                textFieldNewGameName.clear();
 
-                        state = State.CREATE_GAME;
-                    }
-                }
+                state = State.CREATE_GAME;
             }
         }
     }
 
-    private void handleLobbyEnter(final Packet_004_LobbyEnter packet) {
-        // TODO:(jan) Add all the games to the UI.
+    private void handlePacket_012_GameNameAvailable(final Packet_012_GameNameAvailable packet) {
+        if (state == State.CREATE_GAME)
+            if (!textFieldNewGameName.getUserInput().equals(""))
+                textFieldNewGameName.setTextColor(packet.isGranted() ? GREEN : RED);
+    }
 
-        System.out.println(Arrays.toString(packet.getGames()));
-        System.out.println(Arrays.toString(packet.getClients()));
+    private void handlePacket_004_LobbyEnter(final Packet_004_LobbyEnter packet) {
+        if (state == State.ENTERING_LOBBY) {
+            // TODO:(jan) Add all the games to the UI.
+
+            final String[] games = packet.getGames();
+            final String[] owner = packet.getOwners();
+            final Byte[] player = packet.getPlayerCounts();
+
+            int i = 0;
+            for (final String game : games) {
+                final Container<DrawableEntity> gameContainer = new Container<>();
+
+                final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
+                background.setColor(i % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
+                background.setZ(backGroundGames.getZ() + 1);
+
+                final Label labelGame = new Label(game);
+                labelGame.setFont(SOURCE_CODE_PRO);
+                labelGame.setTextSize(30);
+                labelGame.setZ(backgroundCreateGame.getZ() + 1);
+
+                final Label labelOwner = new Label(owner[i]);
+                labelOwner.setFont(SOURCE_CODE_PRO);
+                labelOwner.setTextSize(30);
+                labelOwner.setZ(backgroundCreateGame.getZ() + 1);
+                labelOwner.setLocation(this.labelOwner.getX(), 0);
+
+                final Label labelPLayerCount = new Label(player[i] + "/5");
+                labelPLayerCount.setFont(SOURCE_CODE_PRO);
+                labelPLayerCount.setTextSize(30);
+                labelPLayerCount.setZ(backgroundCreateGame.getZ() + 1);
+                labelPLayerCount.setLocation(this.labelPlayer.getX(), 0);
+
+                gameContainer.add(background);
+                gameContainer.add(labelGame);
+                gameContainer.add(labelOwner);
+                gameContainer.add(labelPLayerCount);
+
+                gameContainer.forEach(this::add);
+
+                gameContainer.setLocation(backGroundGames.getX(), backGroundGames.getY() + backGroundGames.getHeight() - background.getHeight() - (background.getHeight() * i++));
+            }
+
+            System.out.println(Arrays.toString(games));
+            System.out.println(Arrays.toString(packet.getClients()));
+
+            state = State.IN_LOBBY;
+        }
     }
 
     // <- Getter & Setter ->

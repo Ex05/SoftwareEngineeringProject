@@ -345,12 +345,12 @@ public final class LoginAndRegister extends State {
     public void tick(final long ticks, final Engine engine) {
         final InputManager inputManager = engine.getInput();
 
-        // TODO:(jan) Remove debug code.
+   /*     // TODO:(jan) Remove debug code.
         System.err.println("LoginAndRegister.tick[TODO:(jan) Remove debug code].");
         game.switchState(Lobby.class);
 
         if (true)
-            return;
+            return;*/
 
         switch (state) {
             case LOGIN: {

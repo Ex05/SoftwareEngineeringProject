@@ -47,6 +47,10 @@ public final class Lobby {
         return games.stream().map(Game::getName).toArray(String[]::new);
     }
 
+    public String[] getGameOwner() {
+        return games.stream().map(g -> g.getOwner().getUserName()).toArray(String[]::new);
+    }
+
     public String[] getConnectedClients() {
         return clients.stream().map(Client::getUserName).toArray(String[]::new);
     }
@@ -70,6 +74,11 @@ public final class Lobby {
         }
 
         return created;
+    }
+
+    public Byte[] getPlayerCounts() {
+        return games.stream().map(Game::getPlayerCount).toArray(Byte[]::new);
+
     }
 
     // <- Static ->

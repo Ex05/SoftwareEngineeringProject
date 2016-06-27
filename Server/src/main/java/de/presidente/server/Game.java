@@ -15,12 +15,15 @@ public final class Game {
 
     private final Client owner;
 
+    private byte playerCount;
     // <- Static ->
 
     // <- Constructor ->
     public Game(final String name, final Client owner) {
         this.name = name;
         this.owner = owner;
+
+        playerCount = 1;
     }
 
     // <- Abstract ->
@@ -33,6 +36,10 @@ public final class Game {
 
     public Client getOwner() {
         return owner;
+    }
+
+    public byte getPlayerCount() {
+        return playerCount;
     }
 
     // <- Static ->

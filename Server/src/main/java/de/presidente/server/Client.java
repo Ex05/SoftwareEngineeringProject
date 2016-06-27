@@ -17,7 +17,7 @@ import de.presidente.net.Packet_010_RegistrationConfirmation;
 import de.presidente.net.Packet_011_CheckGameName;
 import de.presidente.net.Packet_012_GameNameAvailable;
 import de.presidente.net.Packet_013_CreateNewGame;
-import de.presidente.net.Packet_014_CreateNewgameConfirmation;
+import de.presidente.net.Packet_014_CreateNewGameConfirmation;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -121,13 +121,13 @@ public final class Client implements Runnable {
         do {
             final Packet packet = accept();
 
-            if (packet == null) {
+            if (packet == null || packet.getClass().equals(Packet_000_ConnectionClosed.class)) {
                 close();
 
                 return;
             }
 
-            if (packet.getClass().equals(Packet_005_ReceiveSalt.class) )
+            if (packet.getClass().equals(Packet_005_ReceiveSalt.class))
                 handlePacket_005_ReceiveSalt((Packet_005_ReceiveSalt) packet);
             else if (packet.getClass().equals(Packet_008_CheckUsernameAvailability.class))
                 handlePacket_008_CheckUserNameAvailability((Packet_008_CheckUsernameAvailability) packet);
@@ -144,7 +144,7 @@ public final class Client implements Runnable {
     }
 
     private void handlePacket_013_CreateNewGame(final Packet_013_CreateNewGame packet) {
-        send(new Packet_014_CreateNewgameConfirmation(server.getLobby().createGame(this, packet.getGameName())));
+        send(new Packet_014_CreateNewGameConfirmation(server.getLobby().createGame(this, packet.getGameName())));
     }
 
     private void handlePacket_011_CheckGameName(final Packet_011_CheckGameName packet) {
@@ -161,7 +161,7 @@ public final class Client implements Runnable {
 
             final Lobby lobby = server.getLobby();
 
-            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getConnectedClients()));
+            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getGameOwner(), lobby.getPlayerCounts(), lobby.getConnectedClients()));
 
             server.enterLobby(this);
         } else
