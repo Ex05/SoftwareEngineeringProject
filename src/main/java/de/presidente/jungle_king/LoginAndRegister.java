@@ -139,7 +139,7 @@ public final class LoginAndRegister extends State {
         buttonLogin.setBackgroundColor(new ColorARGB(0, 180, 65));
         buttonLogin.setLocation(engine.getScreenWidth() / 2 - buttonLogin.getWidth() / 2, passwordFieldPasswordLogin.getY() - (offset + 5) - buttonLogin.getHeight());
         buttonLogin.onMousePress(() -> {
-            if (passwordFieldPasswordLogin.getPassword().length != 0) {
+            if (passwordFieldPasswordLogin.getPassword().length != 0 && subState != SubState.AWAITING_SALT) {
                 server.send(new Packet_005_ReceiveSalt(textFieldUserNameLogin.getUserInput()));
 
                 subState = SubState.AWAITING_SALT;

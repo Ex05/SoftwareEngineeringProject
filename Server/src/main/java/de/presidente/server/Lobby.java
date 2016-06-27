@@ -37,22 +37,30 @@ public final class Lobby {
     }
 
     public void leave(final Client client) {
-        synchronized (clients) {
-            clients.remove(client);
-        }
+        if (client != null)
+            synchronized (clients) {
+                clients.remove(client);
+            }
     }
 
     // <- Getter & Setter ->
     public String[] getGameNames() {
-        return games.stream().map(Game::getName).toArray(String[]::new);
+
+        synchronized (clients) {
+            return games.stream().map(Game::getName).toArray(String[]::new);
+        }
     }
 
     public String[] getGameOwner() {
-        return games.stream().map(g -> g.getOwner().getUserName()).toArray(String[]::new);
+        synchronized (clients) {
+            return games.stream().map(g -> g.getOwner().getUserName()).toArray(String[]::new);
+        }
     }
 
     public String[] getConnectedClients() {
-        return clients.stream().map(Client::getUserName).toArray(String[]::new);
+        synchronized (clients) {
+            return clients.stream().map(Client::getUserName).toArray(String[]::new);
+        }
     }
 
     public boolean isGameNameAvailable(final String name) {

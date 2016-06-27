@@ -128,18 +128,6 @@ public final class Server {
         lobby.leave(client);
     }
 
-    public void enterLobby(final Client client) {
-        synchronized (lobby) {
-            lobby.enter(client);
-        }
-    }
-
-    public void leaveLobby(final Client client) {
-        synchronized (lobby) {
-            lobby.leave(client);
-        }
-    }
-
     public boolean login(final Client client, final LoginCredentials credentials) {
         boolean loggedIn = false;
 

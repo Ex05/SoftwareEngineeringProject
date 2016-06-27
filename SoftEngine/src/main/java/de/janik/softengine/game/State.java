@@ -91,7 +91,7 @@ public abstract class State {
                     }
                 });
 
-                if(component.hasFocus())
+                if (component.hasFocus())
                     setFocusHolder(component);
             }
         }
@@ -114,7 +114,7 @@ public abstract class State {
         if (e instanceof UI_Component) {
             focusableElements.remove(e);
 
-            if(focusHolder == e)
+            if (focusHolder == e)
                 focusHolder = null;
         }
 
@@ -144,15 +144,18 @@ public abstract class State {
         return focusHolder;
     }
 
-    public void setFocusHolder(final UI_Component focusHolder) {
+    public synchronized void setFocusHolder(final UI_Component focusHolder) {
         if (this.focusHolder != null) {
             this.focusHolder.setFocus(false);
-            this.focusHolder.loseFocus();
+
+            if (this.focusHolder != null)
+                this.focusHolder.loseFocus();
         }
 
         this.focusHolder = focusHolder;
 
-        this.focusHolder.gainFocus();
+        if (this.focusHolder != null)
+            this.focusHolder.gainFocus();
     }
 
     // <- Static ->

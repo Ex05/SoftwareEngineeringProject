@@ -96,10 +96,14 @@ public abstract class UI_Component extends DrawableEntity {
     }
 
     public void setFocus(final boolean focus) {
-        this.hasFocus = focus;
+        if (focus != hasFocus) {
+            this.hasFocus = focus;
 
-        if (focus)
-            stateCallBack.setFocusHolder(this);
+            if (hasFocus)
+                stateCallBack.setFocusHolder(this);
+            else
+                stateCallBack.setFocusHolder(null);
+        }
     }
 
     public boolean isFocusAble() {

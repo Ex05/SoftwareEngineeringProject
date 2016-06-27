@@ -121,7 +121,7 @@ public final class Client implements Runnable {
         do {
             final Packet packet = accept();
 
-            if (packet == null || packet.getClass().equals(Packet_000_ConnectionClosed.class)) {
+            if (packet == null) {
                 close();
 
                 return;
@@ -161,9 +161,9 @@ public final class Client implements Runnable {
 
             final Lobby lobby = server.getLobby();
 
-            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getGameOwner(), lobby.getPlayerCounts(), lobby.getConnectedClients()));
+            server.getLobby().enter(this);
 
-            server.enterLobby(this);
+            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getGameOwner(), lobby.getPlayerCounts(), lobby.getConnectedClients()));
         } else
             send(new Packet_003_Permission(DENIED));
 

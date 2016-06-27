@@ -20,8 +20,6 @@ import de.presidente.net.Packet_012_GameNameAvailable;
 import de.presidente.net.Packet_013_CreateNewGame;
 import de.presidente.net.Packet_014_CreateNewGameConfirmation;
 
-import java.util.Arrays;
-
 import static de.janik.softengine.util.ColorARGB.CYAN;
 import static de.janik.softengine.util.ColorARGB.FIREBRICK_RED;
 import static de.janik.softengine.util.ColorARGB.GRAY;
@@ -176,14 +174,16 @@ public final class Lobby extends State {
 
                 createGameForm.forEach(e -> e.setVisible(true));
 
-                textFieldNewGameName.setFocus(true);
+                if (!textFieldNewGameName.hasFocus())
+                    textFieldNewGameName.setFocus(true);
             }
         });
 
         buttonCancel.onMousePress(() -> {
-            createGameForm.forEach(e -> e.setVisible(false));
-
             textFieldNewGameName.clear();
+            textFieldNewGameName.setFocus(false);
+
+            createGameForm.forEach(e -> e.setVisible(false));
 
             state = State.IN_LOBBY;
         });
@@ -251,8 +251,6 @@ public final class Lobby extends State {
 
     private void handlePacket_004_LobbyEnter(final Packet_004_LobbyEnter packet) {
         if (state == State.ENTERING_LOBBY) {
-            // TODO:(jan) Add all the games to the UI.
-
             final String[] games = packet.getGames();
             final String[] owner = packet.getOwners();
             final Byte[] player = packet.getPlayerCounts();
@@ -292,8 +290,26 @@ public final class Lobby extends State {
                 gameContainer.setLocation(backGroundGames.getX(), backGroundGames.getY() + backGroundGames.getHeight() - background.getHeight() - (background.getHeight() * i++));
             }
 
-            System.out.println(Arrays.toString(games));
-            System.out.println(Arrays.toString(packet.getClients()));
+            int j = 0;
+            for (final String user : packet.getClients()) {
+                final Container<DrawableEntity> gameContainer = new Container<>();
+
+                final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
+                background.setColor(j % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
+                background.setZ(backGroundGames.getZ() + 1);
+
+                final Label labelUser = new Label(user);
+                labelUser.setFont(SOURCE_CODE_PRO);
+                labelUser.setTextSize(30);
+                labelUser.setZ(backGroundUsers.getZ() + 1);
+
+                gameContainer.add(background);
+                gameContainer.add(labelUser);
+
+                gameContainer.forEach(this::add);
+
+                gameContainer.setLocation(backGroundUsers.getX(), backGroundUsers.getY() + backGroundUsers.getHeight() - background.getHeight() - (background.getHeight() * j++));
+            }
 
             state = State.IN_LOBBY;
         }
