@@ -87,6 +87,7 @@ public final class LoginAndRegister extends State {
 
     private boolean userNameApproved;
     private boolean passwordsMatch;
+    private volatile boolean poolPackets = true;
 
     // <- Static ->
     static {
@@ -389,9 +390,7 @@ public final class LoginAndRegister extends State {
 
         Packet p;
 
-        while ((p = server.retrievePacket()) != null) {
-            System.out.println(p.getClass().getSimpleName());
-
+        while (poolPackets && (p = server.retrievePacket()) != null) {
             if (p.getClass().equals(Packet_003_Permission.class))
                 handlePacket_003_Permission((Packet_003_Permission) p);
             else if (p.getClass().equals(Packet_006_Salt.class))
@@ -441,9 +440,11 @@ public final class LoginAndRegister extends State {
             if (packet.getPermission() == DENIED)
                 clearLoginForm();
         } else if (subState == SubState.LOGGING_IN)
-            if (packet.getPermission() == GRANTED)
+            if (packet.getPermission() == GRANTED) {
                 game.switchState(Lobby.class);
-            else
+
+                poolPackets = false;
+            } else
                 clearLoginForm();
     }
 

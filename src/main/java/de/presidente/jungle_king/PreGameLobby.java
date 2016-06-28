@@ -41,6 +41,5 @@ public final class PreGameLobby extends State {
         return (JungleKingGame) super.getGame();
     }
 
-
     // <- Static ->
 }
