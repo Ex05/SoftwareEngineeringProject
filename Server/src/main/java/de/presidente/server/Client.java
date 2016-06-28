@@ -18,6 +18,8 @@ import de.presidente.net.Packet_011_CheckGameName;
 import de.presidente.net.Packet_012_GameNameAvailable;
 import de.presidente.net.Packet_013_CreateNewGame;
 import de.presidente.net.Packet_014_CreateNewGameConfirmation;
+import de.presidente.net.Packet_015_EnterPreGameLobby;
+import de.presidente.net.Packet_016_EnterPreGameLobbyConfirmation;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -139,8 +141,14 @@ public final class Client implements Runnable {
                 handlePacket_011_CheckGameName((Packet_011_CheckGameName) packet);
             else if (packet.getClass().equals(Packet_013_CreateNewGame.class))
                 handlePacket_013_CreateNewGame((Packet_013_CreateNewGame) packet);
+            else if (packet.getClass().equals(Packet_015_EnterPreGameLobby.class))
+                handlePacket_015_EnterPreGameLobby((Packet_015_EnterPreGameLobby) packet);
         }
         while (true);
+    }
+
+    private void handlePacket_015_EnterPreGameLobby(final Packet_015_EnterPreGameLobby packet) {
+        send(new Packet_016_EnterPreGameLobbyConfirmation(server.getLobby().enterGame(this, packet.getGameName())));
     }
 
     private void handlePacket_013_CreateNewGame(final Packet_013_CreateNewGame packet) {

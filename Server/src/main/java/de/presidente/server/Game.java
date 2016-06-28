@@ -3,6 +3,8 @@ package de.presidente.server;
 
 // <- Static_Import ->
 
+import java.util.ArrayList;
+
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
@@ -15,6 +17,8 @@ public final class Game {
 
     private final Client owner;
 
+    private final ArrayList<Client> clients;
+
     private byte playerCount;
     // <- Static ->
 
@@ -22,6 +26,10 @@ public final class Game {
     public Game(final String name, final Client owner) {
         this.name = name;
         this.owner = owner;
+
+        clients = new ArrayList<>(5);
+
+        clients.add(owner);
 
         playerCount = 1;
     }
@@ -40,6 +48,19 @@ public final class Game {
 
     public byte getPlayerCount() {
         return playerCount;
+    }
+
+    public boolean enter(final Client client) {
+        if (clients.size() >= 5)
+            return false;
+        else {
+            final boolean entered = clients.add(client);
+
+            if (entered)
+                playerCount++;
+
+            return entered;
+        }
     }
 
     // <- Static ->

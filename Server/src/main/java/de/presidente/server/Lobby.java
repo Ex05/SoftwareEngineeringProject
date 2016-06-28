@@ -85,6 +85,15 @@ public final class Lobby {
 
     public Byte[] getPlayerCounts() {
         return games.stream().map(Game::getPlayerCount).toArray(Byte[]::new);
+    }
+
+    public boolean enterGame(final Client client, final String gameName) {
+        final Game game = games.stream().filter(g -> g.getName().equals(gameName)).findFirst().orElse(null);
+
+        if(game != null){
+            return game.enter(client);
+        }
+            return false;
 
     }
 

@@ -4,7 +4,7 @@ package de.janik.softengine.ui;
 // <- Static_Import ->
 
 import de.janik.softengine.InputManager;
-import de.janik.softengine.entity.DrawableEntity;
+import de.janik.softengine.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Container<T extends DrawableEntity> extends DrawableEntity {
+public final class Container<T extends Entity> extends Entity {
     // <- Public ->
     // <- Protected ->
 

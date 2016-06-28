@@ -4,7 +4,9 @@ package de.presidente.jungle_king;
 // <- Static_Import ->
 
 import de.janik.softengine.Engine;
+import de.janik.softengine.InputManager;
 import de.janik.softengine.entity.DrawableEntity;
+import de.janik.softengine.entity.Entity;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.Container;
@@ -19,6 +21,8 @@ import de.presidente.net.Packet_011_CheckGameName;
 import de.presidente.net.Packet_012_GameNameAvailable;
 import de.presidente.net.Packet_013_CreateNewGame;
 import de.presidente.net.Packet_014_CreateNewGameConfirmation;
+import de.presidente.net.Packet_015_EnterPreGameLobby;
+import de.presidente.net.Packet_016_EnterPreGameLobbyConfirmation;
 
 import static de.janik.softengine.util.ColorARGB.CYAN;
 import static de.janik.softengine.util.ColorARGB.FIREBRICK_RED;
@@ -224,15 +228,25 @@ public final class Lobby extends State {
         Packet p;
 
         while (poolPackets && (p = server.retrievePacket()) != null) {
-            System.out.println(p.getClass().getSimpleName());
-
             if (p.getClass().equals(Packet_004_LobbyEnter.class))
                 handlePacket_004_LobbyEnter((Packet_004_LobbyEnter) p);
             else if (p.getClass().equals(Packet_012_GameNameAvailable.class))
                 handlePacket_012_GameNameAvailable((Packet_012_GameNameAvailable) p);
             else if (p.getClass().equals(Packet_014_CreateNewGameConfirmation.class))
                 handlePacket_014_CreateNewGameConfirmation((Packet_014_CreateNewGameConfirmation) p);
+            else if (p.getClass().equals(Packet_016_EnterPreGameLobbyConfirmation.class))
+                handlePacket_016_EnterPreGameLobbyConfirmation((Packet_016_EnterPreGameLobbyConfirmation) p);
         }
+    }
+
+    private void handlePacket_016_EnterPreGameLobbyConfirmation(final Packet_016_EnterPreGameLobbyConfirmation packet) {
+        if (state == State.AWAIT_PREGAME_LOBBY_ENTER_CONFIRMATION)
+            if (packet.isGranted()) {
+                game.switchState(PreGameLobby.class);
+
+                poolPackets = false;
+            }else
+                System.err.println("Failed to enter PreGameLobby.");
     }
 
     private void handlePacket_014_CreateNewGameConfirmation(final Packet_014_CreateNewGameConfirmation packet) {
@@ -256,8 +270,6 @@ public final class Lobby extends State {
     }
 
     private void handlePacket_004_LobbyEnter(final Packet_004_LobbyEnter packet) {
-        System.out.println("Lobby.handlePacket_004_LobbyEnter");
-
         if (state == State.ENTERING_LOBBY) {
             final String[] games = packet.getGames();
             final String[] owner = packet.getOwners();
@@ -265,7 +277,7 @@ public final class Lobby extends State {
 
             int i = 0;
             for (final String game : games) {
-                final Container<DrawableEntity> gameContainer = new Container<>();
+                final Container<Entity> gameContainer = new Container<>();
 
                 final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
                 background.setColor(i % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
@@ -288,12 +300,39 @@ public final class Lobby extends State {
                 labelPLayerCount.setZ(background.getZ() + 1);
                 labelPLayerCount.setLocation(this.labelPlayer.getX(), 0);
 
+                boolean[] pressed = {false};
+                final Entity glassPane = new Entity(0, 0) {
+                    @Override
+                    public void tick(final long ticks, final InputManager input) {
+                        if (!input.isLeftMouseButtonDown())
+                            pressed[0] = false;
+                    }
+                };
+                glassPane.setWidth(background.getWidth());
+                glassPane.setHeight(background.getHeight());
+                glassPane.onMousePress(() -> {
+                    if (!pressed[0]) {
+                        pressed[0] = true;
+
+                        server.send(new Packet_015_EnterPreGameLobby(game));
+
+                        state = State.AWAIT_PREGAME_LOBBY_ENTER_CONFIRMATION;
+                    }
+                });
+                glassPane.setZ(background.getZ() + 2);
+
                 gameContainer.add(background);
                 gameContainer.add(labelGame);
                 gameContainer.add(labelOwner);
                 gameContainer.add(labelPLayerCount);
+                gameContainer.add(glassPane);
 
-                gameContainer.forEach(this::add);
+                gameContainer.forEach(e -> {
+                    if (e instanceof DrawableEntity)
+                        add((DrawableEntity) e);
+                    else
+                        add(e);
+                });
 
                 gameContainer.setLocation(backGroundGames.getX(), backGroundGames.getY() + backGroundGames.getHeight() - background.getHeight() - (background.getHeight() * i++));
             }
@@ -334,6 +373,7 @@ public final class Lobby extends State {
         ENTERING_LOBBY,
         IN_LOBBY,
         CREATE_GAME,
-        AWAIT_GAME_CREATION_CONFIRMATION
+        AWAIT_GAME_CREATION_CONFIRMATION,
+        AWAIT_PREGAME_LOBBY_ENTER_CONFIRMATION
     }
 }
