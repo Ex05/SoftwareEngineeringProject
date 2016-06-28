@@ -6,6 +6,8 @@ package de.presidente.jungle_king.net;
 import de.presidente.net.Packet;
 import de.presidente.net.Packet_000_ConnectionClosed;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -50,8 +52,14 @@ public final class ConnectionManager {
         threadInbound.setDaemon(true);
 
         final Thread t1 = new Thread(() -> {
+            byte repetitions = 1;
+            int timeout = 200;
             do {
-                socket = OpenSocket(address, port, 600);
+                System.out.println(timeout + "ms");
+
+                socket = OpenSocket(address, port, timeout);
+
+                timeout += timeout / 2;
 
                 if (socket != null) {
                     System.out.println("Connected to server.");
@@ -60,8 +68,18 @@ public final class ConnectionManager {
 
                     threadInbound.start();
                 } else
-                    socket = OpenSocket(address, port, 600);
-            } while (socket == null);
+                    System.out.println("Retrying...");
+            } while (socket == null && repetitions++ < 7);
+
+            if (socket == null) {
+                // TODO:(jan) Make this not use OptionPane.
+                final JFrame frame = new JFrame();
+                frame.setAlwaysOnTop(true);
+
+                JOptionPane.showConfirmDialog(frame, "Unable to reach server[" + address + "]", "Server offline!", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+
+                System.exit(-1);
+            }
         });
 
         t1.setDaemon(true);
@@ -172,47 +190,51 @@ public final class ConnectionManager {
     public static Socket OpenSocket(final String iNetAddress, final int port, final int timeout) {
         final boolean[] available = {false};
 
-        final Thread thread = Thread.currentThread();
+        final Thread callingThread = Thread.currentThread();
 
-        final Thread t1 = new Thread(() -> {
-            if (!Thread.currentThread().isInterrupted())
-                try (final Socket socket = new Socket()) {
-                    socket.connect(new InetSocketAddress(iNetAddress, port));
-                    socket.close();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
+        final Socket outgoingConnection = new Socket();
+        final Thread connectorThread = new Thread(() -> {
+            try {
+                outgoingConnection.connect(new InetSocketAddress(iNetAddress, port));
+                outgoingConnection.close();
+            } catch (final Exception ignored) {
+                // Ignore
+            }
 
             available[0] = true;
 
-            synchronized (thread) {
-                thread.notify();
+            synchronized (callingThread) {
+                callingThread.notify();
             }
         });
-        t1.setDaemon(true);
-        t1.start();
+        connectorThread.setDaemon(true);
+        connectorThread.start();
 
-        @SuppressWarnings("deprecation")
-        final Thread t2 = new Thread(() -> {
+        final Thread timer = new Thread(() -> {
             try {
                 Thread.sleep(timeout);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
 
-            t1.stop();
+            connectorThread.interrupt();
+            try {
+                outgoingConnection.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
 
             if (!available[0])
-                synchronized (thread) {
-                    thread.notify();
+                synchronized (callingThread) {
+                    callingThread.notify();
                 }
         });
-        t2.setDaemon(true);
-        t2.start();
+        timer.setDaemon(true);
+        timer.start();
 
-        synchronized (thread) {
+        synchronized (callingThread) {
             try {
-                thread.wait();
+                callingThread.wait();
             } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
