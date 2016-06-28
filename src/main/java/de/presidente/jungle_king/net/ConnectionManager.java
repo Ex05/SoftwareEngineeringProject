@@ -50,14 +50,18 @@ public final class ConnectionManager {
         threadInbound.setDaemon(true);
 
         final Thread t1 = new Thread(() -> {
-            socket = OpenSocket(address, port, 200);
+            for (int i = 0; i < 4; i++) {
+                socket = OpenSocket(address, port, 200 + 200 * i);
 
-            if (socket != null) {
-                System.out.println("Connected to server.");
+                if (socket != null) {
+                    System.out.println("Connected to server.");
 
-                threadOutbound.start();
+                    threadOutbound.start();
 
-                threadInbound.start();
+                    threadInbound.start();
+
+                    break;
+                }
             }
         });
 

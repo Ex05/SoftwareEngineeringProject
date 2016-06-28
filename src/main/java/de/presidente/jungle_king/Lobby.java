@@ -233,8 +233,7 @@ public final class Lobby extends State {
     private void handlePacket_014_CreateNewGameConfirmation(final Packet_014_CreateNewGameConfirmation packet) {
         if (state == State.AWAIT_GAME_CREATION_CONFIRMATION) {
             if (packet.isGranted())
-                // TODO:(jan) Enter pre game lobby.
-                System.err.println("Lobby.tick[TODO:(jan) Enter pre game lobby].");
+                game.switchState(PreGameLobby.class);
             else {
                 textFieldNewGameName.clear();
 
