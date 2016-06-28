@@ -3,6 +3,8 @@ package de.presidente.server;
 
 // <- Static_Import ->
 
+import de.presidente.net.GameInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,19 +45,6 @@ public final class Lobby {
     }
 
     // <- Getter & Setter ->
-    public String[] getGameNames() {
-
-        synchronized (clients) {
-            return games.stream().map(Game::getName).toArray(String[]::new);
-        }
-    }
-
-    public String[] getGameOwner() {
-        synchronized (clients) {
-            return games.stream().map(g -> g.getOwner().getUserName()).toArray(String[]::new);
-        }
-    }
-
     public String[] getConnectedClients() {
         synchronized (clients) {
             return clients.stream().map(Client::getUserName).toArray(String[]::new);
@@ -83,18 +72,23 @@ public final class Lobby {
         return created;
     }
 
-    public Byte[] getPlayerCounts() {
-        return games.stream().map(Game::getPlayerCount).toArray(Byte[]::new);
-    }
-
     public boolean enterGame(final Client client, final String gameName) {
         final Game game = games.stream().filter(g -> g.getName().equals(gameName)).findFirst().orElse(null);
 
-        if(game != null){
-            return game.enter(client);
-        }
-            return false;
+        return game != null && game.enter(client);
 
+    }
+
+    public GameInfo[] getGames() {
+        synchronized (games) {
+            final GameInfo[] gameInfo = new GameInfo[games.size()];
+
+            int i = 0;
+            for (final Game game : games)
+                gameInfo[i++] = new GameInfo(game.getName(), game.getOwner().getUserName(), game.getPlayerCount());
+
+            return gameInfo;
+        }
     }
 
     // <- Static ->

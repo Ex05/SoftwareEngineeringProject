@@ -171,7 +171,7 @@ public final class Client implements Runnable {
 
             server.getLobby().enter(this);
 
-            send(new Packet_004_LobbyEnter(lobby.getGameNames(), lobby.getGameOwner(), lobby.getPlayerCounts(), lobby.getConnectedClients()));
+            send(new Packet_004_LobbyEnter(lobby.getGames(), lobby.getConnectedClients()));
         } else
             send(new Packet_003_Permission(DENIED));
 

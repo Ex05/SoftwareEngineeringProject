@@ -15,6 +15,7 @@ import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.TextField;
 import de.janik.softengine.util.ColorARGB;
 import de.presidente.jungle_king.net.ConnectionManager;
+import de.presidente.net.GameInfo;
 import de.presidente.net.Packet;
 import de.presidente.net.Packet_004_LobbyEnter;
 import de.presidente.net.Packet_011_CheckGameName;
@@ -245,7 +246,7 @@ public final class Lobby extends State {
                 game.switchState(PreGameLobby.class);
 
                 poolPackets = false;
-            }else
+            } else
                 System.err.println("Failed to enter PreGameLobby.");
     }
 
@@ -271,30 +272,26 @@ public final class Lobby extends State {
 
     private void handlePacket_004_LobbyEnter(final Packet_004_LobbyEnter packet) {
         if (state == State.ENTERING_LOBBY) {
-            final String[] games = packet.getGames();
-            final String[] owner = packet.getOwners();
-            final Byte[] player = packet.getPlayerCounts();
-
             int i = 0;
-            for (final String game : games) {
+            for (final GameInfo game : packet.getGames()) {
                 final Container<Entity> gameContainer = new Container<>();
 
                 final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
                 background.setColor(i % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
                 background.setZ(backGroundGames.getZ() + 1);
 
-                final Label labelGame = new Label(game);
+                final Label labelGame = new Label(game.getName());
                 labelGame.setFont(SOURCE_CODE_PRO);
                 labelGame.setTextSize(30);
                 labelGame.setZ(background.getZ() + 1);
 
-                final Label labelOwner = new Label(owner[i]);
+                final Label labelOwner = new Label(game.getOwner());
                 labelOwner.setFont(SOURCE_CODE_PRO);
                 labelOwner.setTextSize(30);
                 labelOwner.setZ(background.getZ() + 1);
                 labelOwner.setLocation(this.labelOwner.getX(), 0);
 
-                final Label labelPLayerCount = new Label(player[i] + "/5");
+                final Label labelPLayerCount = new Label(game.getPlayerCount() + "/5");
                 labelPLayerCount.setFont(SOURCE_CODE_PRO);
                 labelPLayerCount.setTextSize(30);
                 labelPLayerCount.setZ(background.getZ() + 1);
@@ -314,7 +311,7 @@ public final class Lobby extends State {
                     if (!pressed[0]) {
                         pressed[0] = true;
 
-                        server.send(new Packet_015_EnterPreGameLobby(game));
+                        server.send(new Packet_015_EnterPreGameLobby(game.getName()));
 
                         state = State.AWAIT_PREGAME_LOBBY_ENTER_CONFIRMATION;
                     }
