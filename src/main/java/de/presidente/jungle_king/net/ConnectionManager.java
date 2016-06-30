@@ -55,8 +55,6 @@ public final class ConnectionManager {
             byte repetitions = 1;
             int timeout = 200;
             do {
-                System.out.println(timeout + "ms");
-
                 socket = OpenSocket(address, port, timeout);
 
                 timeout += timeout / 2;
@@ -68,7 +66,7 @@ public final class ConnectionManager {
 
                     threadInbound.start();
                 } else
-                    System.out.println("Retrying...");
+                    System.out.println("Retrying to connect to server...");
             } while (socket == null && repetitions++ < 7);
 
             if (socket == null) {

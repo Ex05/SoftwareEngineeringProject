@@ -3,21 +3,29 @@ package de.presidente.jungle_king;
 
 // <- Static_Import ->
 
+import de.janik.imageLoader.ImageLoader;
 import de.janik.softengine.Engine;
 import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
+import de.janik.softengine.ui.DropShadow;
 import de.janik.softengine.ui.Label;
+import de.janik.softengine.util.ColorARGB;
 import de.janik.util.resource_loader.LaunchComponent;
 import de.janik.util.resource_loader.Launcher;
 
+import java.awt.Font;
+
 import static de.janik.softengine.ui.Text.Interpolation.BILINEAR;
+import static de.janik.softengine.ui.TextLocation.LEFT;
 import static de.janik.softengine.util.ColorARGB.BLACK;
+import static de.janik.softengine.util.ColorARGB.DARK_BLUE;
 import static de.janik.softengine.util.ColorARGB.DARK_ORANGE;
-import static de.janik.softengine.util.ColorARGB.LIGHT_GRAY;
-import static de.janik.softengine.util.ColorARGB.ORANGE;
 import static de.janik.softengine.util.Util.Format;
+import static de.presidente.jungle_king.util.Constants.IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH;
+import static de.presidente.jungle_king.util.Resources.IMAGE_PREGAME_LOBBY_MAP_PREVIEW;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
+import static java.awt.Font.BOLD;
 import static java.awt.event.KeyEvent.VK_ENTER;
 
 /**
@@ -61,32 +69,37 @@ public final class Intro extends State implements LaunchComponent {
         textWelcome = new Label("Welcome");
         textWelcome.setFont(SOURCE_CODE_PRO);
         textWelcome.setAntialiasing(true, BILINEAR);
-        textWelcome.setTextColor(ORANGE);
+        textWelcome.setTextColor(DARK_ORANGE);
         textWelcome.setTextSize(256);
         textWelcome.setZ(1);
+        textWelcome.getText().setDropShadow(new DropShadow(BLACK, 3, 3));
         textWelcome.setLocation(engine.getScreenWidth() / 2 - textWelcome.getWidth() / 2, -textWelcome.getHeight());
 
         buttonPressEnter = new Button("<Press Enter>");
+        buttonPressEnter.setZ(textWelcome.getZ() + 1);
         buttonPressEnter.setFont(SOURCE_CODE_PRO);
+        buttonPressEnter.setFocusAble(false);
         buttonPressEnter.setAntialiasing(true, BILINEAR);
         buttonPressEnter.setTextColor(DARK_ORANGE);
         buttonPressEnter.setTextSize(86);
         buttonPressEnter.setVisible(false);
-        buttonPressEnter.onKeyPress(e -> {
-            if (e.getKeyCode() == VK_ENTER) {
-                game.switchState(LoginAndRegister.class);
-            }
-        });
+        buttonPressEnter.getText().setDropShadow(new DropShadow(BLACK, 2, 2));
+        buttonPressEnter.onMousePress(() -> game.switchState(LoginAndRegister.class));
 
-        loadingBar = new Button();
-        loadingBar.setFont(SOURCE_CODE_PRO);
-        loadingBar.setTextSize(16);
-        loadingBar.setTextColor(LIGHT_GRAY);
+        loadingBar = new Button("", LEFT);
+        loadingBar.setFocusAble(false);
+        loadingBar.setFont(new Font("Consolas", BOLD, 16));
+        loadingBar.setTextSize(17);
+        loadingBar.setTextColor(DARK_BLUE);
         loadingBar.setVisible(false);
 
         loadingBar.setLocation(8, 8);
 
-        // TODO:(jan) Add everything that needs to be loaded here.
+        launcher.add(1, parent -> {
+            parent.publish("Loading[Image:" + IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH + "].");
+
+            IMAGE_PREGAME_LOBBY_MAP_PREVIEW = ImageLoader.GetInstance().setInputFile(IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH).load().asImage().get();
+        });
     }
 
     // <- Abstract ->
@@ -94,7 +107,7 @@ public final class Intro extends State implements LaunchComponent {
     // <- Object ->
     @Override
     public void init() {
-        game.setBackgroundColor(BLACK);
+        game.setBackgroundColor(new ColorARGB(115, 195, 90));
 
         game.add(textWelcome);
         game.add(buttonPressEnter);
@@ -106,13 +119,8 @@ public final class Intro extends State implements LaunchComponent {
 
     @Override
     public void tick(final long ticks, final Engine engine) {
-        // TODO:(jan) Remove debug code.
-        game.switchState(LoginAndRegister.class);
-
-        System.err.println("Intro.tick[TODO:(jan) Remove debug code].");
-
         if (textWelcomePosY < engine.getScreenHeight() / 2 - textWelcome.getHeight() / 4) {
-            textWelcomePosY += 10;
+            textWelcomePosY += game.getDesiredTicksPerSecond() / 10;
             textWelcome.setY(textWelcomePosY);
         } else if (resourcesFinishedLoading)
             buttonPressEnter.setVisible(true);
@@ -132,13 +140,17 @@ public final class Intro extends State implements LaunchComponent {
 
             dirty = false;
         }
+
+        if (buttonPressEnter.isVisible())
+            if (engine.getInput().isKeyDown(VK_ENTER))
+                game.switchState(LoginAndRegister.class);
     }
 
     @Override
     public void launch() {
         resourcesFinishedLoading = true;
 
-        loadingBar.setVisible(false);
+        publish("Loading complete.");
     }
 
     @Override

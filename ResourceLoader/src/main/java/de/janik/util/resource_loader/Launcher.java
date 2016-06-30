@@ -38,7 +38,7 @@ public final class Launcher {
         addEvent(new LaunchEvent(action, weight));
     }
 
-    public void addEvent(final LaunchEvent event) {
+    private void addEvent(final LaunchEvent event) {
         event.setParent(component);
 
         events.add(event);
