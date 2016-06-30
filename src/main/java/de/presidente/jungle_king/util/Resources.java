@@ -3,8 +3,9 @@ package de.presidente.jungle_king.util;
 
 // <- Static_Import ->
 
-        import java.awt.Font;
-        import java.awt.image.BufferedImage;
+import de.janik.softengine.ui.Sprite;
+
+import java.awt.Font;
 
 /**
  * @author Jan.Marcel.Janik [©2016]
@@ -13,7 +14,7 @@ public final class Resources {
     // <- Public ->
     public static Font SOURCE_CODE_PRO;
 
-    public static BufferedImage IMAGE_PREGAME_LOBBY_MAP_PREVIEW;
+    public static Sprite IMAGE_PREGAME_LOBBY_MAP_PREVIEW;
 
     // <- Protected ->
     // <- Private->

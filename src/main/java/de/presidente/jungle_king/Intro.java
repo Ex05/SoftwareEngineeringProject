@@ -10,6 +10,7 @@ import de.janik.softengine.game.State;
 import de.janik.softengine.ui.Button;
 import de.janik.softengine.ui.DropShadow;
 import de.janik.softengine.ui.Label;
+import de.janik.softengine.ui.Sprite;
 import de.janik.softengine.util.ColorARGB;
 import de.janik.util.resource_loader.LaunchComponent;
 import de.janik.util.resource_loader.Launcher;
@@ -98,7 +99,7 @@ public final class Intro extends State implements LaunchComponent {
         launcher.add(1, parent -> {
             parent.publish("Loading[Image:" + IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH + "].");
 
-            IMAGE_PREGAME_LOBBY_MAP_PREVIEW = ImageLoader.GetInstance().setInputFile(IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH).load().asImage().get();
+            IMAGE_PREGAME_LOBBY_MAP_PREVIEW = new Sprite(IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH);
         });
     }
 
@@ -149,8 +150,6 @@ public final class Intro extends State implements LaunchComponent {
     @Override
     public void launch() {
         resourcesFinishedLoading = true;
-
-        publish("Loading complete.");
     }
 
     @Override

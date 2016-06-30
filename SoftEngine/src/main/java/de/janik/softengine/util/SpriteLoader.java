@@ -11,6 +11,7 @@ import de.janik.softengine.ui.Bitmap;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.File;
 
 import static de.janik.imageLoader.ImageType.TYPE_INT_ARGB;
 import static de.janik.softengine.util.Constants.ANIMATION_FILE_FILE_EXTENSION;
@@ -38,7 +39,6 @@ public final class SpriteLoader {
         final Preset[] presets = animationPreset.getPreset();
 
         final Animation[] animations = new Animation[presets.length];
-
 
         for (int i = 0; i < presets.length; i++) {
             final Preset preset = presets[i];
@@ -74,5 +74,29 @@ public final class SpriteLoader {
     // <- Static ->
     public static SpriteLoader GetInstance() {
         return LOADER;
+    }
+
+    public Animation[] load(final String file) {
+        final Animation[] animations = new Animation[1];
+
+        final BufferedImage img = ImageLoader.GetInstance().setInputFile(file).type(TYPE_INT_ARGB).load().asImage().get();
+
+        final int[] srcPixel = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+
+        final Bitmap[] bitmaps = new Bitmap[1];
+
+        final int width = img.getWidth();
+        final int height = img.getHeight();
+
+        final int[] pixel = new int[width * height];
+
+        for (int i = 0; i < height; i++)
+            System.arraycopy(srcPixel, i * img.getWidth(), pixel, i * width, width);
+
+        bitmaps[0] = new Bitmap(width, height, pixel);
+
+        animations[0] = new Animation(new File(file).getName(), bitmaps);
+
+        return animations;
     }
 }
