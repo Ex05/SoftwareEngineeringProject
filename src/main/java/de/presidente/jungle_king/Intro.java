@@ -3,7 +3,6 @@ package de.presidente.jungle_king;
 
 // <- Static_Import ->
 
-import de.janik.imageLoader.ImageLoader;
 import de.janik.softengine.Engine;
 import de.janik.softengine.game.Game;
 import de.janik.softengine.game.State;
@@ -94,7 +93,7 @@ public final class Intro extends State implements LaunchComponent {
         loadingBar.setTextColor(DARK_BLUE);
         loadingBar.setVisible(false);
 
-        loadingBar.setLocation(8, 8);
+        loadingBar.setLocation(-6, 4);
 
         launcher.add(1, parent -> {
             parent.publish("Loading[Image:" + IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH + "].");

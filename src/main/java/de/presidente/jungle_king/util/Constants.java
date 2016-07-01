@@ -21,7 +21,7 @@ public final class Constants {
     // <- Static ->
     static {
         GAME_TITLE = "Jungle King [alpha v0.1]";
-        IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH = Path("res", "img", "preGameLobbyIcon.png");
+        IMAGE_PREGAME_LOBBY_MAP_PREVIEW_PATH = Path(".", "res", "img", "preGameLobbyIcon.png");
 
         TICKS_PER_SECOND = 60;
     }
