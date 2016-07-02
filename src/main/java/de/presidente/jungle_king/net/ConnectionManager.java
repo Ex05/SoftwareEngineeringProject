@@ -53,7 +53,7 @@ public final class ConnectionManager {
 
         final Thread t1 = new Thread(() -> {
             byte repetitions = 1;
-            int timeout = 200;
+            int timeout = 300;
             do {
                 socket = OpenSocket(address, port, timeout);
 

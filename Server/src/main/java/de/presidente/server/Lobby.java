@@ -38,10 +38,16 @@ public final class Lobby {
     }
 
     public void leave(final Client client) {
-        if (client != null)
+        if (client != null) {
+            final Game game = client.getGame();
+
+            if (game != null)
+                game.leave(client);
+
             synchronized (clients) {
                 clients.remove(client);
             }
+        }
     }
 
     // <- Getter & Setter ->

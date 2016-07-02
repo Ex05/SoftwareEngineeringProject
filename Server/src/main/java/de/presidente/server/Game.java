@@ -63,5 +63,10 @@ public final class Game {
         }
     }
 
+    public void leave(final Client client){
+        if(clients.remove(client))
+            playerCount--;
+    }
+
     // <- Static ->
 }

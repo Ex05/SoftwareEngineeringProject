@@ -143,9 +143,7 @@ public final class Lobby extends State {
         textFieldNewGameName.setZ(backgroundCreateGame.getZ() + 1);
         textFieldNewGameName.setTextSize(30);
         textFieldNewGameName.setLocation(backgroundCreateGame.getX() + 10, labelCreateNewGame.getY() - textFieldNewGameName.getHeight() - 10);
-        textFieldNewGameName.onInputChange(() -> {
-            server.send(new Packet_011_CheckGameName(textFieldNewGameName.getUserInput()));
-        });
+        textFieldNewGameName.onInputChange(() -> server.send(new Packet_011_CheckGameName(textFieldNewGameName.getUserInput())));
 
         buttonOK = new Button("OK");
         buttonOK.setFocusAble(false);
@@ -266,7 +264,7 @@ public final class Lobby extends State {
 
     private void handlePacket_012_GameNameAvailable(final Packet_012_GameNameAvailable packet) {
         if (state == State.CREATE_GAME)
-            if (!textFieldNewGameName.getUserInput().equals(""))
+            if (!textFieldNewGameName.getUserInput().equals(packet.getGameName()))
                 textFieldNewGameName.setTextColor(packet.isGranted() ? GREEN : RED);
     }
 

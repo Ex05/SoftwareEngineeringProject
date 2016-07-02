@@ -209,6 +209,18 @@ public class Text extends A_Sprite {
         setAntialiasing(antialiasing);
     }
 
+    public DropShadow getDropShadow() {
+        return dropShadow;
+    }
+
+    public Interpolation getInterpolation() {
+        return interpolation;
+    }
+
+    public boolean isAntialiasing() {
+        return antialiasing;
+    }
+
     public Graphics2D getGraphics() {
         return g;
     }

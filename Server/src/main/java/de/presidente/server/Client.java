@@ -52,6 +52,8 @@ public final class Client implements Runnable {
 
     private long uID;
 
+    private Game currentGame;
+
     // <- Static ->
 
     // <- Constructor ->
@@ -156,7 +158,7 @@ public final class Client implements Runnable {
     }
 
     private void handlePacket_011_CheckGameName(final Packet_011_CheckGameName packet) {
-        send(new Packet_012_GameNameAvailable(server.getLobby().isGameNameAvailable(packet.getGameName())));
+        send(new Packet_012_GameNameAvailable(packet.getGameName(), server.getLobby().isGameNameAvailable(packet.getGameName())));
     }
 
     private boolean handlePacket_001_Login(final Packet_001_Login packet) {
@@ -234,6 +236,10 @@ public final class Client implements Runnable {
 
     public void setuID(final long uID) {
         this.uID = uID;
+    }
+
+    public Game getGame() {
+        return currentGame;
     }
 
     // <- Static ->

@@ -49,7 +49,8 @@ public final class Intro extends State implements LaunchComponent {
 
     private boolean resourcesFinishedLoading = false;
     private boolean launcherStarted = false;
-    private boolean dirty = false;
+    private boolean messageDirty = false;
+    private boolean progressDirty = false;
 
     private int progress;
 
@@ -135,10 +136,16 @@ public final class Intro extends State implements LaunchComponent {
             launcherStarted = true;
         }
 
-        if (dirty) {
+        if (messageDirty) {
             loadingBar.setText(Format(BUTTON_LOADING_BAR_FORMAT_STRING, progress, msg));
 
-            dirty = false;
+            messageDirty = false;
+        }
+
+        if (progressDirty) {
+            loadingBar.setText(Format(BUTTON_LOADING_BAR_FORMAT_STRING, progress, msg));
+
+            progressDirty = false;
         }
 
         if (buttonPressEnter.isVisible())
@@ -149,20 +156,24 @@ public final class Intro extends State implements LaunchComponent {
     @Override
     public void launch() {
         resourcesFinishedLoading = true;
+
+        msg = "Loading Complete.";
+
+        messageDirty = true;
     }
 
     @Override
     public void publish(final String msg) {
         this.msg = msg;
 
-        dirty = true;
+        messageDirty = true;
     }
 
     @Override
     public void progress(final int progress) {
         this.progress = progress;
 
-        dirty = true;
+        progressDirty = true;
     }
 
     // <- Getter & Setter ->
