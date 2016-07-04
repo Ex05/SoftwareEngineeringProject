@@ -54,6 +54,7 @@ public final class Client implements Runnable {
     private long uID;
 
     private Game currentGame;
+    private Game currentgame;
 
     // <- Static ->
 
@@ -216,7 +217,7 @@ public final class Client implements Runnable {
             send(new Packet_006_Salt(salt));
     }
 
-    private boolean send(final Packet packet) {
+    public  boolean send(final Packet packet) {
         boolean successfulWrite = false;
 
         try {
@@ -249,12 +250,16 @@ public final class Client implements Runnable {
         this.userName = userName;
     }
 
-    public void setuID(final long uID) {
+    public void setU_ID(final long uID) {
         this.uID = uID;
     }
 
     public Game getGame() {
         return currentGame;
+    }
+
+    public void setCurrentGame(final Game currentGame) {
+        this.currentGame = currentGame;
     }
 
     // <- Static ->

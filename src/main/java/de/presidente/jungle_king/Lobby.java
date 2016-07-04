@@ -24,6 +24,10 @@ import de.presidente.net.Packet_013_CreateNewGame;
 import de.presidente.net.Packet_014_CreateNewGameConfirmation;
 import de.presidente.net.Packet_015_EnterPreGameLobby;
 import de.presidente.net.Packet_016_EnterPreGameLobbyConfirmation;
+import de.presidente.net.Packet_018_LobbyUpdate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static de.janik.softengine.util.ColorARGB.CYAN;
 import static de.janik.softengine.util.ColorARGB.FIREBRICK_RED;
@@ -62,9 +66,11 @@ public final class Lobby extends State {
 
     private final Container<DrawableEntity> createGameForm;
 
+    private final List<Entity> toBeCleared;
+
     private ConnectionManager server;
 
-    private State state = State.ENTERING_LOBBY;
+    private State state;
 
     private volatile boolean poolPackets = true;
 
@@ -198,7 +204,14 @@ public final class Lobby extends State {
             state = State.AWAIT_GAME_CREATION_CONFIRMATION;
 
             server.send(new Packet_013_CreateNewGame(textFieldNewGameName.getUserInput()));
+
+            textFieldNewGameName.clear();
+            textFieldNewGameName.setFocus(false);
+
+            createGameForm.forEach(e -> e.setVisible(false));
         });
+
+        toBeCleared = new ArrayList<>(64);
     }
 
     // <- Abstract ->
@@ -220,6 +233,10 @@ public final class Lobby extends State {
         add(buttonCreateGame);
 
         createGameForm.forEach(this::add);
+
+        state = State.ENTERING_LOBBY;
+
+        poolPackets = true;
     }
 
     @Override
@@ -235,7 +252,13 @@ public final class Lobby extends State {
                 handlePacket_014_CreateNewGameConfirmation((Packet_014_CreateNewGameConfirmation) p);
             else if (p.getClass().equals(Packet_016_EnterPreGameLobbyConfirmation.class))
                 handlePacket_016_EnterPreGameLobbyConfirmation((Packet_016_EnterPreGameLobbyConfirmation) p);
+            else if (p.getClass().equals(Packet_018_LobbyUpdate.class))
+                handlePacket_018_LobbyUpdate((Packet_018_LobbyUpdate) p);
         }
+    }
+
+    private void handlePacket_018_LobbyUpdate(final Packet_018_LobbyUpdate packet) {
+        updateUI(packet);
     }
 
     private void handlePacket_016_EnterPreGameLobbyConfirmation(final Packet_016_EnterPreGameLobbyConfirmation packet) {
@@ -270,90 +293,113 @@ public final class Lobby extends State {
 
     private void handlePacket_004_LobbyEnter(final Packet_004_LobbyEnter packet) {
         if (state == State.ENTERING_LOBBY) {
-            int i = 0;
-            for (final GameInfo game : packet.getGames()) {
-                final Container<Entity> gameContainer = new Container<>();
+            updateUI(packet);
 
-                final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
-                background.setColor(i % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
-                background.setZ(backGroundGames.getZ() + 1);
+            state = State.IN_LOBBY;
+        }
+    }
 
-                final Label labelGame = new Label(game.getName());
-                labelGame.setFont(SOURCE_CODE_PRO);
-                labelGame.setTextSize(30);
-                labelGame.setZ(background.getZ() + 1);
+    private void updateUI(final Packet_004_LobbyEnter packet) {
+        toBeCleared.forEach(e -> {
+            if (e instanceof DrawableEntity)
+                remove((DrawableEntity) e);
+            else
+                remove(e);
+        });
 
-                final Label labelOwner = new Label(game.getOwner());
-                labelOwner.setFont(SOURCE_CODE_PRO);
-                labelOwner.setTextSize(30);
-                labelOwner.setZ(background.getZ() + 1);
-                labelOwner.setLocation(this.labelOwner.getX(), 0);
+        toBeCleared.clear();
 
-                final Label labelPLayerCount = new Label(game.getPlayerCount() + "/5");
-                labelPLayerCount.setFont(SOURCE_CODE_PRO);
-                labelPLayerCount.setTextSize(30);
-                labelPLayerCount.setZ(background.getZ() + 1);
-                labelPLayerCount.setLocation(this.labelPlayer.getX(), 0);
+        int i = 0;
+        for (final GameInfo game : packet.getGames()) {
+            final Container<Entity> gameContainer = new Container<>();
 
-                boolean[] pressed = {false};
-                final Entity glassPane = new Entity(0, 0) {
-                    @Override
-                    public void tick(final long ticks, final InputManager input) {
-                        if (!input.isLeftMouseButtonDown())
-                            pressed[0] = false;
-                    }
-                };
-                glassPane.setWidth(background.getWidth());
-                glassPane.setHeight(background.getHeight());
-                glassPane.onMousePress(() -> {
-                    if (!pressed[0]) {
-                        pressed[0] = true;
+            final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
+            background.setColor(i % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
+            background.setZ(backGroundGames.getZ() + 1);
 
+            final Label labelGame = new Label(game.getName());
+            labelGame.setFont(SOURCE_CODE_PRO);
+            labelGame.setTextSize(30);
+            labelGame.setZ(background.getZ() + 1);
+
+            final Label labelOwner = new Label(game.getOwner());
+            labelOwner.setFont(SOURCE_CODE_PRO);
+            labelOwner.setTextSize(30);
+            labelOwner.setZ(background.getZ() + 1);
+            labelOwner.setLocation(this.labelOwner.getX(), 0);
+
+            final Label labelPLayerCount = new Label(game.getPlayerCount() + "/5");
+            labelPLayerCount.setFont(SOURCE_CODE_PRO);
+            labelPLayerCount.setTextSize(30);
+            labelPLayerCount.setZ(background.getZ() + 1);
+            labelPLayerCount.setLocation(this.labelPlayer.getX(), 0);
+
+            boolean[] pressed = {false};
+            final Entity glassPane = new Entity(0, 0) {
+                @Override
+                public void tick(final long ticks, final InputManager input) {
+                    if (!input.isLeftMouseButtonDown())
+                        pressed[0] = false;
+                }
+            };
+            glassPane.setWidth(background.getWidth());
+            glassPane.setHeight(background.getHeight());
+            glassPane.onMousePress(() -> {
+                if (!pressed[0]) {
+                    pressed[0] = true;
+
+                    if (state != State.AWAIT_PREGAME_LOBBY_ENTER_CONFIRMATION) {
                         server.send(new Packet_015_EnterPreGameLobby(game.getName()));
 
                         state = State.AWAIT_PREGAME_LOBBY_ENTER_CONFIRMATION;
                     }
-                });
-                glassPane.setZ(background.getZ() + 2);
+                }
+            });
+            glassPane.setZ(background.getZ() + 2);
 
-                gameContainer.add(background);
-                gameContainer.add(labelGame);
-                gameContainer.add(labelOwner);
-                gameContainer.add(labelPLayerCount);
-                gameContainer.add(glassPane);
+            gameContainer.add(background);
+            gameContainer.add(labelGame);
+            gameContainer.add(labelOwner);
+            gameContainer.add(labelPLayerCount);
+            gameContainer.add(glassPane);
 
-                gameContainer.forEach(e -> {
-                    if (e instanceof DrawableEntity)
-                        add((DrawableEntity) e);
-                    else
-                        add(e);
-                });
+            gameContainer.forEach(e -> {
+                if (e instanceof DrawableEntity)
+                    add((DrawableEntity) e);
+                else
+                    add(e);
 
-                gameContainer.setLocation(backGroundGames.getX(), backGroundGames.getY() + backGroundGames.getHeight() - background.getHeight() - (background.getHeight() * i++));
-            }
+                toBeCleared.add(e);
+            });
 
-            int j = 0;
-            for (final String user : packet.getClients()) {
-                final Container<DrawableEntity> gameContainer = new Container<>();
+            gameContainer.setLocation(backGroundGames.getX(), backGroundGames.getY() + backGroundGames.getHeight() - background.getHeight() - (background.getHeight() * i++));
+        }
 
-                final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
-                background.setColor(j % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
-                background.setZ(backGroundGames.getZ() + 1);
+        int j = 0;
+        for (final String user : packet.getClients()) {
+            final Container<DrawableEntity> gameContainer = new Container<>();
 
-                final Label labelUser = new Label(user);
-                labelUser.setFont(SOURCE_CODE_PRO);
-                labelUser.setTextSize(30);
-                labelUser.setZ(backGroundUsers.getZ() + 1);
+            toBeCleared.add(gameContainer);
 
-                gameContainer.add(background);
-                gameContainer.add(labelUser);
+            final Rectangle background = new Rectangle(backGroundGames.getWidth(), 44);
+            background.setColor(j % 2 == 0 ? SILVER_GRAY : LIGHT_GRAY);
+            background.setZ(backGroundGames.getZ() + 1);
 
-                gameContainer.forEach(this::add);
+            final Label labelUser = new Label(user);
+            labelUser.setFont(SOURCE_CODE_PRO);
+            labelUser.setTextSize(30);
+            labelUser.setZ(backGroundUsers.getZ() + 1);
 
-                gameContainer.setLocation(backGroundUsers.getX(), backGroundUsers.getY() + backGroundUsers.getHeight() - background.getHeight() - (background.getHeight() * j++));
-            }
+            gameContainer.add(background);
+            gameContainer.add(labelUser);
 
-            state = State.IN_LOBBY;
+            gameContainer.forEach(e -> {
+                add(e);
+
+                toBeCleared.add(e);
+            });
+
+            gameContainer.setLocation(backGroundUsers.getX(), backGroundUsers.getY() + backGroundUsers.getHeight() - background.getHeight() - (background.getHeight() * j++));
         }
     }
 

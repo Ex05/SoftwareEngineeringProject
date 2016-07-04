@@ -67,7 +67,7 @@ public final class ConnectionManager {
                     threadInbound.start();
                 } else
                     System.out.println("Trying to connect to server.");
-            } while (socket == null && repetitions++ < 8);
+            } while (socket == null && repetitions++ < 10);
 
             if (socket == null) {
                 // TODO:(jan) Make this not use OptionPane.

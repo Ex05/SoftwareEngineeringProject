@@ -13,6 +13,8 @@ public final class Game {
     // <- Protected ->
 
     // <- Private->
+    private final Lobby lobby;
+
     private final String name;
 
     private final Client owner;
@@ -23,13 +25,14 @@ public final class Game {
     // <- Static ->
 
     // <- Constructor ->
-    public Game(final String name, final Client owner) {
+    public Game(final Lobby lobby, final String name, final Client owner) {
+        this.lobby = lobby;
         this.name = name;
         this.owner = owner;
 
         clients = new ArrayList<>(5);
 
-        clients.add(owner);
+        enter(owner);
 
         playerCount = 1;
     }
@@ -56,16 +59,24 @@ public final class Game {
         else {
             final boolean entered = clients.add(client);
 
-            if (entered)
+            if (entered) {
+                client.setCurrentGame(this);
+
                 playerCount++;
+            }
 
             return entered;
         }
     }
 
-    public void leave(final Client client){
-        if(clients.remove(client))
+    public void leave(final Client client) {
+        if (clients.remove(client))
             playerCount--;
+
+        System.out.println("playerCount = " + playerCount);
+
+        if(playerCount <= 0)
+            lobby.remove(this);
     }
 
     // <- Static ->
