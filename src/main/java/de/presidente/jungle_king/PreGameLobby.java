@@ -11,6 +11,8 @@ import de.janik.softengine.ui.DropShadow;
 import de.janik.softengine.ui.Rectangle;
 import de.janik.softengine.ui.TextField;
 import de.janik.softengine.ui.TexturedQuad;
+import de.presidente.jungle_king.net.ConnectionManager;
+import de.presidente.net.Packet_017_LeavePreGameLobby;
 
 import java.awt.Font;
 
@@ -23,7 +25,6 @@ import static de.janik.softengine.util.ColorARGB.GREEN;
 import static de.janik.softengine.util.ColorARGB.LIGHT_GRAY;
 import static de.janik.softengine.util.ColorARGB.RED;
 import static de.janik.softengine.util.ColorARGB.SILVER;
-import static de.janik.softengine.util.ColorARGB.SILVER_GRAY;
 import static de.presidente.jungle_king.util.Resources.IMAGE_PREGAME_LOBBY_MAP_PREVIEW;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
 
@@ -46,6 +47,8 @@ public final class PreGameLobby extends State {
     private Rectangle backgroundChat;
 
     private TextField textFieldChat;
+
+    private ConnectionManager server;
     // <- Static ->
 
     // <- Constructor ->
@@ -53,7 +56,13 @@ public final class PreGameLobby extends State {
         super(game);
 
         buttonReady = new Button("Ready");
+
         buttonLeave = new Button("Leave");
+        buttonLeave.onMousePress(() -> {
+            server.send(new Packet_017_LeavePreGameLobby());
+
+            game.switchState(Lobby.class);
+        });
 
         buttonLeaveAndReady = new Container<>();
         buttonLeaveAndReady.add(buttonReady);
@@ -70,6 +79,8 @@ public final class PreGameLobby extends State {
     // <- Object ->
     @Override
     public void init() {
+        server = getGame().getServerConnection();
+
         game.setBackgroundColor(DARK_ORANGE);
 
         mapPreview = new TexturedQuad(IMAGE_PREGAME_LOBBY_MAP_PREVIEW);

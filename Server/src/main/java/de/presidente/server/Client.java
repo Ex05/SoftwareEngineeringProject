@@ -20,6 +20,7 @@ import de.presidente.net.Packet_013_CreateNewGame;
 import de.presidente.net.Packet_014_CreateNewGameConfirmation;
 import de.presidente.net.Packet_015_EnterPreGameLobby;
 import de.presidente.net.Packet_016_EnterPreGameLobbyConfirmation;
+import de.presidente.net.Packet_017_LeavePreGameLobby;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -145,8 +146,26 @@ public final class Client implements Runnable {
                 handlePacket_013_CreateNewGame((Packet_013_CreateNewGame) packet);
             else if (packet.getClass().equals(Packet_015_EnterPreGameLobby.class))
                 handlePacket_015_EnterPreGameLobby((Packet_015_EnterPreGameLobby) packet);
+            else if (packet.getClass().equals(Packet_017_LeavePreGameLobby.class))
+                handlePacket_017_LeavePreGameLobby((Packet_017_LeavePreGameLobby) packet);
         }
         while (true);
+    }
+
+    private void handlePacket_017_LeavePreGameLobby(final Packet_017_LeavePreGameLobby packet) {
+        currentGame.leave(this);
+
+        currentGame = null;
+
+        enterLobby();
+    }
+
+    private void enterLobby() {
+        final Lobby lobby = server.getLobby();
+
+        server.getLobby().enter(this);
+
+        send(new Packet_004_LobbyEnter(lobby.getGames(), lobby.getConnectedClients()));
     }
 
     private void handlePacket_015_EnterPreGameLobby(final Packet_015_EnterPreGameLobby packet) {
@@ -169,11 +188,7 @@ public final class Client implements Runnable {
         if (loggedIn) {
             send(new Packet_003_Permission(GRANTED));
 
-            final Lobby lobby = server.getLobby();
-
-            server.getLobby().enter(this);
-
-            send(new Packet_004_LobbyEnter(lobby.getGames(), lobby.getConnectedClients()));
+            enterLobby();
         } else
             send(new Packet_003_Permission(DENIED));
 
