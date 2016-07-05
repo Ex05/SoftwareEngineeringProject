@@ -73,8 +73,6 @@ public final class Game {
         if (clients.remove(client))
             playerCount--;
 
-        System.out.println("playerCount = " + playerCount);
-
         if(playerCount <= 0)
             lobby.remove(this);
     }
