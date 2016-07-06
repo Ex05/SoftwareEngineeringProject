@@ -3,6 +3,8 @@ package de.presidente.server;
 
 // <- Static_Import ->
 
+import de.presidente.server.chat.Chat;
+
 import java.util.ArrayList;
 
 /**
@@ -21,6 +23,8 @@ public final class Game {
 
     private final ArrayList<Client> clients;
 
+    private final Chat chat;
+
     private byte playerCount;
     // <- Static ->
 
@@ -32,13 +36,42 @@ public final class Game {
 
         clients = new ArrayList<>(5);
 
-        enter(owner);
+        chat = new Chat();
 
-        playerCount = 1;
+        enter(owner);
     }
 
     // <- Abstract ->
+
     // <- Object ->
+    public boolean enter(final Client client) {
+        if (clients.size() >= 5)
+            return false;
+        else {
+            final boolean entered = clients.add(client);
+
+            if (entered) {
+                client.setCurrentGame(this);
+
+                playerCount++;
+
+                chat.join(client);
+            }
+
+            return entered;
+        }
+    }
+
+    public void leave(final Client client) {
+        if (clients.remove(client)) {
+            playerCount--;
+
+            chat.leave(client);
+        }
+
+        if (playerCount <= 0)
+            lobby.remove(this);
+    }
 
     // <- Getter & Setter ->
     public String getName() {
@@ -53,29 +86,9 @@ public final class Game {
         return playerCount;
     }
 
-    public boolean enter(final Client client) {
-        if (clients.size() >= 5)
-            return false;
-        else {
-            final boolean entered = clients.add(client);
-
-            if (entered) {
-                client.setCurrentGame(this);
-
-                playerCount++;
-            }
-
-            return entered;
-        }
+    public Chat getChat() {
+        return chat;
     }
 
-    public void leave(final Client client) {
-        if (clients.remove(client))
-            playerCount--;
-
-        if(playerCount <= 0)
-            lobby.remove(this);
-    }
-
-    // <- Static ->
+// <- Static ->
 }

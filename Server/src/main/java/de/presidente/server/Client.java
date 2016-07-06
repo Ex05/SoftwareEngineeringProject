@@ -21,6 +21,8 @@ import de.presidente.net.Packet_014_CreateNewGameConfirmation;
 import de.presidente.net.Packet_015_EnterPreGameLobby;
 import de.presidente.net.Packet_016_EnterPreGameLobbyConfirmation;
 import de.presidente.net.Packet_017_LeavePreGameLobby;
+import de.presidente.net.Packet_019_ChatMsgSend;
+import de.presidente.net.Packet_020_ChatMsgReceive;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -149,8 +151,14 @@ public final class Client implements Runnable {
                 handlePacket_015_EnterPreGameLobby((Packet_015_EnterPreGameLobby) packet);
             else if (packet.getClass().equals(Packet_017_LeavePreGameLobby.class))
                 handlePacket_017_LeavePreGameLobby((Packet_017_LeavePreGameLobby) packet);
+            else if (packet.getClass().equals(Packet_019_ChatMsgSend.class))
+                handlePacket_019_ChatMsgSend((Packet_019_ChatMsgSend) packet);
         }
         while (true);
+    }
+
+    private void handlePacket_019_ChatMsgSend(final Packet_019_ChatMsgSend packet) {
+        currentGame.getChat().addMessage(this, packet.getMsg());
     }
 
     private void handlePacket_017_LeavePreGameLobby(final Packet_017_LeavePreGameLobby packet) {
@@ -217,7 +225,7 @@ public final class Client implements Runnable {
             send(new Packet_006_Salt(salt));
     }
 
-    public  boolean send(final Packet packet) {
+    public boolean send(final Packet packet) {
         boolean successfulWrite = false;
 
         try {

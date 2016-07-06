@@ -75,5 +75,22 @@ public final class Container<T extends Entity> extends Entity {
         children.forEach(action);
     }
 
+    public void clear() {
+        children.clear();
+    }
+
+    public void setAbsoluteLocation(final int x, final int y) {
+        super.setLocation(x, y);
+
+        children.forEach(e -> {
+            if (x == 0)
+                e.setLocation(e.getX(), y);
+            else if (y == 0)
+                e.setLocation(x, e.getY());
+            else
+                e.setLocation(x, y);
+        });
+    }
+
     // <- Static ->
 }
