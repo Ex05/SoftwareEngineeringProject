@@ -17,24 +17,22 @@ import de.presidente.net.Packet;
 import de.presidente.net.Packet_017_LeavePreGameLobby;
 import de.presidente.net.Packet_019_ChatMsgSend;
 import de.presidente.net.Packet_020_ChatMsgReceive;
+import de.presidente.net.Packet_021_PreGameLobbyClientUpdate;
 
 import java.util.List;
 
 import static de.janik.softengine.ui.TextLocation.LEFT;
 import static de.janik.softengine.util.ColorARGB.BLACK;
 import static de.janik.softengine.util.ColorARGB.CADET_BLUE;
-import static de.janik.softengine.util.ColorARGB.CYAN;
-import static de.janik.softengine.util.ColorARGB.DARK_GREEN;
-import static de.janik.softengine.util.ColorARGB.DARK_OLIVE_GREEN;
 import static de.janik.softengine.util.ColorARGB.DARK_ORANGE;
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
 import static de.janik.softengine.util.ColorARGB.GRAY;
 import static de.janik.softengine.util.ColorARGB.GREEN;
-import static de.janik.softengine.util.ColorARGB.GREEN_YELLOW;
 import static de.janik.softengine.util.ColorARGB.LIGHT_GRAY;
+import static de.janik.softengine.util.ColorARGB.LIGHT_STEEL_BLUE;
 import static de.janik.softengine.util.ColorARGB.RED;
 import static de.janik.softengine.util.ColorARGB.SILVER;
-import static de.janik.softengine.util.ColorARGB.YELLOW;
+import static de.janik.softengine.util.ColorARGB.SLATE_BLUE;
 import static de.presidente.jungle_king.util.Resources.IMAGE_PREGAME_LOBBY_MAP_PREVIEW;
 import static de.presidente.jungle_king.util.Resources.SOURCE_CODE_PRO;
 import static java.awt.Font.BOLD;
@@ -55,7 +53,7 @@ public final class PreGameLobby extends State {
 
     private final Container<Button> buttonLeaveAndReady;
     private final Container<Container<Label>> chat;
-
+    private final Container<Label> clients;
 
     private Rectangle backgroundUser;
     private Rectangle backgroundChat;
@@ -100,6 +98,8 @@ public final class PreGameLobby extends State {
                 textFieldChat.clear();
             }
         });
+
+        clients = new Container<>();
     }
 
     // <- Abstract ->
@@ -171,7 +171,36 @@ public final class PreGameLobby extends State {
         while (poolPackets && (p = server.retrievePacket()) != null) {
             if (p.getClass().equals(Packet_020_ChatMsgReceive.class))
                 handlePacket_020_ChatMsgReceive((Packet_020_ChatMsgReceive) p);
+            else if (p.getClass().equals(Packet_021_PreGameLobbyClientUpdate.class))
+                handlePacket_021_PreGameLobbyClientUpdate((Packet_021_PreGameLobbyClientUpdate) p);
         }
+    }
+
+    private void handlePacket_021_PreGameLobbyClientUpdate(final Packet_021_PreGameLobbyClientUpdate packet) {
+        clients.forEach(this::remove);
+        clients.clear();
+
+        int yOffset = 0;
+        int i = 0;
+        for (final String clientName : packet.getClientNames()) {
+            final Label labelClientName = new Label(clientName, LEFT);
+
+            labelClientName.setFont(SOURCE_CODE_PRO.deriveFont(BOLD));
+            labelClientName.setTextColor(BLACK);
+            labelClientName.setBackgroundColor( i++ % 2 == 0 ? SLATE_BLUE : LIGHT_STEEL_BLUE);
+            labelClientName.setTextSize(26);
+            labelClientName.setZ(backgroundUser.getZ() + 1);
+            labelClientName.setWidth(backgroundUser.getWidth());
+            labelClientName.setLocation(0, yOffset);
+
+            yOffset -= labelClientName.getHeight();
+
+            clients.add(labelClientName);
+        }
+
+        clients.setLocation(backgroundUser.getX(), backgroundUser.getY() + backgroundUser.getHeight() - 32);
+
+        clients.forEach(this::add);
     }
 
     private void handlePacket_020_ChatMsgReceive(final Packet_020_ChatMsgReceive packet) {
@@ -216,7 +245,7 @@ public final class PreGameLobby extends State {
 
         chat.forEach(container -> container.setLocation(0, backgroundChat.getY() + backgroundChat.getHeight() - 35));
 
-        chat.forEach(c -> c.forEach(this::add));
+        chat.forEach(child -> child.forEach(this::add));
     }
 
     // <- Getter & Setter ->

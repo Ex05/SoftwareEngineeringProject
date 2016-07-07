@@ -22,7 +22,6 @@ import de.presidente.net.Packet_015_EnterPreGameLobby;
 import de.presidente.net.Packet_016_EnterPreGameLobbyConfirmation;
 import de.presidente.net.Packet_017_LeavePreGameLobby;
 import de.presidente.net.Packet_019_ChatMsgSend;
-import de.presidente.net.Packet_020_ChatMsgReceive;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -56,7 +55,6 @@ public final class Client implements Runnable {
     private long uID;
 
     private Game currentGame;
-    private Game currentgame;
 
     // <- Static ->
 
@@ -179,10 +177,14 @@ public final class Client implements Runnable {
 
     private void handlePacket_015_EnterPreGameLobby(final Packet_015_EnterPreGameLobby packet) {
         send(new Packet_016_EnterPreGameLobbyConfirmation(server.getLobby().enterGame(this, packet.getGameName())));
+
+        currentGame.updatePreGameLobby();
     }
 
     private void handlePacket_013_CreateNewGame(final Packet_013_CreateNewGame packet) {
         send(new Packet_014_CreateNewGameConfirmation(server.getLobby().createGame(this, packet.getGameName())));
+
+        currentGame.updatePreGameLobby();
     }
 
     private void handlePacket_011_CheckGameName(final Packet_011_CheckGameName packet) {

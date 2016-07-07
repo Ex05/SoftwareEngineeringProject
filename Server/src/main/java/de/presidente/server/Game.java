@@ -3,6 +3,7 @@ package de.presidente.server;
 
 // <- Static_Import ->
 
+import de.presidente.net.Packet_021_PreGameLobbyClientUpdate;
 import de.presidente.server.chat.Chat;
 
 import java.util.ArrayList;
@@ -48,7 +49,11 @@ public final class Game {
         if (clients.size() >= 5)
             return false;
         else {
-            final boolean entered = clients.add(client);
+            final boolean entered;
+
+            synchronized (clients) {
+                entered = clients.add(client);
+            }
 
             if (entered) {
                 client.setCurrentGame(this);
@@ -63,10 +68,18 @@ public final class Game {
     }
 
     public void leave(final Client client) {
-        if (clients.remove(client)) {
+        final boolean remove;
+
+        synchronized (clients) {
+            remove = clients.remove(client);
+        }
+
+        if (remove) {
             playerCount--;
 
             chat.leave(client);
+
+            updatePreGameLobby();
         }
 
         if (playerCount <= 0)
@@ -88,6 +101,12 @@ public final class Game {
 
     public Chat getChat() {
         return chat;
+    }
+
+    public void updatePreGameLobby() {
+        synchronized (clients) {
+         clients.forEach(client -> client.send(new Packet_021_PreGameLobbyClientUpdate(clients.stream().map(Client::getUserName).toArray(String[]::new))));
+        }
     }
 
 // <- Static ->
