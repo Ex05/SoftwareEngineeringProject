@@ -83,7 +83,7 @@ public class TextField extends Button {
         }
     }
 
-    public void clear(){
+    public void clear() {
         setText("");
 
         displayDefaultText();
@@ -106,6 +106,11 @@ public class TextField extends Button {
         setText(text);
 
         onInputChange();
+    }
+
+    public void append(final String text) {
+        for (final char c : text.toCharArray())
+            append(c);
     }
 
     private void displayDefaultText() {

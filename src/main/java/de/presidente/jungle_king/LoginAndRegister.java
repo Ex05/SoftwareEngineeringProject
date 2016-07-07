@@ -301,6 +301,16 @@ public final class LoginAndRegister extends State {
         initDefaultFocus();
     }
 
+    private void clearRegisterForm() {
+        textFieldUserNameRegister.clear();
+
+        passwordFieldPasswordRegister.clear();
+
+        passwordFieldPasswordRegisterConfirm.clear();
+
+        initDefaultFocus();
+    }
+
     private void switchState(final State nextState) {
         switch (nextState) {
             case LOGIN: {
@@ -405,10 +415,20 @@ public final class LoginAndRegister extends State {
 
     private void handlePacket_010_RegistrationConfirmation(final Packet_010_RegistrationConfirmation packet) {
         if (subState == SubState.AWAIT_REGISTRATION_RESPONSE)
-            if (packet.isGranted())
-                System.out.println("Registered.");
-            else
-                System.err.println("Failed to register");
+            if (packet.isGranted()) {
+                final String userName = textFieldUserNameRegister.getUserInput();
+
+                clearRegisterForm();
+
+                textFieldUserNameLogin.setFocus(true);
+                textFieldUserNameLogin.append(userName);
+
+                switchState(State.TRANSITION_TO_LOGIN);
+            } else {
+                clearRegisterForm();
+
+                Toolkit.getDefaultToolkit().beep();
+            }
     }
 
     private void handlePacket_009_UserNameAvailable(final Packet_009_UserNameAvailable packet) {
