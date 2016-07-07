@@ -53,10 +53,8 @@ public final class ConnectionManager {
 
         final Thread t1 = new Thread(() -> {
             byte repetitions = 1;
-            int timeout = 200;
+            int timeout = 300;
             do {
-                System.out.println(timeout + "ms");
-
                 socket = OpenSocket(address, port, timeout);
 
                 timeout += timeout / 2;
@@ -68,8 +66,8 @@ public final class ConnectionManager {
 
                     threadInbound.start();
                 } else
-                    System.out.println("Retrying...");
-            } while (socket == null && repetitions++ < 7);
+                    System.out.println("Trying to connect to server.");
+            } while (socket == null && repetitions++ < 10);
 
             if (socket == null) {
                 // TODO:(jan) Make this not use OptionPane.

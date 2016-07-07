@@ -155,7 +155,7 @@ public final class Server {
         if (loggedIn) {
             client.setUserName(credentials.getUserName());
 
-            client.setuID(uID);
+            client.setU_ID(uID);
         }
 
         return loggedIn;

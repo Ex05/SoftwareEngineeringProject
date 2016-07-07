@@ -3,6 +3,8 @@ package de.presidente.jungle_king.util;
 
 // <- Static_Import ->
 
+import de.janik.softengine.ui.Sprite;
+
 import java.awt.Font;
 
 /**
@@ -11,6 +13,8 @@ import java.awt.Font;
 public final class Resources {
     // <- Public ->
     public static Font SOURCE_CODE_PRO;
+
+    public static Sprite IMAGE_PREGAME_LOBBY_MAP_PREVIEW;
 
     // <- Protected ->
     // <- Private->

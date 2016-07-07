@@ -20,6 +20,8 @@ import de.presidente.net.Packet_013_CreateNewGame;
 import de.presidente.net.Packet_014_CreateNewGameConfirmation;
 import de.presidente.net.Packet_015_EnterPreGameLobby;
 import de.presidente.net.Packet_016_EnterPreGameLobbyConfirmation;
+import de.presidente.net.Packet_017_LeavePreGameLobby;
+import de.presidente.net.Packet_019_ChatMsgSend;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -51,6 +53,8 @@ public final class Client implements Runnable {
     private String userName;
 
     private long uID;
+
+    private Game currentGame;
 
     // <- Static ->
 
@@ -143,20 +147,48 @@ public final class Client implements Runnable {
                 handlePacket_013_CreateNewGame((Packet_013_CreateNewGame) packet);
             else if (packet.getClass().equals(Packet_015_EnterPreGameLobby.class))
                 handlePacket_015_EnterPreGameLobby((Packet_015_EnterPreGameLobby) packet);
+            else if (packet.getClass().equals(Packet_017_LeavePreGameLobby.class))
+                handlePacket_017_LeavePreGameLobby((Packet_017_LeavePreGameLobby) packet);
+            else if (packet.getClass().equals(Packet_019_ChatMsgSend.class))
+                handlePacket_019_ChatMsgSend((Packet_019_ChatMsgSend) packet);
         }
         while (true);
     }
 
+    private void handlePacket_019_ChatMsgSend(final Packet_019_ChatMsgSend packet) {
+        currentGame.getChat().addMessage(this, packet.getMsg());
+    }
+
+    private void handlePacket_017_LeavePreGameLobby(final Packet_017_LeavePreGameLobby packet) {
+        currentGame.leave(this);
+
+        currentGame = null;
+
+        enterLobby();
+    }
+
+    private void enterLobby() {
+        final Lobby lobby = server.getLobby();
+
+        server.getLobby().enter(this);
+
+        send(new Packet_004_LobbyEnter(lobby.getGames(), lobby.getConnectedClients()));
+    }
+
     private void handlePacket_015_EnterPreGameLobby(final Packet_015_EnterPreGameLobby packet) {
         send(new Packet_016_EnterPreGameLobbyConfirmation(server.getLobby().enterGame(this, packet.getGameName())));
+
+        currentGame.updatePreGameLobby();
     }
 
     private void handlePacket_013_CreateNewGame(final Packet_013_CreateNewGame packet) {
         send(new Packet_014_CreateNewGameConfirmation(server.getLobby().createGame(this, packet.getGameName())));
+
+        currentGame.updatePreGameLobby();
     }
 
     private void handlePacket_011_CheckGameName(final Packet_011_CheckGameName packet) {
-        send(new Packet_012_GameNameAvailable(server.getLobby().isGameNameAvailable(packet.getGameName())));
+        send(new Packet_012_GameNameAvailable(packet.getGameName(), server.getLobby().isGameNameAvailable(packet.getGameName())));
     }
 
     private boolean handlePacket_001_Login(final Packet_001_Login packet) {
@@ -167,11 +199,7 @@ public final class Client implements Runnable {
         if (loggedIn) {
             send(new Packet_003_Permission(GRANTED));
 
-            final Lobby lobby = server.getLobby();
-
-            server.getLobby().enter(this);
-
-            send(new Packet_004_LobbyEnter(lobby.getGames(), lobby.getConnectedClients()));
+            enterLobby();
         } else
             send(new Packet_003_Permission(DENIED));
 
@@ -199,7 +227,7 @@ public final class Client implements Runnable {
             send(new Packet_006_Salt(salt));
     }
 
-    private boolean send(final Packet packet) {
+    public boolean send(final Packet packet) {
         boolean successfulWrite = false;
 
         try {
@@ -232,8 +260,16 @@ public final class Client implements Runnable {
         this.userName = userName;
     }
 
-    public void setuID(final long uID) {
+    public void setU_ID(final long uID) {
         this.uID = uID;
+    }
+
+    public Game getGame() {
+        return currentGame;
+    }
+
+    public void setCurrentGame(final Game currentGame) {
+        this.currentGame = currentGame;
     }
 
     // <- Static ->

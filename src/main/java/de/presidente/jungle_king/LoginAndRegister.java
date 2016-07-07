@@ -29,6 +29,7 @@ import de.presidente.net.Packet_008_CheckUserNameAvailability;
 import de.presidente.net.Packet_009_UserNameAvailable;
 import de.presidente.net.Packet_010_RegistrationConfirmation;
 
+import java.awt.Toolkit;
 import java.util.Arrays;
 
 import static de.janik.softengine.util.ColorARGB.DARK_SLATE_GRAY;
@@ -437,15 +438,21 @@ public final class LoginAndRegister extends State {
 
     private void handlePacket_003_Permission(final Packet_003_Permission packet) {
         if (subState == SubState.AWAITING_SALT) {
-            if (packet.getPermission() == DENIED)
+            if (packet.getPermission() == DENIED) {
                 clearLoginForm();
+
+                Toolkit.getDefaultToolkit().beep();
+            }
         } else if (subState == SubState.LOGGING_IN)
             if (packet.getPermission() == GRANTED) {
                 game.switchState(Lobby.class);
 
                 poolPackets = false;
-            } else
+            } else {
                 clearLoginForm();
+
+                Toolkit.getDefaultToolkit().beep();
+            }
     }
 
     // <- Getter & Setter ->

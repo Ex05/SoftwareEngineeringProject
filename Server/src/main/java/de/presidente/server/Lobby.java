@@ -4,6 +4,7 @@ package de.presidente.server;
 // <- Static_Import ->
 
 import de.presidente.net.GameInfo;
+import de.presidente.net.Packet_018_LobbyUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +36,23 @@ public final class Lobby {
         synchronized (clients) {
             clients.add(client);
         }
+
+        updateClients();
     }
 
     public void leave(final Client client) {
-        if (client != null)
+        if (client != null) {
+            final Game game = client.getGame();
+
+            if (game != null)
+                game.leave(client);
+
             synchronized (clients) {
                 clients.remove(client);
             }
+        }
+
+        updateClients();
     }
 
     // <- Getter & Setter ->
@@ -63,11 +74,18 @@ public final class Lobby {
         if (isGameNameAvailable(name)) {
 
             synchronized (games) {
-                games.add(new Game(name, client));
+                games.add(new Game(this, name, client));
             }
 
             created = true;
         }
+
+        synchronized (clients) {
+            clients.remove(client);
+        }
+
+        if (created)
+            updateClients();
 
         return created;
     }
@@ -75,8 +93,17 @@ public final class Lobby {
     public boolean enterGame(final Client client, final String gameName) {
         final Game game = games.stream().filter(g -> g.getName().equals(gameName)).findFirst().orElse(null);
 
-        return game != null && game.enter(client);
+        if (game != null && game.enter(client)) {
+            synchronized (clients) {
+                clients.remove(client);
+            }
 
+            updateClients();
+
+            return true;
+        }
+
+        return false;
     }
 
     public GameInfo[] getGames() {
@@ -89,6 +116,15 @@ public final class Lobby {
 
             return gameInfo;
         }
+    }
+
+    public void remove(final Game game) {
+        if (games.remove(game))
+            updateClients();
+    }
+
+    private void updateClients() {
+        clients.forEach(c -> c.send(new Packet_018_LobbyUpdate(getGames(), getConnectedClients())));
     }
 
     // <- Static ->

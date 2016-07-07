@@ -22,6 +22,13 @@ public final class Label extends TextComponent {
         setFocusAble(false);
     }
 
+    public Label(final String text , final TextLocation textLocation) {
+        super();
+
+        setText(text);
+        setTextLocation(textLocation);
+    }
+
     // <- Abstract ->
     // <- Object ->
     // <- Getter & Setter ->

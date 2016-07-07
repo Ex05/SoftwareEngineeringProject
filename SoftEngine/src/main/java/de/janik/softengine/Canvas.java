@@ -8,6 +8,7 @@ import de.janik.windowing.WindowComponent;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -62,7 +63,7 @@ public class Canvas extends WindowComponent<JPanel> {
         getAWT_Component().add(canvas);
 
         canvas.setFocusable(true);
-        canvas.setBackground(BLACK);
+        canvas.setBackground(new Color(115, 195, 90));
         canvas.setIgnoreRepaint(true);
         canvas.setFocusTraversalKeysEnabled(false);
         canvas.requestFocusInWindow();

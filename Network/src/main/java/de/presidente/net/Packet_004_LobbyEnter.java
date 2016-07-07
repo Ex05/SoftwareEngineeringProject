@@ -6,7 +6,7 @@ package de.presidente.net;
 /**
  * @author Jan.Marcel.Janik [©2016]
  */
-public final class Packet_004_LobbyEnter extends Packet {
+public class Packet_004_LobbyEnter extends Packet {
     // <- Public ->
     // <- Protected ->
 

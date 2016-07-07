@@ -5,10 +5,14 @@ package de.janik.softengine.ui;
 
 import de.janik.softengine.util.ColorARGB;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -53,8 +57,12 @@ public class Text extends A_Sprite {
     private int height;
 
     private boolean antialiasing = false;
+    private boolean dropShadowEnabled = false;
+    private boolean outlineOnly = false;
 
     private Interpolation interpolation = NEAREST_NEIGHBOR;
+
+    private DropShadow dropShadow = new DropShadow(BLACK, 1, 1);
 
     // <- Static ->
     static {
@@ -99,8 +107,6 @@ public class Text extends A_Sprite {
 
             g.setFont(font);
 
-            g.setColor(ToAWT_Color(color));
-
             final FontMetrics fm = g.getFontMetrics();
 
             float posX = (width - fm.stringWidth(text)) / 2.0f;
@@ -108,7 +114,35 @@ public class Text extends A_Sprite {
 
             final float posY = (fm.getAscent() + (height - (fm.getAscent() + fm.getDescent())) / 2.0f);
 
-            g.drawString(text, posX, posY);
+            if (dropShadowEnabled) {
+                if (text.length() != 0) {
+                    final TextLayout textLayout = new TextLayout(text, font, g.getFontRenderContext());
+                    g.setPaint(ColorARGB.ToAWT_Color(dropShadow.getColor()));
+                    textLayout.draw(g, posX + dropShadow.getxOffset(), posY + dropShadow.getyOffset());
+
+                    g.setPaint(ToAWT_Color(color));
+                    textLayout.draw(g, posX, posY);
+                }
+            } else if (outlineOnly) {
+                final FontRenderContext renderContext = g.getFontRenderContext();
+
+                final TextLayout textTl = new TextLayout(text, font, renderContext);
+
+                final Shape outline = textTl.getOutline(null);
+
+                final java.awt.Rectangle outlineBounds = outline.getBounds();
+
+                final AffineTransform transform = g.getTransform();
+                transform.translate(width / 2 - (outlineBounds.width / 2), height / 2 + (outlineBounds.height / 2));
+
+                g.transform(transform);
+                g.setColor(Color.blue);
+                g.draw(outline);
+                g.setClip(outline);
+            } else {
+                g.setColor(ToAWT_Color(color));
+                g.drawString(text, posX, posY);
+            }
         }
     }
 
@@ -175,8 +209,45 @@ public class Text extends A_Sprite {
         setAntialiasing(antialiasing);
     }
 
+    public DropShadow getDropShadow() {
+        return dropShadow;
+    }
+
+    public Interpolation getInterpolation() {
+        return interpolation;
+    }
+
+    public boolean isAntialiasing() {
+        return antialiasing;
+    }
+
     public Graphics2D getGraphics() {
         return g;
+    }
+
+    public boolean isDropShadowEnabled() {
+        return dropShadowEnabled;
+    }
+
+    public boolean isOutlineOnly() {
+        return outlineOnly;
+    }
+
+    public void setOutlineOnly(final boolean outlineOnly) {
+        this.outlineOnly = outlineOnly;
+
+        updateText();
+    }
+    public void setDropShadowEnabled(final boolean dropShadowEnabled) {
+        this.dropShadowEnabled = dropShadowEnabled;
+
+        updateText();
+    }
+
+    public void setDropShadow(final DropShadow dropShadow) {
+        this.dropShadow = dropShadow;
+
+        setDropShadowEnabled(true);
     }
 
     // <- Static ->

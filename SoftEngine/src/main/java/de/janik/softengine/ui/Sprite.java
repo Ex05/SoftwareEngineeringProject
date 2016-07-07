@@ -27,6 +27,12 @@ public final class Sprite extends A_Sprite {
         current = animations[0];
     }
 
+    public Sprite(final String file){
+        animations = SpriteLoader.GetInstance().load(file);
+
+        current = animations[0];
+    }
+
     // <- Abstract ->
 
     // <- Object ->
